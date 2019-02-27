@@ -2,10 +2,11 @@ from bs4 import BeautifulSoup
 from lib.item.fangzi import *
 from lib.zone.area import *
 import json
+import os
 
 
 def get_contents(urls):
-    content = requests.get(urls, timeout=10).content
+    content = requests.get(urls, timeout=10, headers=create_headers()).content
     return content
 
 
@@ -14,17 +15,25 @@ def get_fangzi_detail(content):
     soup = BeautifulSoup(content, 'lxml')
     fangzi_details = soup.find_all('div', class_='info clear')
     for fangzi_detail in fangzi_details:
-        fangzi_detail_title = fangzi_detail.contents[1].text.strip()
+        fangzi_detail_title = fangzi_detail.contents[1].text.strip().replace('\n', ' ')
         fangzi_detail_size = [item.strip().split('\n')[0].replace('\n', '') for item in
                               fangzi_detail.contents[3].text.strip().split('|')
                               ][1:]
         fangzi_detail_price = [item.strip() for item in
                                fangzi_detail.contents[3].contents[9].text.strip().split('\n')
                                if item.strip() != '']
-        # total_detail = fangzi_detail_title+fangzi_detail_size+fangzi_detail_price
-        fangzi_ = FangZi(fangzi_detail_title, fangzi_detail_size[0], fangzi_detail_size[1],
-                         fangzi_detail_price[1], fangzi_detail_price[0], fangzi_detail_size[2])
-
+        try:
+            if len(fangzi_detail_size) == 3:
+                fangzi_ = FangZi(fangzi_detail_title, fangzi_detail_size[0], fangzi_detail_size[1],
+                                 fangzi_detail_price[1], fangzi_detail_price[0], fangzi_detail_size[2])
+            else:
+                fangzi_ = FangZi(fangzi_detail_title, fangzi_detail_size[0], fangzi_detail_size[1],
+                                 fangzi_detail_price[1], fangzi_detail_price[0])
+        except:
+            fangzi_ = FangZi()
+            print(fangzi_detail_title)
+            print(fangzi_detail_size)
+            print(fangzi_detail_price)
         fangzi_list_.append(fangzi_)
     return fangzi_list_
 
@@ -37,7 +46,7 @@ def get_house_detail_list(house_detail_response):
     if len(house_details) == 0:
         house_developer = ''
     else:
-        house_developer = house_details[3].text.strip()
+        house_developer = house_details[3].text.strip().split('\n')[-1]
     # print(house_label,":",house_content)
     if SPIDER_NAME == 'ke':
         all_house_href = house_detail_soup.find_all('a', class_='fr CLICKDATA')
@@ -61,6 +70,17 @@ def get_house_detail_list(house_detail_response):
         else:
             fangzi_list.extend(get_fangzi_detail(all_h_response.content))
     return fangzi_list, house_developer
+
+
+# 获取文件大小
+def getDocSize(path):
+    try:
+        size = os.path.getsize(path)
+        size = float(size)
+        kb = size / 1024
+        return kb
+    except Exception as err:
+        print(err)
 
 
 if __name__ == '__main__':

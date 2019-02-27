@@ -30,6 +30,10 @@ class XiaoQuBaseSpider(BaseSpider):
         """
         district_name = area_dict.get(area_name, "")
         csv_file = self.today_path + "/{0}_{1}.csv".format(district_name, area_name)
+        if os.path.exists(csv_file):
+            if getDocSize(csv_file) > 1:
+                print(csv_file + "exist and large enough!")
+                return
         with open(csv_file, "w") as f:
             # 开始获得需要的板块数据
             xqs = self.get_xiaoqu_info(city_name, area_name)
@@ -40,8 +44,8 @@ class XiaoQuBaseSpider(BaseSpider):
                 self.mutex.release()
             if fmt == "csv":
                 for xiaoqu in xqs:
-                    if xiaoqu.fangzi.name != '':
-                        f.write(self.date_string + "," + xiaoqu.text() + "\n")
+                    # if xiaoqu.fangzi.name != '':
+                    f.write(self.date_string + "," + xiaoqu.text() + "\n")
         print("Finish crawl area: " + area_name + ", save data to : " + csv_file)
         logger.info("Finish crawl area: " + area_name + ", save data to : " + csv_file)
 
@@ -92,7 +96,8 @@ class XiaoQuBaseSpider(BaseSpider):
                 house_detail_href = name.contents[1].attrs['href']
                 name = name.text.replace("\n", "")
                 on_sale = on_sale.text.replace("\n", "").strip()
-                house_detail_content = requests.get(house_detail_href, timeout=10).content
+                house_detail_content = requests.get(house_detail_href,
+                                                    timeout=10, headers=create_headers()).content
                 fangzi_list, house_developer = get_house_detail_list(house_detail_content)
                 # 作为对象保存
                 for fangzi_ in fangzi_list:
@@ -118,7 +123,8 @@ class XiaoQuBaseSpider(BaseSpider):
             areas_of_district = get_areas(city, district)
             print('{0}: Area list:  {1}'.format(district, areas_of_district))
             # 用list的extend方法,L1.extend(L2)，该方法将参数L2的全部元素添加到L1的尾部
-            areas.extend(areas_of_district)
+            if areas_of_district is not None:
+                areas.extend(areas_of_district)
             # 使用一个字典来存储区县和板块的对应关系, 例如{'beicai': 'pudongxinqu', }
             for area in areas_of_district:
                 area_dict[area] = district

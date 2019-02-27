@@ -20,7 +20,8 @@ def get_root_path():
 
 def create_data_path():
     root_path = get_root_path()
-    data_path = root_path + "/data"
+    # data_path = root_path + "/data"
+    data_path = os.path.join('F:\Python', 'data')
     if not os.path.exists(data_path):
         os.makedirs(data_path)
     return data_path

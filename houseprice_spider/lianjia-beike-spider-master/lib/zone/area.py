@@ -55,5 +55,5 @@ def get_areas(city, district):
 
 
 if __name__ == "__main__":
-    print(get_areas("sh", "huangpu"))
+    print(get_areas("su", "gongyeyuan"))
 

@@ -76,11 +76,15 @@ WSGI_APPLICATION = 'MyBigHouses.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 
-# 此处注册后台使用的数据库，可以注册多种数据库 NGINE
+# 此处注册后台使用的数据库，可以注册多种数据库 ENGINE
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'MBH',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': '42.159.9.216',
+        'PORT': '3306'
     }
 }
 
@@ -126,3 +130,6 @@ USE_TZ = True
 # 静态资源存储目录
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_URL = '/static/'
+
+# 使用自定义的 User 类， 覆盖Django提供的类
+AUTH_USER_MODEL = 'user.User'

@@ -1,0 +1,18 @@
+前端传给后端的数据格式：
+ 
+
+注册界面 lochost:8000/user/register：
+user_name: 用户名
+email：邮箱地址
+pwd： 密码
+cpwd： 确认密码
+
+
+登录界面 localhost:8000/user/login:
+username: 用户名
+pwd: 密码
+remember: 记住我（勾选则值为‘on’）
+
+
+
+ 

@@ -15,6 +15,10 @@ def register(request):
 def f1():
     pass
 
+def f2():
+    pass
+
+
 def login(request):
     if request.method == 'POST':
         username = request.POST.get('')

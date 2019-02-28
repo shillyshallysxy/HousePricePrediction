@@ -12,6 +12,8 @@ def user(request):
 def register(request):
     pass
 
+def f1():
+    pass
 
 def login(request):
     if request.method == 'POST':

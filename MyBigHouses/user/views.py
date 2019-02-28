@@ -13,6 +13,10 @@ def register(request):
     pass
 
 
+def f2():
+    pass
+
+
 def login(request):
     if request.method == 'POST':
         username = request.POST.get('')

@@ -1,8 +1,19 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect,reverse
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_protect
 
 # Create your views here.
 
 
-def index(request):
-    return HttpResponse("Hello My House")
+def user(request):
+    return HttpResponse("page of user info!")
+
+
+def register(request):
+    pass
+
+
+def login(request):
+    if request.method == 'POST':
+        username = request.POST.get('')
+    return render(request, 'login.html')

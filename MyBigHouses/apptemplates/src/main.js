@@ -5,11 +5,13 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import axios from 'axios'
+
 
 /* 使用element-ui插件 */
 Vue.use(ElementUI)
 Vue.config.productionTip = false
-
+Vue.prototype.$ajax = axios
 /*
 main.js的文件调用顺序：
 （1）确定将被挂载的元素  el:'#app'
@@ -19,9 +21,6 @@ main.js的文件调用顺序：
     2. 注入路由时指定router文件夹，指定文件夹下所有的routes
     3. router文件夹下此时只有index.js文件，其中routes[]规定了文件地址及其url地址映射
     4. 根据文件地址，载入组件，组件被渲染在<router-view>中，被显示在index.html中
-
-
-
 */
 
 /* eslint-disable no-new */
@@ -35,4 +34,3 @@ new Vue({
   /* 替换挂载元素的模版组件*/
   template: '<App/>'
 })
-

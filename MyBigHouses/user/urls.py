@@ -1,9 +1,8 @@
 from django.conf.urls import url
-from .views import register
-from django.urls import path
-from .views import user
+from .views import RegisterView, ActiveView
 app_name = 'user'
 
 urlpatterns = [
-    url(r'^$', user)
+    url(r'register/', RegisterView.as_view(), name="register"),
+    url(r'active/(?P<token>.*)', ActiveView.as_view(), name='active'),
 ]

@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# sys.path.insert(0, '..')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -38,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 注册 user app
-    'user'
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +138,23 @@ STATIC_URL = '/static/'
 
 # 使用自定义的 User 类， 覆盖Django提供的类
 AUTH_USER_MODEL = 'user.User'
+
+
+# 配置邮箱引擎
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+# 实际发件人
+EMAIL_HOST_USER = 'amisher@163.com'
+# 发件邮箱的授权码
+EMAIL_HOST_PASSWORD = 'django2018'
+# 接受方显示的<发件人>名称
+EMAIL_FROM = u'我的大房子<amisher@163.com>'
+
+
+# 使用 redis 作为 celery 的 broker
+CELERY_BROKER_URL = 'redis://42.159.9.216:6380'
+CELERY_RESULT_BACKEND = 'redis://42.159.9.216:6380'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

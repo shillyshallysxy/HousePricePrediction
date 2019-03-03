@@ -3,12 +3,11 @@
     <header>
     <Test></Test>
     </header>
-    
+
     <div style="width:400px;text-align: center;">
     <router-view/>
     </div>
     <footer>
-      <h1>now you see me</h1>
     </footer>
 
   </div>
@@ -22,7 +21,7 @@ export default {
   components:{
     Test,
   },
-  
+
 
   name: 'App'
 }

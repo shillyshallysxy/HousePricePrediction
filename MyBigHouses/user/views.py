@@ -14,12 +14,16 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 # url: /user/login/
-# @csrf_exempt
-def login(request):
-    print("222")
-    print(request.method)
-    if request.method == 'POST':
+class LoginView(View):
+    '''登录类视图'''
+
+    def get(self, request):
+        # method == 'GET'
         get_token(request)
+        return JsonResponse({})
+
+    def post(self, request):
+        # get_token(request)
         data = json.loads(request.body)
         username = data["username"]
         pwd = data["password"]
@@ -42,17 +46,12 @@ def login(request):
         else:
             # username不存在
             return JsonResponse({'code': 5, 'msg': u'该用户名不存在！'})
-    else:
-
-        # method == 'GET'
-        get_token(request)
-        print("获取了token")
-        #return render(request, 'index.html')
-        return JsonResponse({})
 
 
 # url: /user/active/<id>
 class ActiveView(View):
+    '''激活类视图'''
+
     def get(self, request, token):
         print(token)
         serializer = Serializer(settings.SECRET_KEY, 3600)
@@ -86,10 +85,6 @@ class RegisterView(View):
         username = request.POST['username']
         password = request.POST['password']
         email = request.POST['email']
-        # form_data = json.loads(request.body)
-        # username = form_data.get('username')
-        # password = form_data.get('password')
-        # email = form_data.get('email')
 
         # 检查是否重名
         try:

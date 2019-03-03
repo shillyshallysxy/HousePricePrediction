@@ -1,43 +1,107 @@
 <template>
-    <el-menu :default-active="activeIndex2" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
-        <el-menu-item index="1">处理中心</el-menu-item>
-        <el-submenu index="2">
-            <template slot="title">我的工作台</template>
-            <el-menu-item index="2-1">选项1</el-menu-item>
-            <el-menu-item index="2-2">选项2</el-menu-item>
-            <el-menu-item index="2-3">选项3</el-menu-item>
-        </el-submenu>
-        <el-menu-item index="3">
-            <a href="https://www.ele.me" target="_blank">订单管理</a>
-        </el-menu-item>
-    </el-menu>
+      <div style="margin-top:60px;">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" >
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="ruleForm.username"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="userpassword">
+            <el-input v-model="ruleForm.userpassword"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">立即登陆</el-button>
+            <el-button @click="register_route()">注册账号</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    
 </template>
 
 <script>
 export default {
   name: 'HelloWorld',
-  data () {
-    return {
-      msg: 'Welcome to Your Vue.js App'
+  data() {
+      return {
+        ruleForm: {
+          username: '',
+          password: '',
+        },
+        rules: {
+          username: [
+            { required: true, message: '请输入用户名', trigger: 'blur' },
+            { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
+          ],
+          userpassword: [
+            { required: true, message: '请输入密码', trigger: 'blur' },
+            { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+
+          ],
+        }
+      };
+    },
+  mounted(){
+      this.$ajax({
+              method: 'get',
+              url:'http://127.0.0.1:8000/user/login/',
+            })
+  },
+  methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            var arr =  this.getCookie('csrftoken')
+            alert(arr)
+            this.$ajax({
+              method: 'post',
+              url:'http://127.0.0.1:8000/user/login/',
+              data :{
+                username: this.ruleForm.username,
+                password: this.ruleForm.userpassword
+              },
+              headers:{
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': arr
+              }
+          }).then(function(response){
+            alert(response.data.msg)
+            if(response.data.code === 0){
+              window.location = '/projects'  //登录成功后跳转到home页面
+              setCookie('login', 'success', 15)
+              setCookie('username', response.data.data.username, 15)
+              setCookie('userid', response.data.data.id, 15)
+            } else {
+              vm.$message.error('Login failed!!');
+            }
+          })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+
+      
+      register_route() {
+        this.$router.push({path:"/register"})
+      },
+
+      getCookie(name){  //获取cookie函数
+    name = name + "=";
+    var start = document.cookie.indexOf(name),
+        value = null;
+    if(start>-1){
+        var end = document.cookie.indexOf(";",start);
+        if(end == -1){
+            end = document.cookie.length;
+        }
+        value = document.cookie.substring(start+name.length,end);
     }
-  }
+    return value;
+}
+    },
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+
 </style>

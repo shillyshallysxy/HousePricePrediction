@@ -13,11 +13,15 @@ export default new Router({
       component: First
     },
     {
-      path: '/',
+      path: '/login',
       name: 'HelloWorld',
       component: HelloWorld
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: First
     }
-
 
   ]
 })

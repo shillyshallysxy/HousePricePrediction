@@ -8,17 +8,25 @@ from django.conf import settings
 from django.middleware.csrf import get_token, rotate_token
 from celery_task.tasks import send_activate_email  # 发送邮件函数
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature  # 加密 激活URL
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
 
 # url: /user/login/
+# @csrf_exempt
 def login(request):
+    print("222")
+    print(request.method)
     if request.method == 'POST':
-        data = json.load(request.body)
+        get_token(request)
+        data = json.loads(request.body)
         username = data["username"]
         pwd = data["password"]
-        user = User.objects.get(username=username)
+        try:
+            user = User.objects.get(username=username)
+        except:
+            return JsonResponse({'code': 5, 'msg': u'该用户名不存在！'})
         if user:
             pwd_correct = user.password
             if md5(pwd.encode('utf-8')).hexdigest() == pwd_correct:
@@ -35,9 +43,12 @@ def login(request):
             # username不存在
             return JsonResponse({'code': 5, 'msg': u'该用户名不存在！'})
     else:
+
         # method == 'GET'
         get_token(request)
-        return render(request, 'login.html')
+        print("获取了token")
+        #return render(request, 'index.html')
+        return JsonResponse({})
 
 
 # url: /user/active/<id>

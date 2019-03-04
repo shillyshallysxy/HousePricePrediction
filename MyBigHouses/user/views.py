@@ -35,7 +35,7 @@ class LoginView(View):
             if md5(pwd.encode('utf-8')).hexdigest() == pwd_correct:
                 if user.is_active:
                     request.session['user'] = object_to_json(user)
-                    return HttpResponse('登陆成功!')
+                    return JsonResponse({'code': 0, 'msg': u'登录成功！'})
                 else:
                     # 未激活
                     return JsonResponse({'code': 3, 'msg': u'账户未激活！'})

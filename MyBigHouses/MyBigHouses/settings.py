@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 注册 user app
     'user',
+    # 注册 house app
+    'house',
     'corsheaders'
 ]
 

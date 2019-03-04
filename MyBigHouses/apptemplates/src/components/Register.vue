@@ -1,5 +1,5 @@
 <template>
-    <div style="margin-top:60px;">
+    <div style="margin-top:60px;width: 450px;margin: 0 auto">
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
     <el-form-item label="邮箱" prop="email">
         <el-input v-model="ruleForm.email"></el-input>

@@ -1,5 +1,6 @@
 <template>
-      <div style="margin-top:60px;">
+		
+      <div style="margin-top:60px; width: 450px; margin:60px auto">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" >
           <el-form-item label="用户名" prop="username">
             <el-input v-model="ruleForm.username"></el-input>
@@ -18,7 +19,7 @@
           </el-form-item>
         </el-form>
       </div>
-
+		
 </template>
 
 <script>

@@ -3,7 +3,7 @@
     <header>
     <HeadNav></HeadNav>
     </header>
-    <div style="width:400px;text-align: center;margin:0 auto">
+    <div style="width:100%;text-align: center;margin:0 auto">
 
     <router-view/>
     </div>

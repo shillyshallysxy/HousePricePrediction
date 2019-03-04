@@ -13,9 +13,9 @@
     <el-form-item label="确认密码" prop="confirm_password">
         <el-input type="password" v-model="ruleForm.confirm_password" autocomplete="off"></el-input>
     </el-form-item>
-  
 
-  
+
+
     <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
     <el-button @click="resetForm('ruleForm')">重置</el-button>
     </el-form-item>
@@ -57,16 +57,16 @@ export default {
           email: [
             { required: true, message: '请输入邮箱地址', trigger: 'blur' },
             { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
-          ],  
+          ],
           username: [
             { required: true, message: '请输入用户名', trigger: 'blur' },
             { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
           ],
           password: [
-            { validator: validatePass, trigger: 'blur' }, 
+            { validator: validatePass, trigger: 'blur' },
           ],
           confirm_password: [
-            { validator: validatePass2, trigger: 'blur' }, 
+            { validator: validatePass2, trigger: 'blur' },
           ],
         }
       };
@@ -75,35 +75,25 @@ export default {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert(this.ruleForm);
-            var arr = this.getCookie('CSRFtoken')
-            alert(arr)
-            
+            var arr = this.getCookie('csrftoken')
             this.$ajax({
               method: 'post',
-              url:'http://localhost:8000/user/register/',
+              url:'http://127.0.0.1:8000/user/register/',
               data :{
                 username: this.ruleForm.username,
-                password: this.ruleForm.userpassword,
+                password: this.ruleForm.password,
                 email: this.ruleForm.email
               },
               headers:{
-              'Accept': '*/*',
+
               'Content-Type': 'application/x-www-form-urlencoded',
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'DELETE, POST, GET, OPTIONS',
-              'Access-Control-Allow-Headers': 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With',
-              'X-CSRFtoken': arr
+
+              'X-CSRFToken': arr
               }
           }).then(function(response){
-            alert(response.data.msg)
+
             if(response.data.code === 0){
-              window.location = ''  //登录成功后跳转到home页面
-              setCookie('login', 'success', 15)
-              setCookie('username', response.data.data.username, 15)
-              setCookie('userid', response.data.data.id, 15)
             } else {
-              vm.$message.error('Login failed!!');
             }
           })
           } else {
@@ -115,13 +105,19 @@ export default {
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      getCookie(name) {
-        var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
-        if (arr = document.cookie.match(reg))
-          return (arr[2]);
-        else
-          return null;
+      getCookie(name){  //获取cookie函数
+        name = name + "=";
+        var start = document.cookie.indexOf(name),
+        value = null;
+        if(start>-1){
+          var end = document.cookie.indexOf(";",start);
+        if(end == -1){
+            end = document.cookie.length;
         }
+        value = document.cookie.substring(start+name.length,end);
+        }
+        return value;
+      }
     }
   }
 </script>

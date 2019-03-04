@@ -7,6 +7,11 @@
           <el-form-item label="密码" prop="userpassword">
             <el-input v-model="ruleForm.userpassword"></el-input>
           </el-form-item>
+
+          <el-form-item >
+            <el-checkbox v-model="checked" style="color:#a0a0a0;float:left">一周内自动登录</el-checkbox>
+          </el-form-item>
+          
           <el-form-item>
             <el-button type="primary" @click="submitForm('ruleForm')">立即登陆</el-button>
             <el-button @click="register_route()">注册账号</el-button>
@@ -35,7 +40,8 @@ export default {
             { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
 
           ],
-        }
+        },
+        checked: false,
       };
     },
   mounted(){
@@ -49,13 +55,13 @@ export default {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             var arr =  this.getCookie('csrftoken')
-            alert(arr)
             this.$ajax({
               method: 'post',
               url:'http://127.0.0.1:8000/user/login/',
               data :{
                 username: this.ruleForm.username,
-                password: this.ruleForm.userpassword
+                password: this.ruleForm.userpassword,
+                ischecked: this.checked
               },
               headers:{
               'Content-Type': 'application/x-www-form-urlencoded',

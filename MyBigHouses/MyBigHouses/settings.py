@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': 'MBH',
         'USER': 'root',
         'PASSWORD': '123456',
-        'HOST': '42.159.9.216',
+        'HOST': '42.159.122.43',
         'PORT': '3306'
     }
 }
@@ -154,8 +154,8 @@ EMAIL_FROM = u'我的大房子<amisher@163.com>'
 
 
 # 使用 redis 作为 celery 的 broker
-CELERY_BROKER_URL = 'redis://42.159.9.216:6380'
-CELERY_RESULT_BACKEND = 'redis://42.159.9.216:6380'
+CELERY_BROKER_URL = 'redis://42.159.122.43:6380'
+CELERY_RESULT_BACKEND = 'redis://42.159.122.43:6380'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

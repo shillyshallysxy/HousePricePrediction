@@ -12,7 +12,7 @@ import time
 # django.setup()
 
 # 给celery实例起个名字，redis 3 号数据库作为 broker
-app = Celery('celery_task.tasks', broker="redis://42.159.9.216:6380/3")
+app = Celery('celery_task.tasks', broker="redis://42.159.122.43:6380/3")
 
 
 @app.task(name='celery_task.tasks')

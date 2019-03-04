@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <header>
-    <Test></Test>
+    <HeadNav></HeadNav>
     </header>
+    <div style="width:400px;text-align: center;margin:0 auto">
 
-    <div style="width:400px;text-align: center;">
     <router-view/>
     </div>
     <footer>
@@ -16,12 +16,11 @@
 
 <script>
 
-import Test from './components/test.vue'
+import HeadNav from './components/HeadNav.vue'
 export default {
   components:{
-    Test,
+    HeadNav,
   },
-
 
   name: 'App'
 }

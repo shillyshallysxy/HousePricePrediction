@@ -1,8 +1,8 @@
     <template>
     <el-menu router :default-active="$route.path" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
-        
+
         <el-menu-item index="/user/login" >登陆</el-menu-item>
-     
+
         <el-menu-item v-else>注销</el-menu-item>
         <el-submenu index="2">
             <template slot="title">我的工作台</template>
@@ -22,7 +22,7 @@ export default {
             return {
                 activeIndex: '1',
                 activeIndex2: '1',
-                isLogin:True
+                isLogin: 'True'
 
             };
         },

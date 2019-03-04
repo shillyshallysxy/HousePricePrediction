@@ -35,7 +35,7 @@ class LoginView(View):
             if md5(pwd.encode('utf-8')).hexdigest() == pwd_correct:
                 if user.is_active:
                     request.session['user'] = object_to_json(user)
-                    return JsonResponse({'code': 0, 'msg': u'登录成功！'})
+                    return JsonResponse({'code': 0, 'msg': u'登录成功！','username': username})
                 else:
                     # 未激活
                     return JsonResponse({'code': 3, 'msg': u'账户未激活！'})
@@ -98,9 +98,10 @@ class RegisterView(View):
 
     def post(self, request):
         # 接受数据
-        username = request.POST['username']
-        password = request.POST['password']
-        email = request.POST['email']
+        data = json.loads(request.body)
+        username = data['username']
+        password = data['password']
+        email = data['email']
 
         # 检查是否重名
         try:

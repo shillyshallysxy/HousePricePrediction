@@ -11,14 +11,14 @@
           <el-form-item >
             <el-checkbox v-model="checked" style="color:#a0a0a0;float:left">一周内自动登录</el-checkbox>
           </el-form-item>
-          
+
           <el-form-item>
             <el-button type="primary" @click="submitForm('ruleForm')">立即登陆</el-button>
             <el-button @click="register_route()">注册账号</el-button>
           </el-form-item>
         </el-form>
       </div>
-    
+
 </template>
 
 <script>
@@ -68,14 +68,13 @@ export default {
               'X-CSRFToken': arr
               }
           }).then(function(response){
-            alert(response.data.msg)
             if(response.data.code === 0){
-              window.location = '/projects'  //登录成功后跳转到home页面
-              setCookie('login', 'success', 15)
-              setCookie('username', response.data.data.username, 15)
-              setCookie('userid', response.data.data.id, 15)
+              alert("登陆成功")
+              sessionStorage.setItem('username',response.data.username)
+              var usr = sessionStorage.getItem("username")
+              alert(usr)
             } else {
-              vm.$message.error('Login failed!!');
+              alert(response.data.msg)
             }
           })
           } else {
@@ -85,7 +84,7 @@ export default {
         });
       },
 
-      
+
       register_route() {
         this.$router.push({path:"/register"})
       },

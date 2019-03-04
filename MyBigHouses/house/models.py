@@ -11,7 +11,7 @@ class House(models.Model):
     zone = models.CharField(max_length=20, null=True, verbose_name="区")
     garden = models.CharField(max_length=15, null=True, verbose_name="小区")
     architecture = models.CharField(max_length=20, null=True, verbose_name="版型")
-    property_fare = models.CharField(max_length=15, null=True, verbose_name="物业费")
+    property_fee = models.CharField(max_length=15, null=True, verbose_name="物业费")
     property_company = models.CharField(max_length=30, null=True, verbose_name="物业公司")
     developer = models.CharField(max_length=20, null=True, verbose_name="开发商")
     average_price = models.IntegerField(verbose_name="小区均价")
@@ -19,7 +19,8 @@ class House(models.Model):
 
     description = models.CharField(max_length=50, null=True, default="暂无该房源的描述", verbose_name="房子描述")
     layout = models.CharField(max_length=10, null=True, default="此房暂时不在售", verbose_name="房型")
-    layer = models.CharField(max_length=20, null=True, default="暂无楼层信息",verbose_name="楼层&年份")
+    layer = models.CharField(max_length=20, null=True, default="暂无楼层信息",verbose_name="楼层")
+    built_year = models.CharField(max_length=8, null=True, default="年份未知", verbose_name="建造年份")
     area = models.DecimalField(decimal_places=1, max_digits= 10,null=True, default=0.0, verbose_name="住房面积")
     price = models.DecimalField(decimal_places=1, max_digits= 10, null=True, default=0.0, verbose_name="住房单价")
     total_price = models.DecimalField(decimal_places=2, max_digits= 13, null=True, default=0.0, verbose_name="房屋总价")

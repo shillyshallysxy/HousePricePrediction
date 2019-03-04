@@ -9,17 +9,20 @@ from django.middleware.csrf import get_token, rotate_token
 from celery_task.tasks import send_activate_email  # 发送邮件函数
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature  # 加密 激活URL
 from django.views.decorators.csrf import csrf_exempt
-
+import datetime
 # Create your views here.
 
-
 # url: /user/login/
-# @csrf_exempt
-def login(request):
-    print("222")
-    print(request.method)
-    if request.method == 'POST':
+class LoginView(View):
+    '''登录类视图'''
+
+    def get(self, request):
+        # method == 'GET'
         get_token(request)
+        return JsonResponse({})
+
+    def post(self, request):
+        # get_token(request)
         data = json.loads(request.body)
         username = data["username"]
         pwd = data["password"]
@@ -31,8 +34,8 @@ def login(request):
             pwd_correct = user.password
             if md5(pwd.encode('utf-8')).hexdigest() == pwd_correct:
                 if user.is_active:
-                    request.session['user'] = user
-                    return HttpResponse('successful login!')
+                    request.session['user'] = object_to_json(user)
+                    return HttpResponse('登陆成功!')
                 else:
                     # 未激活
                     return JsonResponse({'code': 3, 'msg': u'账户未激活！'})
@@ -42,13 +45,21 @@ def login(request):
         else:
             # username不存在
             return JsonResponse({'code': 5, 'msg': u'该用户名不存在！'})
-    else:
 
-        # method == 'GET'
-        get_token(request)
-        print("获取了token")
-        #return render(request, 'index.html')
-        return JsonResponse({})
+
+def object_to_json(self):
+    fields = []
+    for field in self._meta.fields:
+        fields.append(field.name)
+    d = {}
+    for attr in fields:
+        if isinstance(getattr(self, attr), datetime.datetime):
+            d[attr] = getattr(self, attr).strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(getattr(self, attr), datetime.date):
+            d[attr] = getattr(self, attr).strftime("%Y-%m-%d")
+        else:
+            d[attr] = getattr(self, attr)
+        return json.dumps(d)
 
 
 # url: /user/active/<id>
@@ -71,6 +82,7 @@ class ActiveView(View):
         # 激活成功，重定向到登录页面
         # return redirect(reverse('login'))
         return HttpResponse("您已激活成功")
+
 
 
 # url: /user/register/

@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 注册 user app
     'user',
+    # 注册 house app
+    'house',
     'corsheaders'
 ]
 
@@ -185,3 +187,19 @@ CORS_ALLOW_HEADERS = (
     'Access-Control-Allow-Headers'
 
 )
+
+
+# 配置redis存储django缓存
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://42.159.122.43:6380/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# 配置redis存储session
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = 'default'

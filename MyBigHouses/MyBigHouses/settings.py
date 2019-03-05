@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# sys.path.insert(0, '..')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -38,7 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 注册 user app
-    'user'
+    'user',
+    # 注册 house app
+    'house',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -77,11 +82,15 @@ WSGI_APPLICATION = 'MyBigHouses.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 
-# 此处注册后台使用的数据库，可以注册多种数据库 NGINE
+# 此处注册后台使用的数据库，可以注册多种数据库 ENGINE
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'MBH',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': '42.159.122.43',
+        'PORT': '3306'
     }
 }
 
@@ -124,6 +133,73 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+
 # 静态资源存储目录
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'apptemplates/dist/static')]
 STATIC_URL = '/static/'
+
+
+# 使用自定义的 User 类， 覆盖Django提供的类
+AUTH_USER_MODEL = 'user.User'
+
+
+# 配置邮箱引擎
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+# 实际发件人
+EMAIL_HOST_USER = 'amisher@163.com'
+# 发件邮箱的授权码
+EMAIL_HOST_PASSWORD = 'django2018'
+# 接受方显示的<发件人>名称
+EMAIL_FROM = u'我的大房子<amisher@163.com>'
+
+
+# 使用 redis 作为 celery 的 broker
+CELERY_BROKER_URL = 'redis://42.159.122.43:6380'
+CELERY_RESULT_BACKEND = 'redis://42.159.122.43:6380'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+    '127.0.0.1:8000',
+    '127.0.0.1:8080'
+)
+
+CORS_ALLOW_METHODS = ('*')
+
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Methods',
+    'Access-Control-Allow-Headers'
+
+)
+
+
+# 配置redis存储django缓存
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://42.159.122.43:6380/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# 配置redis存储session
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = 'default'

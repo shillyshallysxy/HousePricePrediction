@@ -1,15 +1,33 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <header>
+    <HeadNav></HeadNav>
+    </header>
+    <div style="width:100%;text-align: center;margin:0 auto">
+
     <router-view/>
+    </div>
+    <footer>
+    </footer>
+
   </div>
+
 </template>
 
 <script>
+
+import HeadNav from './components/HeadNav.vue'
 export default {
+  components:{
+    HeadNav,
+  },
+
   name: 'App'
 }
+
+
 </script>
+
 
 <style>
 #app {
@@ -18,6 +36,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 0px;
 }
 </style>

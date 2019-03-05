@@ -17,17 +17,26 @@ export default new Router({
     {
       path: '/user/login',
       name: 'HelloWorld',
-      component: Login
+      component: Login,
+      meta:{
+        requireLogin: false
+      }
     },
     {
       path: '/register',
       name: 'register',
-      component: Register
+      component: Register,
+      meta:{
+        requireLogin: false
+      }
     },
 		{
 			path: '/price_condition',
 			name: 'PriceDemo',
-			component: PriceDemo
+			component: PriceDemo,
+			meta:{
+        requireLogin: true
+      }
 		}
 
   ]

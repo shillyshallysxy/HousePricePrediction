@@ -8,6 +8,7 @@
     <router-view/>
     </div>
     <footer>
+			<FootNav></FootNav>
     </footer>
 
   </div>
@@ -17,11 +18,13 @@
 <script>
 
 import HeadNav from './components/HeadNav.vue'
+import FootNav from './components/FootNav.vue'
 export default {
   components:{
     HeadNav,
+		FootNav
   },
-
+	
   name: 'App'
 }
 

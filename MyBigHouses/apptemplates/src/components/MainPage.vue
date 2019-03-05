@@ -13,7 +13,7 @@
 								</h4>
 								<div style="margin-top: 5px;text-align: center;font-size: 5px;">
 									<h1 style="font-family:Georgia;color: black;text-align: center;">
-										均价:3.64w
+										均价:1.64w
 										<!--todo这里的价格后台传值进来-->
 									</h1>
 										来源最近15天数据

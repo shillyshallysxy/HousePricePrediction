@@ -1,63 +1,72 @@
 <template>
-    <div class="hello" >
-        <div class="charts" >
-            <x-chart :id="id" :option="option"></x-chart>
-        </div>
-    </div>
+	<div class="hello">
+		<div class="charts">
+			<x-chart :id="id" :option="option"></x-chart>
+		</div>
+	</div>
 </template>
- 
+
 <script>
-    // 导入chart组件
-    import XChart from './ChartsDemo.vue'
-    export default {
-        data() {
-            return {
-                id: 'test',
-                option: {
-			chart: {
-				type: 'line'
-				},
-			title: {
-				text: '月平均气温'
-				},
-			subtitle: {
-				text: '数据来源: WorldClimate.com'
-			},
-			xAxis: {
-				categories: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
-			},
-			yAxis: {
-				title: {
-					text: '气温 (°C)'
-				}
-			},
-			plotOptions: {
-				line: {
-					dataLabels: {
-					// 开启数据标签
-						enabled: true          
+	// 导入chart组件
+	import XChart from './ChartsDemo.vue'
+	import store from '@/store'
+	export default {
+		store,
+		data() {
+			return {
+				id: 'test',
+				option: {
+					chart: {
+						type: 'line'
 					},
-				// 关闭鼠标跟踪，对应的提示框、点击事件会失效
-				enableMouseTracking: false
+					title: {
+						text: '月平均气温'
+					},
+					subtitle: {
+						text: '数据来源: WorldClimate.com'
+					},
+					xAxis: {
+						categories: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+					},
+					yAxis: {
+						title: {
+							text: '气温 (°C)'
+						}
+					},
+					plotOptions: {
+						line: {
+							dataLabels: {
+								// 开启数据标签
+								enabled: true
+							},
+							// 关闭鼠标跟踪，对应的提示框、点击事件会失效
+							enableMouseTracking: false
+						}
+					},
+					//去除水印
+					credits: {
+						enabled: false
+					},
+					series: [{
+							name: '东京',
+							data: [7.0, 6.9, 9.5, 14.5, 18.4, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+						},
+						{
+							name: '伦敦',
+							data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+						}
+					]
 				}
-			},
-			//去除水印
-			credits: {
-				enabled: false
-			},
-			series: [{
-				name: '东京',
-				data: [7.0, 6.9, 9.5, 14.5, 18.4, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
-				}, 
-				{
-				name: '伦敦',
-				data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
-				}]
-                }
-            }
-        },
-        components: {
-            XChart
-        }
-    }
+			}
+		},
+		mounted() {
+			console.log(store.state.isLogin)
+			console.log(store.state.UserInfo.username)
+
+
+		},
+		components: {
+			XChart
+		}
+	}
 </script>

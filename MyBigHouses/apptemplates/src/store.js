@@ -7,9 +7,12 @@ export default new Vuex.Store({
   state:{
     isLogin : false,
     UserInfo:{
-      username : '123',
-
-    }
+      username : '',
+    },
+    area:{
+			city: "suzhou",
+			area: "工业园区"
+		}
   },
   mutations:{
     change_isLogin(state,username){

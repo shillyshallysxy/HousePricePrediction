@@ -1,29 +1,33 @@
 <template>
-	<div style="margin-top:60px;width: 450px;margin: 0 auto">
-		<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-			<el-form-item label="邮箱" prop="email">
-				<el-input v-model="ruleForm.email"></el-input>
-			</el-form-item>
-			<el-form-item label="用户名" prop="username">
-				<el-input v-model="ruleForm.username"></el-input>
-			</el-form-item>
-			<el-form-item label="密码" prop="password">
-				<el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
-			</el-form-item>
-			<el-form-item label="确认密码" prop="confirm_password">
-				<el-input type="password" v-model="ruleForm.confirm_password" autocomplete="off"></el-input>
-			</el-form-item>
-
-
-
-			<el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
-			<el-button @click="resetForm('ruleForm')">重置</el-button>
-			</el-form-item>
-	</div>
-	</el-form>
+  <div v-bind:class="{body: true}">
+	  <div v-bind:class="{background: true}">
+    	<div v-bind:class="{register_window: true}">
+    			<img src="../assets/user.png" style="height: 40px; width: 40px;" />
+      		<div style="margin-top: 10px; max-height: 260px;min-height: 260px;max-width: 250px;min-width: 250px;padding-left: 10px;">
+      			  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+			          <el-form-item prop="email">
+				          <el-input v-bind:class="{text_input: true}" v-model="ruleForm.email" placeholder="email"></el-input>
+			          </el-form-item>
+			          <el-form-item prop="username">
+				          <el-input v-model="ruleForm.username" v-bind:class="{text_input: true}" placeholder="username"></el-input>
+			          </el-form-item>
+			          <el-form-item prop="password">
+				          <el-input type="password" v-model="ruleForm.password" autocomplete="off" v-bind:class="{text_input: true}" placeholder="password"></el-input>
+			          </el-form-item>
+			          <el-form-item prop="confirm_password">
+				          <el-input type="password" v-model="ruleForm.confirm_password" autocomplete="off" placeholder="confirm password" v-bind:class="{text_input: true}"></el-input>
+			          </el-form-item>
+			            <el-button type="primary" @click="submitForm('ruleForm')" v-bind:class="{button: true, register_btn:true}">注册</el-button>
+			            <el-button @click="resetForm('ruleForm')" v-bind:class="{button: true}">重置</el-button>
+			        </el-form>
+	        </div>
+      </div>
+		</div>
+  </div>
 </template>
 
 <script>
+	import store from '@/store'
 	export default {
 		data() {
 			var validatePass = (rule, value, callback) => {
@@ -109,7 +113,10 @@
 							}
 						}).then(function(response) {
 
-							if (response.data.code === 0) {} else {}
+							if (response.data.code === 0) {
+							} else {
+							    alert(response.data.msg);
+							}
 						})
 					} else {
 						console.log('error submit!!');
@@ -137,5 +144,88 @@
 	}
 </script>
 
-<style>
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+  .body{
+    width: 100%;
+	  height: 100%;
+	  padding:0px;
+    overflow: hidden;
+	  display:block;
+	  position:relative;
+  }
+
+  .background {
+	  width:100%;
+	  height:700px;
+	  background-image:url(../assets/login_back.jpg);
+	  background-repeat: no-repeat;
+	  background-size:100% 100%;
+	  padding-top: 160px;
+	  text-align: center;
+	}
+
+  .register_window{
+    border-radius:20px;
+    width: 300px;
+    height: 360px;
+    opacity:0.6;
+    background-color: white;
+    text-align:center;
+    margin:0 auto;
+    padding-top: 20px;
+  }
+
+  .button{
+	  opacity: 100%;
+	  border-radius:10px;
+	  display: inline-block;
+	  -webkit-border-radius: 30px;
+	  -moz-border-radius: 30px;
+	  width: 100px;
+	  box-shadow: 0;
+	  border-style: solid;
+	  padding: 4px;
+	  background: transparent;
+	  border-color: #009688;
+	  color: black;
+	  margin-left: 0px;
+	  margin-top: 0px;
+  }
+
+  .button:hover{
+	  cursor: pointer;
+  }
+
+  .register_btn{
+    margin-left: 35px;
+  }
+
+  .text_input{
+	  width: 200px;
+	  margin: 0px;
+	  padding: 0px;
+	  opacity: 100%;
+	  display: inline-block;
+	  border-color: darkgray;
+	  text-align: center;
+	  background-color: white;
+	  color: black;
+	  margin-left: -60px;
+  }
+
+  .el-input__inner::-webkit-input-placeholder{   /* WebKit browsers */
+    color: black;
+  }
+  .el-input__inner::-moz-placeholder{   /* Mozilla Firefox 19+ */
+    color: black;
+  }
+  .el-input__inner:-moz-placeholder{    /* Mozilla Firefox 4 to 18 */
+    color: black;
+  }
+  .el-input__inner:-ms-input-placeholder{  /* Internet Explorer 10-11 */
+    color: black;
+  }
+
 </style>
+

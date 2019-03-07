@@ -7,7 +7,7 @@
 
     <router-view/>
     </div>
-    <footer>
+    <footer style="margin-top: -200;">
 			<FootNav></FootNav>
     </footer>
 

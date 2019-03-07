@@ -2,7 +2,7 @@
   <div v-bind:class="{body: true}">
 	  <div v-bind:class="{background: true}">
     	<div v-bind:class="{register_window: true}">
-    			<img src="../assets/user.png" style="height: 40px; width: 40px;" />
+    			<img src="../assets/user.png" style="height: 30px; width: 30px;" />
       		<div style="margin-top: 10px; max-height: 260px;min-height: 260px;max-width: 250px;min-width: 250px;padding-left: 10px;">
       			  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
 			          <el-form-item prop="email">
@@ -17,8 +17,10 @@
 			          <el-form-item prop="confirm_password">
 				          <el-input type="password" v-model="ruleForm.confirm_password" autocomplete="off" placeholder="confirm password" v-bind:class="{text_input: true}"></el-input>
 			          </el-form-item>
-			            <el-button type="primary" @click="submitForm('ruleForm')" v-bind:class="{button: true, register_btn:true}">注册</el-button>
-			            <el-button @click="resetForm('ruleForm')" v-bind:class="{button: true}">重置</el-button>
+			            <el-button type="primary" @click="submitForm('ruleForm')" v-bind:class="{button: true, register_btn:true}">注册</el-button></br>
+			          <el-form-item style="width: 200px; margin-left:70px; text-align: right;">
+			            <el-button @click="resetForm('ruleForm')" v-bind:class="{button: true, reset_btn: true}">重置</el-button>
+			          </el-form-item>
 			        </el-form>
 	        </div>
       </div>
@@ -157,7 +159,7 @@
 
   .background {
 	  width:100%;
-	  height:700px;
+	  height:800px;
 	  background-image:url(../assets/login_back.jpg);
 	  background-repeat: no-repeat;
 	  background-size:100% 100%;
@@ -168,8 +170,8 @@
   .register_window{
     border-radius:20px;
     width: 300px;
-    height: 360px;
-    opacity:0.6;
+    height: 400px;
+    opacity:0.5;
     background-color: white;
     text-align:center;
     margin:0 auto;
@@ -182,7 +184,7 @@
 	  display: inline-block;
 	  -webkit-border-radius: 30px;
 	  -moz-border-radius: 30px;
-	  width: 100px;
+	  width: 80px;
 	  box-shadow: 0;
 	  border-style: solid;
 	  padding: 4px;
@@ -198,7 +200,13 @@
   }
 
   .register_btn{
-    margin-left: 35px;
+    margin-left: 38px;
+    width:200px;
+    height: 40px;
+  }
+
+  .reset_btn{
+    border-width: 0;
   }
 
   .text_input{

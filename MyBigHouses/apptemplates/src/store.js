@@ -10,8 +10,10 @@ export default new Vuex.Store({
       username : '',
     },
     area:{
-			city: "suzhou",
-			area: "工业园区"
+			province: "江苏省",
+			city: "苏州",
+			area: "吴中区",
+			street: ""
 		}
   },
   mutations:{
@@ -24,7 +26,18 @@ export default new Vuex.Store({
     change_LoginOut(state){
       state.isLogin = false,
       state.UserInfo.username = ''
-    }
+    },
+		change_AreaInfo(state, area){
+			state.area.province = area['province'],
+			state.area.city = area['city'],
+			state.area.area = area['area']
+			state.area.street = area['street']
+			localStorage.setItem("province", area["province"])
+			localStorage.setItem("city", area['city'])
+			localStorage.setItem("area", area['area'])
+			localStorage.setItem("street", area["street"])
+			
+		}
   },
   actions:{
 
@@ -35,6 +48,9 @@ export default new Vuex.Store({
     },
     getUserInfo: function(state){
       return state.UserInfo
-    }
+    },
+		getAreaInfo: function(state){
+			return state.area
+		}
   }
 })

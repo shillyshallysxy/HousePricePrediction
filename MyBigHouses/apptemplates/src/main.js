@@ -37,6 +37,16 @@ main.js的文件调用顺序：
 router.beforeEach((to, from ,next) =>{
   let flag = getCookie("Flag")
   let username = getCookie("username")
+	let province = localStorage.getItem("province")
+	let city = localStorage.getItem("city")
+	let area = localStorage.getItem("area")
+	let street = localStorage.getItem("street")
+	if(province!=null){
+		store.state.area.province = province
+		store.state.area.city = city
+		store.state.area.area = area
+		store.state.area.street = street
+	}
   if(flag==='isLogin'){
     store.state.isLogin = true
     store.state.UserInfo.username = username

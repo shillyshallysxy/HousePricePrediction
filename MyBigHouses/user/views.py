@@ -10,7 +10,9 @@ from celery_task.tasks import send_activate_email  # 发送邮件函数
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature  # 加密 激活URL
 from django.views.decorators.csrf import csrf_exempt
 import datetime
+from django.conf import settings
 # Create your views here.
+
 
 # url: /user/login/
 class LoginView(View):
@@ -62,13 +64,11 @@ def object_to_json(self):
         return json.dumps(d)
 
 
-
 # url: /user/active/<id>
 class ActiveView(View):
     '''激活类视图'''
 
     def get(self, request, token):
-        print(token)
         serializer = Serializer(settings.SECRET_KEY, 3600)
 
         try:
@@ -85,7 +85,6 @@ class ActiveView(View):
         # 激活成功，重定向到登录页面
         # return redirect(reverse('login'))
         return HttpResponse("您已激活成功")
-
 
 
 # url: /user/register/
@@ -128,9 +127,9 @@ class RegisterView(View):
         user.save()
 
         # 发送验证邮件
-        serialier = Serializer(settings.SECRET_KEY, 3600)  # 过期时间 3600s
+        serializer = Serializer(settings.SECRET_KEY, 3600)  # 过期时间 3600s
         info = {'confirm': user.id}
-        token = serialier.dumps(info).decode()
+        token = serializer.dumps(info).decode()
 
         # 向 celery 发送邮件任务
         send_activate_email.delay(email, username, token)
@@ -139,3 +138,20 @@ class RegisterView(View):
         # return redirect(reverse('login'))
         return HttpResponse("注册成功! 请查看邮箱以激活账号")
 
+
+# url: /user/modify_avatar/<username>
+@csrf_exempt
+def upload_avatar(request):
+    session_user = json.loads(request.session['user'])
+    user_id = session_user.get('id')
+    avatar = request.POST.get("avatar")
+
+    try:
+        user = User.objects.get(id=user_id)
+    except:
+        return JsonResponse({"code": 1, "msg": "无此用户"})
+
+    user.avatar = avatar
+    user.save()
+
+    return JsonResponse({"code": 0, "msg": "修改成功", "url": settings.MEDIA_URL + user.avatar.url})

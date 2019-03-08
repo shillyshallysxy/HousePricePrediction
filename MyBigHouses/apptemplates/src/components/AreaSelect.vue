@@ -1,12 +1,14 @@
 <template>
 	<div style="width: 100%; height:800px; min-width:1320px; margin-top: 60px;">
 		<span class="demonstration" style="font-size: 18px;">请选择你所在的城市</span>
-		<el-cascader placeholder="试试搜索：城市" :options="options" filterable style="margin-left: 60px;"></el-cascader>
+		<el-cascader placeholder="试试搜索：城市" @change="handleChange" v-model="optionSelect" :options="options" filterable style="margin-left: 60px;"></el-cascader>
 	</div>
 </template>
 
 <script>
+	import store from '@/store'
 	export default {
+		//省、市联动选择框数据
 		data() {
 			return {
 				options: [{
@@ -1212,7 +1214,7 @@
 							value: 'yushu',
 							label: '玉树'
 						}, ]
-					}
+					},
 
 
 
@@ -1230,8 +1232,34 @@
 
 
 
-				]
+
+				],
+				optionSelect: [],
 			};
+		},
+		methods: {
+			handleChange() {
+				var value = this.getCascaderObj(this.optionSelect, this.options)
+				console.log(value)
+				var area = {}
+				area["province"] = value[0].label
+				area["city"] = value[1].label
+				area["area"] = ''
+				area["street"] = ''
+				store.commit('change_AreaInfo', area)
+				this.$router.go(-1)
+			},
+			getCascaderObj(val, opt) {
+				return val.map(function(value, index, array) {
+					for (var itm of opt) {
+						if (itm.value == value) {
+							opt = itm.children;
+							return itm;
+						}
+					}
+					return null;
+				});
+			}
 		}
 	};
 </script>

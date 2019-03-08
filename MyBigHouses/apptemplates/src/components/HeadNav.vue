@@ -8,7 +8,7 @@
 
 			<i class="el-icon-location" style="max-height: 20px;float: left;margin-left: 100px;margin-top: 25px;"></i>
 			<p style="float:left;font-size: 12px;color: black;font-weight: 300;margin-left: 10px;margin-top: 25px;"@click="select_area()">
-				苏州
+				{{getCity}}
 			</p>
 
 			<el-menu-item style="margin-left: 20%;color: black;font-size: 18px;" index="/">主页</el-menu-item>
@@ -24,8 +24,7 @@
 
 			<el-submenu style="float: right;color: black;margin-right: 5%;" v-else>
 				<template slot="title">{{getusername}}</template>
-				<el-menu-item index=''>查看个人信息</el-menu-item>
-				<el-menu-item index=''>查看收藏夹</el-menu-item>
+				<el-menu-item index='/UserInfo'>查看个人信息</el-menu-item>
 				<el-menu-item index='' @click="loginout()">退出登录</el-menu-item>
 			</el-submenu>
 
@@ -60,6 +59,9 @@
 
 			getusername() {
 				return store.state.UserInfo.username
+			},
+			getCity(){
+				return store.state.area.city
 			}
 		},
 		methods: {

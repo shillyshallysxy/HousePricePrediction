@@ -5,6 +5,7 @@ import MainPage from '@/components/MainPage'
 import Register from '@/components/Register'
 import PriceDemo from '@/components/PriceDemo'
 import AreaSelect from '@/components/AreaSelect'
+import UserInfo from '@/components/UserInfo'
 Vue.use(Router)
 
 export default new Router({
@@ -50,6 +51,14 @@ export default new Router({
 		    requireLogin: false
 		  }
 		},
+		{
+			path: '/UserInfo',
+			name: 'UserInfo',
+			component: UserInfo,
+			meta:{
+				requireLogin: true
+			}
+		}
 		
 
   ]

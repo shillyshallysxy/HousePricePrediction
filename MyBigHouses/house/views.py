@@ -33,7 +33,7 @@ class History(View):
 
         count = len(past_prices)  # 检索到的有效记录数
         prices = []
-        for price in past_prices:  # 数据汇总
+        for price in past_prices[::-1]:  # 数据汇总
             prices.append([price.year, price.month, str(price.average_price), str(price.tendency)])
 
         return JsonResponse({"code": 0, "count": count, "data": prices})  # 返回 Json 响应

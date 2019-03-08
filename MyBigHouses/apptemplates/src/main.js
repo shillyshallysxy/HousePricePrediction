@@ -8,11 +8,21 @@ import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 import VueHighCharts from 'vue-highcharts'
 import Highcharts from 'highcharts'
+import store from '@/store'
+import iView from 'iview';
+import 'iview/dist/styles/iview.css'
+import {
+		getCookie,
+		setCookie,
+		delCookie
+	} from '@/utils/utils'
+//import {Message} from 'iview'
 
 /* 使用element-ui插件 */
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 Vue.prototype.$ajax = axios
+//Vue.prototype.$Message = Message
 Vue.use(VueHighCharts,{Highcharts})
 /*
 main.js的文件调用顺序：
@@ -24,6 +34,24 @@ main.js的文件调用顺序：
     3. router文件夹下此时只有index.js文件，其中routes[]规定了文件地址及其url地址映射
     4. 根据文件地址，载入组件，组件被渲染在<router-view>中，被显示在index.html中
 */
+router.beforeEach((to, from ,next) =>{
+  let flag = getCookie("Flag")
+  let username = getCookie("username")
+  if(flag==='isLogin'){
+    store.state.isLogin = true
+    store.state.UserInfo.username = username
+    next()
+  }else{
+    store.state.isLogin =false
+    if(to.meta.requireLogin){
+      next({path: '/login'})
+      iView.Message.info('请先登录')
+    }else{
+      next()
+    }
+  }
+
+})
 
 /* eslint-disable no-new */
 new Vue({
@@ -36,3 +64,5 @@ new Vue({
   /* 替换挂载元素的模版组件*/
   template: '<App/>'
 })
+
+

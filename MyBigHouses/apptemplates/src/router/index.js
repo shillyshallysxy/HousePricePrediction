@@ -4,6 +4,7 @@ import Login from '@/components/Login'
 import MainPage from '@/components/MainPage'
 import Register from '@/components/Register'
 import PriceDemo from '@/components/PriceDemo'
+import AreaSelect from '@/components/AreaSelect'
 Vue.use(Router)
 
 export default new Router({
@@ -12,10 +13,13 @@ export default new Router({
     {
       path: '/',
       name: 'MainPage',
-      component: MainPage
+      component: MainPage,
+      meta:{
+        requireLogin: false
+      }
     },
     {
-      path: '/user/login',
+      path: '/login',
       name: 'HelloWorld',
       component: Login,
       meta:{
@@ -37,7 +41,17 @@ export default new Router({
 			meta:{
         requireLogin: true
       }
-		}
+		},
+		{
+			path: '/AreaSelect',
+			name: 'AreaSelect',
+			component: AreaSelect,
+			meta:{
+		    requireLogin: false
+		  }
+		},
+		
 
   ]
 })
+

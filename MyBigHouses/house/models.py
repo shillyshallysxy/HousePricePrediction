@@ -42,7 +42,7 @@ class House(models.Model):
 class HistoryPrice(models.Model):
     '''历史房均价'''
 
-    location = models.CharField(max_length=10, null=False, verbose_name="地点")
+    location = models.CharField(max_length=30, null=False, verbose_name="地点")
     year = models.CharField(max_length=8, null=False, verbose_name="房价年份")
     month = models.CharField(max_length=4, null=False, verbose_name="房价月份")
     average_price = models.DecimalField(max_digits=10, decimal_places=1, verbose_name="均价")

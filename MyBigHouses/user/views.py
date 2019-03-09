@@ -139,19 +139,24 @@ class RegisterView(View):
         return HttpResponse("注册成功! 请查看邮箱以激活账号")
 
 
-# url: /user/modify_avatar/<username>
-@csrf_exempt
-def upload_avatar(request):
-    session_user = json.loads(request.session['user'])
-    user_id = session_user.get('id')
-    avatar = request.POST.get("avatar")
+# url: /user/modify_avatar/
+class UploadAvatarView(View):
 
-    try:
-        user = User.objects.get(id=user_id)
-    except:
-        return JsonResponse({"code": 1, "msg": "无此用户"})
+    def post(self,request):
+        session_user = json.loads(request.session['user'])
+        user_id = session_user.get('id')
 
-    user.avatar = avatar
-    user.save()
+        avatar = request.FILES.get("file", None)
+        if avatar is None:
+            print("avatar is None")
+            return JsonResponse({"code": 0, "msg": "No avatar selected"})
 
-    return JsonResponse({"code": 0, "msg": "修改成功", "url": settings.MEDIA_URL + user.avatar.url})
+        try:
+            user = User.objects.get(id=user_id)
+        except:
+            return JsonResponse({"code": 1, "msg": "无此用户"})
+
+        user.avatar = avatar
+        user.save()
+        print(settings.MEDIA_ROOT + user.avatar.url)
+        return JsonResponse({"code": 0, "msg": "修改成功", "img_url": settings.MEDIA_ROOT + user.avatar.url})

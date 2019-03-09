@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, UserManager, Permission
 
 
 def user_path_url(instance, filename):
-    return "images/user_{0}/{1}",format(instance.id, filename)
+    return "avatars/user_{0}/{1}".format(instance.id, filename)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -13,7 +13,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         first_name = models.CharField(max_length=10, verbose_name='名')
         last_name = models.CharField(max_length=10, verbose_name='姓')
         email = models.EmailField(max_length=255, verbose_name='邮箱')
-        avatar = models.ImageField(upload_to="images/", null=True, default="images/default.png")
+        avatar = models.ImageField(upload_to=user_path_url, null=True, default="avatars/default.png")
         is_active = models.BooleanField(default=True, verbose_name='是否激活')
         is_superuser = models.BooleanField(default=False, verbose_name='是否是管理员')
         is_staff = models.BooleanField(default=False)

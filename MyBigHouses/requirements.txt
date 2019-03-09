@@ -1,23 +1,18 @@
-Package             Version
-------------------- -------
-amqp                2.4.1  
-anyjson             0.3.3  
-billiard            3.5.0.5
-celery              4.2.1  
-Django              2.1.7  
-django-appconf      1.0.3  
-django-avatar       4.1.0  
-django-cors-headers 2.4.0  
-django-redis        4.10.0 
-itsdangerous        1.1.0  
-kombu               4.3.0  
-Pillow              5.4.1  
-pip                 19.0.3 
-pymongo             3.7.2  
-PyMySQL             0.9.3  
-pytz                2018.9 
-redis               3.2.0  
-setuptools          40.8.0 
-six                 1.12.0 
-vine                1.2.0  
-wheel               0.33.1 
+amqp==2.4.1
+anyjson==0.3.3
+billiard==3.5.0.5
+celery==4.2.1
+Django==2.1.7
+django-appconf==1.0.3
+django-avatar==4.1.0
+django-cors-headers==2.4.0
+django-redis==4.10.0
+itsdangerous==1.1.0
+kombu==4.3.0
+Pillow==5.4.1
+pymongo==3.7.2
+PyMySQL==0.9.3
+pytz==2018.9
+redis==3.2.0
+six==1.12.0
+vine==1.2.0

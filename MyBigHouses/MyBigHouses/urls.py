@@ -1,5 +1,4 @@
 """MyBigHouses URL Configuration
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.1/topics/http/urls/
 Examples:
@@ -15,8 +14,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
+from django.views.generic import TemplateView
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('user.urls', namespace='user'))
+    path(r'admin/', admin.site.urls),
+    path(r'user/', include('user.urls', namespace='user')),
+    path(r'house/', include('house.urls', namespace='house')),
+    url(r'', TemplateView.as_view(template_name="index.html")),
 ]

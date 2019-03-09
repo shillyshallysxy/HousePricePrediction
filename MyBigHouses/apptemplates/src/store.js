@@ -14,6 +14,12 @@ export default new Vuex.Store({
 			city: "苏州",
 			area: "吴中区",
 			street: ""
+		},
+		area_eng:{
+		  province: "jiangsu",
+			city: "suzhou",
+			area: "wuzhong",
+			street: ""
 		}
   },
   mutations:{
@@ -36,6 +42,14 @@ export default new Vuex.Store({
 			localStorage.setItem("city", area['city'])
 			localStorage.setItem("area", area['area'])
 			localStorage.setItem("street", area["street"])
+			state.area_eng.province = area['province_eng'],
+			state.area_eng.city = area['city_eng'],
+			state.area_eng.area = area['area_eng']
+			state.area_eng.street = area['street_eng']
+			localStorage.setItem("province_eng", area["province_eng"])
+			localStorage.setItem("city_eng", area['city_eng'])
+			localStorage.setItem("area_eng", area['area_eng'])
+			localStorage.setItem("street_eng", area["street_eng"])
 			
 		}
   },

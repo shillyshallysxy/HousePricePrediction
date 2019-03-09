@@ -41,11 +41,20 @@ router.beforeEach((to, from ,next) =>{
 	let city = localStorage.getItem("city")
 	let area = localStorage.getItem("area")
 	let street = localStorage.getItem("street")
+	let province_eng = localStorage.getItem("province_eng")
+	let city_eng = localStorage.getItem("city_eng")
+	let area_eng = localStorage.getItem("area_eng")
+	let street_eng = localStorage.getItem("street_eng")
 	if(province!=null){
 		store.state.area.province = province
 		store.state.area.city = city
 		store.state.area.area = area
 		store.state.area.street = street
+		store.state.area_eng.province = province_eng
+		store.state.area_eng.city = city_eng
+		store.state.area_eng.area = area_eng
+		store.state.area_eng.street = street_eng
+
 	}
   if(flag==='isLogin'){
     store.state.isLogin = true

@@ -57,9 +57,13 @@ router.beforeEach((to, from ,next) =>{
 
 	}
   if(flag==='isLogin'){
-    store.state.isLogin = true
-    store.state.UserInfo.username = username
-    next()
+		if(to.path == '/register'){
+			next('/')
+		}else{
+			store.state.isLogin = true
+			store.state.UserInfo.username = username
+			next()
+		}   
   }else{
     store.state.isLogin =false
     if(to.meta.requireLogin){

@@ -2,6 +2,7 @@
   <div v-bind:class="{body: true}">
 	  <div v-bind:class="{background: true}">
     	<div v-bind:class="{register_window: true}">
+			
     			<img src="../assets/user.png" style="height: 30px; width: 30px;" />
       		<div style="margin-top: 10px; max-height: 260px;min-height: 260px;max-width: 250px;min-width: 250px;padding-left: 10px;">
       			  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -30,6 +31,7 @@
 
 <script>
 	import store from '@/store'
+	import global_ from '@/components/Global'
 	import iview from 'iview'
 	export default {
 		data() {
@@ -102,7 +104,7 @@
 						var arr = this.getCookie('csrftoken')
 						this.$ajax({
 							method: 'post',
-							url: 'http://127.0.0.1:8000/user/register/',
+							url: global_.IpUrl + '/user/register/',
 							data: {
 								username: this.ruleForm.username,
 								password: this.ruleForm.password,

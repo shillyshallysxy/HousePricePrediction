@@ -109,3 +109,58 @@ class SubLocationPriceView(View):
                         date_time.append('{}-{}'.format(sub_info[index].year, sub_info[index].month))
         print(datetime.datetime.now())
         return JsonResponse({"code": 0, "data": ret, "location_cn": location_cn, "time": date_time})
+
+
+# url:house/price/<city>/sub_location?year=xxxx&month=yy
+class SubLocationPriceView(View):
+    '''获取下级最新房价'''
+
+    def __init__(self):
+        with open("./house/city_mapping_e2c.pkl", "rb") as f:
+            self.city_mapping = pickle.load(f)
+            # 建立到 MongoDB 的连接
+        client = MongoClient(host="42.159.122.43", port=27018)
+        db = client.MBH
+        self.city_relations = db.city_relations
+        # 查询一次，存储在 cursor 中
+        self.cursor = list(self.city_relations.find())[0]
+
+    def get(self, request, city_name):
+        location_cn = self.city_mapping.get(city_name, None)
+        year = request.GET.get("year", None)
+        month = request.GET.get("month", None)
+
+        # 获取年份和月份信息
+        if year is None:
+            year = datetime.datetime.now().year
+
+        if month is None:
+            # 使用当前月
+            cur_month = datetime.datetime.now().month
+            # 格式化成数据库中存储的格式
+            month = '0'+str(cur_month) if cur_month <= 9 else str(cur_month)
+        else:
+            if len(month) == 1:
+                month = '0'+month
+
+        if location_cn is None:
+            return JsonResponse({"code": 1, "msg": "没有这个城市"})
+
+        # 查询下属城镇信息
+        subs = self.cursor.get(location_cn, None)
+        if subs is None:
+            return JsonResponse({"code": 2, "msg": "已经到最后一级了"})
+
+        ret = [list()]
+        date_time = list()
+
+        for i, sub in enumerate(subs):
+            sub_info = HistoryPrice.objects.filter(Q(location=sub) & Q(year=year) & Q(month=month))
+            if len(list(sub_info)) == 0:
+                continue
+            else:
+                ret[0].append([sub_info[0].location, sub_info[0].average_price])
+                if i == 0:
+                    date_time.append('{}-{}'.format(sub_info[0].year, sub_info[0].month))
+
+        return JsonResponse({"code": 0, "data": ret, "location_cn": location_cn, "time": date_time})

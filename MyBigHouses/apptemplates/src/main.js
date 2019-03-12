@@ -11,6 +11,8 @@ import Highcharts from 'highcharts'
 import store from '@/store'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css'
+import global_ from './components/Global'//引用文件
+
 import {
 		getCookie,
 		setCookie,
@@ -24,6 +26,8 @@ Vue.config.productionTip = false
 Vue.prototype.$ajax = axios
 //Vue.prototype.$Message = Message
 Vue.use(VueHighCharts,{Highcharts})
+//挂载ip全局变量
+Vue.prototype.GLOBAL = global_//挂载到Vue实例上面
 /*
 main.js的文件调用顺序：
 （1）确定将被挂载的元素  el:'#app'

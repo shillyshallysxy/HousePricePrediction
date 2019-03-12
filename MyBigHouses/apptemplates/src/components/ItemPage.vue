@@ -103,6 +103,14 @@
 </template>
 
 <script>
+	export default{
+		data(){
+			
+		},
+		created() {
+			alert(this.$route.query.HouseId)
+		}
+	}
 </script>
 
 <style>

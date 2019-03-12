@@ -73,42 +73,42 @@ class CityInfoView(View):
 
 
 # url:house/price/<city>/sub_location?last_n_month=n
-class SubLocationPriceView(View):
-    '''获取下级最新房价'''
-
-    def __init__(self):
-        with open("./house/city_mapping_e2c.pkl", "rb") as f:
-            self.city_mapping = pickle.load(f)
-            # 建立到 MongoDB 的连接
-        client = MongoClient(host="42.159.122.43", port=27018)
-        db = client.MBH
-        self.city_relations = db.city_relations
-        # 查询一次，存储在 cursor 中
-        self.cursor = list(self.city_relations.find())[0]
-
-    def get(self, request, city_name):
-        location_cn = self.city_mapping.get(city_name, None)
-        last_month = int(request.GET.get('last_n_month', 1))
-        if location_cn is None:
-            return JsonResponse({"code": 1, "msg": "没有这个城市"})
-
-        subs = self.cursor.get(location_cn, None)
-        if subs is None:
-            return JsonResponse({"code": 2, "msg": "已经到最后一级了"})
-        ret = [list() for i in range(last_month)]
-        date_time = list()
-        print(datetime.datetime.now())
-        for i, sub in enumerate(subs):
-            sub_info = HistoryPrice.objects.filter(location=sub).order_by("-year", "-month")[:last_month] # 只要最近 last_month 个月
-            if len(list(sub_info)) == 0:
-                continue
-            else:
-                for index in range(last_month):
-                    ret[index].append([sub_info[index].location, sub_info[index].average_price])
-                    if i == 0:
-                        date_time.append('{}-{}'.format(sub_info[index].year, sub_info[index].month))
-        print(datetime.datetime.now())
-        return JsonResponse({"code": 0, "data": ret, "location_cn": location_cn, "time": date_time})
+# class SubLocationPriceView(View):
+#     '''获取下级最新房价'''
+#
+#     def __init__(self):
+#         with open("./house/city_mapping_e2c.pkl", "rb") as f:
+#             self.city_mapping = pickle.load(f)
+#             # 建立到 MongoDB 的连接
+#         client = MongoClient(host="42.159.122.43", port=27018)
+#         db = client.MBH
+#         self.city_relations = db.city_relations
+#         # 查询一次，存储在 cursor 中
+#         self.cursor = list(self.city_relations.find())[0]
+#
+#     def get(self, request, city_name):
+#         location_cn = self.city_mapping.get(city_name, None)
+#         last_month = int(request.GET.get('last_n_month', 1))
+#         if location_cn is None:
+#             return JsonResponse({"code": 1, "msg": "没有这个城市"})
+#
+#         subs = self.cursor.get(location_cn, None)
+#         if subs is None:
+#             return JsonResponse({"code": 2, "msg": "已经到最后一级了"})
+#         ret = [list() for i in range(last_month)]
+#         date_time = list()
+#         print(datetime.datetime.now())
+#         for i, sub in enumerate(subs):
+#             sub_info = HistoryPrice.objects.filter(location=sub).order_by("-year", "-month")[:last_month] # 只要最近 last_month 个月
+#             if len(list(sub_info)) == 0:
+#                 continue
+#             else:
+#                 for index in range(last_month):
+#                     ret[index].append([sub_info[index].location, sub_info[index].average_price])
+#                     if i == 0:
+#                         date_time.append('{}-{}'.format(sub_info[index].year, sub_info[index].month))
+#         print(datetime.datetime.now())
+#         return JsonResponse({"code": 0, "data": ret, "location_cn": location_cn, "time": date_time})
 
 
 # url:house/price/<city>/sub_location?year=xxxx&month=yy
@@ -164,3 +164,37 @@ class SubLocationPriceView(View):
                     date_time.append('{}-{}'.format(sub_info[0].year, sub_info[0].month))
 
         return JsonResponse({"code": 0, "data": ret, "location_cn": location_cn, "time": date_time})
+
+
+# url:house/price/<city>/overview?number=x
+class HouseOverView(View):
+    def __init__(self):
+        with open("./house/city_mapping_e2c.pkl", "rb") as f:
+            self.city_mapping = pickle.load(f)
+            # 建立到 MongoDB 的连接
+        client = MongoClient(host="42.159.122.43", port=27018)
+        db = client.MBH
+        self.city_relations = db.city_relations
+        # 查询一次，存储在 cursor 中
+        self.cursor = list(self.city_relations.find())[0]
+
+    def get(self, request, city_name):
+        number = request.GET.get("number", None)
+        location_cn = self.city_mapping.get(city_name, None)
+        # 获取年份和月份信息
+        if number is None:
+            number = 4
+        else:
+            number = int(float(number))
+        print(city_name)
+        print(number)
+        print(location_cn)
+        overview_infos = list()
+        infos = House.objects.filter(Q(city=location_cn) & ~Q(description='暂无描述') & ~Q(description='暂无该房源的描述'))[:number]
+        for info in infos:
+            print(info)
+            overview_infos.append({'id': info.id, 'garden': info.garden, 'description': info.description,
+                                   'area': info.area, 'total_price': info.total_price,
+                                   'img_url': "require('@/assets/2.jpg')"})
+
+        return JsonResponse({"code": 0, "data": overview_infos})

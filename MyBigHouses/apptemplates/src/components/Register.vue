@@ -13,10 +13,10 @@
 				          <el-input v-model="ruleForm.username" v-bind:class="{text_input: true}" placeholder="username"></el-input>
 			          </el-form-item>
 			          <el-form-item prop="password">
-				          <el-input type="password" v-model="ruleForm.password" autocomplete="off" type="password" v-bind:class="{text_input: true}" placeholder="password"></el-input>
+				          <el-input v-model="ruleForm.password" autocomplete="off" type="password" v-bind:class="{text_input: true}" placeholder="password"></el-input>
 			          </el-form-item>
 			          <el-form-item prop="confirm_password">
-				          <el-input type="password" v-model="ruleForm.confirm_password" autocomplete="off" type="password" placeholder="confirm password" v-bind:class="{text_input: true}"></el-input>
+				          <el-input v-model="ruleForm.confirm_password" autocomplete="off" type="password" placeholder="confirm password" v-bind:class="{text_input: true}"></el-input>
 			          </el-form-item>
 			            <el-button type="primary" @click="submitForm('ruleForm')" v-bind:class="{button: true, register_btn:true}">注册</el-button></br>
 			          <el-form-item style="width: 200px; margin-left:70px; text-align: right;">

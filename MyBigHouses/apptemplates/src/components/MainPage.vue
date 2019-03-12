@@ -187,7 +187,7 @@
 		},
 		methods: {
 			go_to_detail_page(id) {
-				alert("11")
+				alert(id)
 				this.$router.push({
 					path: '/ItemPage',
 					query:{

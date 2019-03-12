@@ -74,7 +74,7 @@
 									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px">{{o.detail}}</p>
 									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 5px;margin-right: 30px;margin-top:10px">{{o.area}}</p>
 									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;right: 5px;">{{o.price}}</p>
-									<el-button type="text" class="button" style="margin-top: 10px;" data-index="o.id" @click.native="go_to_detail_page(o.id)">查看详情</el-button>
+									<el-button type="text" class="button" style="margin-top: 10px;padding: 0; float: right;" data-index="o.id" @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 								</div>
 							</el-card>
 						</el-col>
@@ -95,7 +95,7 @@
 									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px">{{o.detail}}</p>
 									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 5px;margin-right: 30px;margin-top:10px">{{o.area}}</p>
 									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;right: 5px;">{{o.price}}</p>
-									<el-button type="text" class="button" style="margin-top: 10px;" @click.native="go_to_detail_page(o.id)">查看详情</el-button>
+									<el-button type="text" class="button" style="margin-top: 10px;padding: 0; float: right;" @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 								</div>
 							</el-card>
 						</el-col>
@@ -210,7 +210,7 @@ export default {
 }
 </script>
 
-<style>
+<style >
 .body{
   height:100%;
   width:100%;
@@ -273,10 +273,7 @@ export default {
 		line-height: 12px;
 	}
 
-	.button {
-		padding: 0;
-		float: right;
-	}
+	
 
 	.image {
 		width: 100%;

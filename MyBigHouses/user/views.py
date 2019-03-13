@@ -142,7 +142,7 @@ class RegisterView(View):
 # url: /user/modify_avatar/
 class UploadAvatarView(View):
 
-    def post(self,request):
+    def post(self, request):
         session_user = json.loads(request.session['user'])
         user_id = session_user.get('id')
 
@@ -158,7 +158,6 @@ class UploadAvatarView(View):
 
         user.avatar = avatar
         user.save()
-        print(settings.MEDIA_ROOT + user.avatar.url)
         return JsonResponse({"code": 0, "msg": "修改成功", "img_url": settings.MEDIA_ROOT + user.avatar.url})
 
 

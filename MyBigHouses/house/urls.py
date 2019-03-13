@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.views.generic import TemplateView
-from .views import History, CityInfoView, SubLocationPriceView, HouseOverView, HouseListFilterView, HouseDetailView
+from .views import History, CityInfoView, SubLocationPriceView, HouseOverView, HouseListFilterView, HouseDetailView, HouseMainPageView
 
 
 app_name = 'house'

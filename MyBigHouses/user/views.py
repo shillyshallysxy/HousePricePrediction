@@ -8,7 +8,7 @@ from django.conf import settings
 from django.middleware.csrf import get_token, rotate_token
 from celery_task.tasks import send_activate_email  # 发送邮件函数
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature  # 加密 激活URL
-from django.views.decorators.csrf import csrf_exempt
+from django_redis import get_redis_connection
 import datetime
 from django.conf import settings
 # Create your views here.
@@ -160,3 +160,57 @@ class UploadAvatarView(View):
         user.save()
         print(settings.MEDIA_ROOT + user.avatar.url)
         return JsonResponse({"code": 0, "msg": "修改成功", "img_url": settings.MEDIA_ROOT + user.avatar.url})
+
+
+# url: /user/star?house_id=xxxx
+class StarCountView(View):
+    '''收藏接口'''
+
+    def get(self, request):
+        conn = get_redis_connection("User&House")
+
+        try:
+            # 检查是否登录
+            session_user = json.loads(request.session['user'])
+            user_id = session_user.get('id')
+            # 检查是否 house_id 合法性
+            house_id = request.GET.get('house_id', None)
+            if house_id is None:
+                return JsonResponse({"code": 1, "msg": "未提供房源 id "})
+            try:
+                house_id = int(house_id)
+            except TypeError:
+                return JsonResponse({"code": 2, "msg": "房源 id 不合法"})
+
+            # 检查是否已收藏
+            user_key = "user_{}".format(user_id)
+            star_list = conn.lrange(user_key, 0, -1)
+            star_list = [item.decode() for item in star_list]
+
+            if str(house_id) in star_list:
+                star_flag = True
+            else:
+                star_flag = False
+
+        except KeyError:
+            return JsonResponse({"code": 2, "msg": "请先登录"})
+
+        house_key = "house_{}".format(house_id)
+        # 有这个收藏，说明要做取消收藏的动作
+        if star_flag:
+            conn.lrem(user_key, 0, house_id)
+            conn.hincrby(house_key, "star_count", -1)
+            star_flag = False
+        else:
+            # 没有这个收藏，说明要做加入收藏的动作
+            conn.lpush(user_key, house_id)
+            conn.hincrby(house_key, "star_count", 1)
+            star_flag = True
+
+
+        # 获取更新之后的收藏量
+        star_count = conn.hget(house_key, "star_count").decode()
+        return JsonResponse({"code": 0, "star_count": star_count, "star_flag": star_flag})
+
+
+

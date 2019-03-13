@@ -4,8 +4,9 @@ from django.views.generic import View
 from django.db.models import Q
 import pickle
 from pymongo import MongoClient
+from django_redis import get_redis_connection
 import datetime
-
+import json
 
 # url: house/price/<city>/history?last_n_month=xx
 class History(View):
@@ -214,4 +215,84 @@ class HouseMainPageView(View):
         for info in infos:
             overview_infos.append(info.average_price)
 
-        return JsonResponse({"code": 0, "average_price": overview_infos})
+        return JsonResponse({"code": 0, "data": overview_infos})
+
+
+class HouseListFilterView(View):
+    '''房子列表展示的地区筛选'''
+    def __init__(self):
+        with open("./house/city_mapping_e2c.pkl", "rb") as f:
+            self.city_mapping = pickle.load(f)
+
+    def get(self, request, city_name):
+        location_cn = self.city_mapping.get(city_name, None)
+        if location_cn is None:
+            return JsonResponse({"code": 1, "msg": "查无此城市的次级信息"})
+
+        records = House.objects.filter(city=location_cn)
+        districts = records.values("district").distinct()
+        districts = [district['district'] for district in districts]
+
+        zones = dict()
+        for district in districts:
+            zone_queryset = records.filter(district=district).values("zone").distinct()
+            zones[district] = [zone['zone'] for zone in zone_queryset]
+        data = {'city': location_cn, 'districts': districts, 'zones': zones}
+        return JsonResponse({"code": 0, 'data': data})
+
+
+# url: house/detail/<house_id>
+class HouseDetailView(View):
+    '''房子详情信息接口'''
+
+    def get(self, request, house_id):
+        conn = get_redis_connection("User&House")
+        try:
+            session_user = json.loads(request.session['user'])
+            user_id = session_user.get('id')
+            user_key = "user_{}".format(user_id)
+
+            # 检查是否已收藏
+            star_list = conn.lrange(user_key, 0, -1)
+            if str(house_id) in star_list:
+                star_flag = True
+            else:
+                star_flag = False
+        except KeyError:
+            star_flag = False
+
+        try:
+            house = House.objects.get(id=house_id)
+        except House.DoesNotExist:
+            return JsonResponse({"code": 1, "msg": "<{}> 不存在".format(house_id)})
+
+        # 增加浏览量计数
+        house_key = "house_{}".format(house_id)
+        conn.hincrby(house_key, "view_count", 1)
+        view_count = int(conn.hget(house_key, "view_count").decode())
+        # 获取该房子的收藏量
+        star_count = conn.hget(house_key, "star_count")
+        if star_count is None:
+            star_count = 0
+        else:
+            star_count = star_count.decode()
+
+        # 组装返回数据
+        data = dict()
+        data['description'] = house.description
+        data['total_price'] = house.total_price
+        data['price'] = house.price
+        data['layout'] = house.layout
+        data['orientation'] = house.orientation
+        data['area'] = house.area
+        data['layer'] = house.layer
+        data['architecture'] = house.architecture
+        data['built_year'] = house.built_year
+        data['garden'] = house.garden
+        data['location'] = "{} {}".format(house.district, house.zone)
+        data['developer'] = house.developer
+        data['property_company'] = house.property_company
+        data['contact'] = '13800010001'
+
+        return JsonResponse({"code": 0, "data": data, "view_count": view_count, "star_count": star_count, \
+                             "star_flag": star_flag})

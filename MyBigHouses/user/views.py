@@ -136,7 +136,7 @@ class RegisterView(View):
 
         # 重定向到登录页面
         # return redirect(reverse('login'))
-        return HttpResponse("注册成功! 请查看邮箱以激活账号")
+        return JsonResponse({"code": 0, "msg": "注册成功! 请查看邮箱以激活账号"})
 
 
 # url: /user/modify_avatar/

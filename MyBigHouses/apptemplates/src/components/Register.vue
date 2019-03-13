@@ -32,7 +32,7 @@
 <script>
 	import store from '@/store'
 	import global_ from '@/components/Global'
-	import iview from 'iview'
+	import iView from 'iview';
 	export default {
 		data() {
 			var validatePass = (rule, value, callback) => {
@@ -117,9 +117,8 @@
 								'X-CSRFToken': arr
 							}
 						}).then(function(response) {
-
 							if (response.data.code === 0) {
-								iView.Message.info('注册成功')
+								iView.Message.info('注册成功,请至邮箱激活您的账号')
 							} else {
 								iView.Message.info(response.data.msg)
 							}

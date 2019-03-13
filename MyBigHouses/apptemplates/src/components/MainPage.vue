@@ -72,8 +72,8 @@
 								<div style="padding: 14px;">
 									<p v-bind:class="{erShouName: true}" style="color: #009688;margin-top:10px">{{o.name}}</p>
 									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px;height: 36px;">{{o.detail}}</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 5px;margin-right: 30px;margin-top:10px">{{o.area}}平米</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;right: 5px;">{{o.price}}万</p>
+									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 0px;">{{o.area}}平米</p>
+									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;">{{o.price}}万</p>
 									<el-button type="text" class="button" style="margin-top: 10px;padding: 0; float: right;" data-index="o.id"
 									 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 								</div>
@@ -94,8 +94,8 @@
 								<div style="padding: 14px;">
 									<p v-bind:class="{erShouName: true}" style="color: #009688;margin-top:10px">{{o.name}}</p>
 									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px;height: 36px;">{{o.detail}}</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 5px;margin-right: 30px;margin-top:10px">{{o.area}}平米</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;right: 5px;">{{o.price}}万</p>
+									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 0px;">{{o.area}}平米</p>
+									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;">{{o.price}}万</p>
 									<el-button type="text" class="button" style="margin-top: 10px;padding: 0; float: right;" @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 								</div>
 							</el-card>
@@ -130,40 +130,7 @@
 				city_name_en: 'SuZhou',
 				average_price: '1.64',
 				ShowHouse: [],
-				ShowHouse2: [{
-						id: "100005",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城5',
-						detail: '望京新城5 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					},
-					{
-						id: "100006",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城6',
-						detail: '望京新城6 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					},
-					{
-						id: "100007",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城7',
-						detail: '望京新城7 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					},
-					{
-						id: "100008",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城8',
-						detail: '望京新城8 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					}
-
-				]
+				ShowHouse2: []
 			}
 		},
 		mounted() {
@@ -176,6 +143,7 @@
 				url: global_.IpUrl + '/house/price/' + this.get_city() + '/overview',
 			}).then(function(response) {
 				var house_info = response.data.data
+				console.log(house_info[0])
 				for (var i = 0; i <= 3; i++) {
 					var temp1 = {}
 					temp1['id'] = house_info[i].id
@@ -188,6 +156,19 @@
 					temp1['price'] = house_info[i].total_price
 					_this.ShowHouse.push(temp1)
 				}
+				for (var i = 4; i <= 7; i++) {
+					var temp1 = {}
+					temp1['id'] = house_info[i].id
+					var pic = house_info[i].img_url
+					console.log(pic)
+					temp1['pic_src'] = pic
+					temp1['name'] = house_info[i].garden
+					temp1['detail'] = house_info[i].description
+					temp1['area'] = house_info[i].area
+					temp1['price'] = house_info[i].total_price
+					_this.ShowHouse2.push(temp1)
+				}
+				
 			})
 
 		},

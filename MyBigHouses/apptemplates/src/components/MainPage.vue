@@ -187,7 +187,7 @@
 					url: global_.IpUrl + '/house/price/' + this.city_name_en + '/mainpage_overview'
 				}).then(function(resopnse) {
 					if (resopnse.data.code == 0) {
-						this.average_price = '' + (parseFloat(resopnse.data.average_price[0]) / 10000)
+						this.average_price = '' + (parseFloat(resopnse.data.data[0]) / 10000)
 						
 					} else {
 						iView.Message.info(response.data.msg)

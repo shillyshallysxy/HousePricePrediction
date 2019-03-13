@@ -36216,10 +36216,11 @@
 </script>
 <style>
 .root{
-	margin-top:12px;
+	margin-top:35px;
 }
 .charts{
-	width: 1150px;
+	margin-top: 12px;
+	width: 950px;
 	margin: 0 auto;
     background-color: #fff;
 }

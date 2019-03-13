@@ -105,7 +105,9 @@
 <script>
 	export default{
 		data(){
-			
+			return{
+				
+			}
 		},
 		created() {
 			alert(this.$route.query.HouseId)

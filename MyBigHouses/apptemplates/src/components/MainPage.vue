@@ -134,8 +134,8 @@
 			}
 		},
 		mounted() {
-			this.city_name_cn = store.state.area.province
-			this.city_name_en = store.state.area_eng.province
+			this.city_name_cn = store.state.area.city
+			this.city_name_en = store.state.area_eng.city
 			this.get_mainpage_info()
 			var _this = this
 			_this.$ajax({
@@ -143,12 +143,10 @@
 				url: global_.IpUrl + '/house/price/' + this.get_city() + '/overview',
 			}).then(function(response) {
 				var house_info = response.data.data
-				console.log(house_info[0])
 				for (var i = 0; i <= 3; i++) {
 					var temp1 = {}
 					temp1['id'] = house_info[i].id
 					var pic = house_info[i].img_url
-					console.log(pic)
 					temp1['pic_src'] = pic
 					temp1['name'] = house_info[i].garden
 					temp1['detail'] = house_info[i].description
@@ -160,7 +158,6 @@
 					var temp1 = {}
 					temp1['id'] = house_info[i].id
 					var pic = house_info[i].img_url
-					console.log(pic)
 					temp1['pic_src'] = pic
 					temp1['name'] = house_info[i].garden
 					temp1['detail'] = house_info[i].description
@@ -174,9 +171,8 @@
 		},
 		methods: {
 			go_to_detail_page(id) {
-				alert(id)
 				this.$router.push({
-					name: 'ItemPage',
+					path: 'ItemPage',
 					query: {
 						HouseId: id
 					}
@@ -192,6 +188,7 @@
 				}).then(function(resopnse) {
 					if (resopnse.data.code == 0) {
 						this.average_price = '' + (parseFloat(resopnse.data.average_price[0]) / 10000)
+						
 					} else {
 						iView.Message.info(response.data.msg)
 						this.average_price = '暂无该地区房价信息'

@@ -21,6 +21,7 @@ import {
 //import {Message} from 'iview'
 
 /* 使用element-ui插件 */
+Vue.use(iView) 
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 Vue.prototype.$ajax = axios

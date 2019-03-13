@@ -172,31 +172,48 @@ class HouseOverView(View):
     def __init__(self):
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
-            # 建立到 MongoDB 的连接
-        client = MongoClient(host="42.159.122.43", port=27018)
-        db = client.MBH
-        self.city_relations = db.city_relations
-        # 查询一次，存储在 cursor 中
-        self.cursor = list(self.city_relations.find())[0]
 
     def get(self, request, city_name):
         number = request.GET.get("number", None)
         location_cn = self.city_mapping.get(city_name, None)
         # 获取年份和月份信息
         if number is None:
-            number = 4
+            number = 8
         else:
             number = int(float(number))
-        print(city_name)
-        print(number)
-        print(location_cn)
         overview_infos = list()
         infos = House.objects.filter(Q(city=location_cn) & ~Q(description='暂无描述') & ~Q(description='暂无该房源的描述'))[:number]
+        if len(infos) < number:
+            JsonResponse({"code": 1, "msg": '该地区的房源信息不足'})
         for info in infos:
-            print(info)
             overview_infos.append({'id': info.id, 'garden': info.garden, 'description': info.description,
                                    'area': info.area, 'total_price': info.total_price,
-                                   'img_url': "require('@/assets/2.jpg')"})
+                                   'img_url': "static/images/2.jpg"})
+        print(overview_infos)
+        return JsonResponse({"code": 0, "data": overview_infos})
+
+
+# url:house/price/<city>/mainpage_overview
+class HouseMainPageView(View):
+    def __init__(self):
+        with open("./house/city_mapping_e2c.pkl", "rb") as f:
+            self.city_mapping = pickle.load(f)
+
+    def get(self, request, city_name):
+        location_cn = self.city_mapping.get(city_name, None)
+
+        year = datetime.datetime.now().year
+
+        # 使用当前月
+        cur_month = datetime.datetime.now().month
+        # 格式化成数据库中存储的格式
+        month = '0' + str(cur_month) if cur_month <= 9 else str(cur_month)
+        overview_infos = list()
+        infos = HistoryPrice.objects.filter(Q(location=location_cn) & Q(year=year) & Q(month=month))
+        if len(infos) < 1:
+            JsonResponse({"code": 1, "msg": '该地区的信息不足'})
+        for info in infos:
+            overview_infos.append(info.average_price)
 
         return JsonResponse({"code": 0, "data": overview_infos})
 

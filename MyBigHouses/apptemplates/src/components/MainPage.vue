@@ -4,17 +4,17 @@
 			<div v-bind:class="{price: true}">
 				<div v-bind:class="{city:true}">
 					<h2 style="font-family: 黑体;color: black;text-align: center;">
-						苏州
+						{{city_name_cn}}
 						<!--todo这里的city后台传值进来-->
 					</h2>
 					<div>
 						<h4 style="font-family:times new roman;color: black;text-align: center;">
-							SuZhou
+							{{city_name_en}}
 							<!--todo这里的city后台传值进来-->
 						</h4>
 						<div style="margin-top: 5px;text-align: center;font-size: 5px;">
 							<h1 style="font-family:times new roman;color: black;text-align: center;">
-								均价:1.64w
+								均价:{{average_price}}w
 								<!--todo这里的价格后台传值进来-->
 							</h1>
 							<h4 style="font-family: 黑体;color: black;text-align: center;">
@@ -71,9 +71,9 @@
 								<img :src="o.pic_src" class="image">
 								<div style="padding: 14px;">
 									<p v-bind:class="{erShouName: true}" style="color: #009688;margin-top:10px">{{o.name}}</p>
-									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px">{{o.detail}}</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 5px;margin-right: 30px;margin-top:10px">{{o.area}}</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;right: 5px;">{{o.price}}</p>
+									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px;height: 36px;">{{o.detail}}</p>
+									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 0px;">{{o.area}}平米</p>
+									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;">{{o.price}}万</p>
 									<el-button type="text" class="button" style="margin-top: 10px;padding: 0; float: right;" data-index="o.id"
 									 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 								</div>
@@ -93,9 +93,9 @@
 								<img :src="o.pic_src" class="image">
 								<div style="padding: 14px;">
 									<p v-bind:class="{erShouName: true}" style="color: #009688;margin-top:10px">{{o.name}}</p>
-									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px">{{o.detail}}</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 5px;margin-right: 30px;margin-top:10px">{{o.area}}</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;right: 5px;">{{o.price}}</p>
+									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px;height: 36px;">{{o.detail}}</p>
+									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 0px;">{{o.area}}平米</p>
+									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;">{{o.price}}万</p>
 									<el-button type="text" class="button" style="margin-top: 10px;padding: 0; float: right;" @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 								</div>
 							</el-card>
@@ -120,92 +120,58 @@
 </template>
 
 <script>
+	import store from '@/store'
 	import global_ from '@/components/Global'
+	import iView from 'iview'
 	export default {
 		data() {
 			return {
-				ShowHouse: [{
-						id: "100001",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城1',
-						detail: '望京新城1 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-
-					},
-					{
-						id: "100002",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城2',
-						detail: '望京新城2 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					},
-					{
-						id: "100003",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城3',
-						detail: '望京新城3 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					},
-					{
-						id: "100004",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城4',
-						detail: '望京新城4 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					}
-
-
-				],
-				ShowHouse2: [{
-						id: "100005",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城5',
-						detail: '望京新城5 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					},
-					{
-						id: "100006",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城6',
-						detail: '望京新城6 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					},
-					{
-						id: "100007",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城7',
-						detail: '望京新城7 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					},
-					{
-						id: "100008",
-						pic_src: require('@/assets/2.jpg'),
-						name: '望京新城8',
-						detail: '望京新城8 三室一厅 东南',
-						area: '96.47平米',
-						price: '650万'
-					}
-
-				]
+				city_name_cn: '苏州',
+				city_name_en: 'SuZhou',
+				average_price: '1.64',
+				ShowHouse: [],
+				ShowHouse2: []
 			}
 		},
 		mounted() {
-			this.$ajax({
-				method :'get',
-				url: global_.IpUrl+'/user/login/',
-				
-
-			}).then(function(response){
+			this.city_name_cn = store.state.area.province
+			this.city_name_en = store.state.area_eng.province
+			this.get_mainpage_info()
+			var _this = this
+			_this.$ajax({
+				method: 'get',
+				url: global_.IpUrl + '/house/price/' + this.get_city() + '/overview',
+			}).then(function(response) {
+				var house_info = response.data.data
+				console.log(house_info[0])
+				for (var i = 0; i <= 3; i++) {
+					var temp1 = {}
+					temp1['id'] = house_info[i].id
+					var pic = house_info[i].img_url
+					console.log(pic)
+					temp1['pic_src'] = pic
+					temp1['name'] = house_info[i].garden
+					temp1['detail'] = house_info[i].description
+					temp1['area'] = house_info[i].area
+					temp1['price'] = house_info[i].total_price
+					_this.ShowHouse.push(temp1)
+				}
+				for (var i = 4; i <= 7; i++) {
+					var temp1 = {}
+					temp1['id'] = house_info[i].id
+					var pic = house_info[i].img_url
+					console.log(pic)
+					temp1['pic_src'] = pic
+					temp1['name'] = house_info[i].garden
+					temp1['detail'] = house_info[i].description
+					temp1['area'] = house_info[i].area
+					temp1['price'] = house_info[i].total_price
+					_this.ShowHouse2.push(temp1)
+				}
 				
 			})
-		}
+
+		},
 		methods: {
 			go_to_detail_page(id) {
 				alert(id)
@@ -215,7 +181,23 @@
 						HouseId: id
 					}
 				})
-			}
+			},
+			get_city() {
+				return store.state.area_eng.city
+			},
+			get_mainpage_info() {
+				this.$ajax({
+					method: 'get',
+					url: global_.IpUrl + '/house/price/' + this.city_name_en + '/mainpage_overview'
+				}).then(function(resopnse) {
+					if (resopnse.data.code == 0) {
+						this.average_price = '' + (parseFloat(resopnse.data.average_price[0]) / 10000)
+					} else {
+						iView.Message.info(response.data.msg)
+						this.average_price = '暂无该地区房价信息'
+					}
+				}.bind(this))
+			},
 		}
 	}
 </script>

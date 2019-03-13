@@ -109,8 +109,13 @@
 				
 			}
 		},
-		created() {
-			alert(this.$route.query.HouseId)
+		mounted() {
+			var House_id = this.$route.query.HouseId
+			console.log(House_id)
+			var _this = this
+			
+			
+			
 		}
 	}
 </script>

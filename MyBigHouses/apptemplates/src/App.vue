@@ -4,7 +4,6 @@
     <HeadNav></HeadNav>
     </header>
     <div style="width:100%;text-align: center;margin:0 auto">
-
     <router-view/>
     </div>
     <footer style="margin-top: -200;">

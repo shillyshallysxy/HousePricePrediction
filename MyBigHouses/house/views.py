@@ -187,8 +187,8 @@ class HouseOverView(View):
         for info in infos:
             overview_infos.append({'id': info.id, 'garden': info.garden, 'description': info.description,
                                    'area': info.area, 'total_price': info.total_price,
-                                   'img_url': "require('@/assets/2.jpg')"})
-
+                                   'img_url': "static/images/2.jpg"})
+        print(overview_infos)
         return JsonResponse({"code": 0, "data": overview_infos})
 
 

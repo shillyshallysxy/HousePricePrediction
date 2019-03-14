@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect,reverse
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import View
 from .models import User
+from house.models import House
 import json
 from hashlib import md5  # 加密密码
 from django.conf import settings
@@ -161,9 +162,10 @@ class UploadAvatarView(View):
         return JsonResponse({"code": 0, "msg": "修改成功", "img_url": user.avatar.url})
 
 
-# url: /user/get_avatar/
-class GetAvatarView(View):
+# url: /user/info/
+class GetInfoView(View):
     def get(self, request):
+        conn = get_redis_connection("User&House")
         session_user = json.loads(request.session['user'])
         user_id = session_user.get('id')
 
@@ -172,9 +174,34 @@ class GetAvatarView(View):
         except:
             return JsonResponse({"code": 1, "msg": "无此用户"})
 
+        user_key = "user_{}".format(user_id)
+        collection_infos = list()
+        collection_list = conn.lrange(user_key, 0, -1)[0:5:-1]
+        collection_list = [item.decode() for item in collection_list]
+
+        for collection in collection_list:
+            house_info = dict()
+            house_key = "house_{}".format(collection)
+            star_count = conn.hget(house_key, "star_count").decode()
+            house_obj = House.object.get(id=int(collection))
+            house_info["description"] = house_obj.description
+            house_info["layout"] = house_obj.layout
+            house_info["layer"] = house_obj.layer
+            house_info["built_year"] = house_obj.built_year
+            house_info["area"] = house_obj.area
+            house_info["price"] = house_obj.price
+            house_info["total_price"] = house_obj.total_price
+            house_info["orientation"] = house_obj.orientation
+            house_info["garden"] = house_obj.garden
+            house_info["developer"] = house_obj.developer
+            house_info["architecture"] = house_obj.architecture
+            house_info["id"] = house_obj.id
+            house_info["img_url"] = "static/images/2.jpg"
+            house_info["star_count"] = star_count
+            collection_infos.append(house_info)
+
         img_url = user.avatar.url
-        print(img_url)
-        return JsonResponse({"code": 0, "img_url": img_url})
+        return JsonResponse({"code": 0, "img_url": img_url, "data": collection_infos})
 
 
 # url: /user/star?house_id=xxxx
@@ -208,7 +235,7 @@ class StarCountView(View):
                 star_flag = False
 
         except KeyError:
-            return JsonResponse({"code": 2, "msg": "请先登录"})
+            return JsonResponse({"code": 3, "msg": "请先登录"})
 
         house_key = "house_{}".format(house_id)
         # 有这个收藏，说明要做取消收藏的动作

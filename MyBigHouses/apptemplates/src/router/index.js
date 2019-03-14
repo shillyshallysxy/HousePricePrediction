@@ -8,6 +8,7 @@ import AreaSelect from '@/components/AreaSelect'
 import UserInfo from '@/components/UserInfo'
 import SelectHouse from '@/components/SelectHouse'
 import ItemPage from '@/components/ItemPage'
+import PricePredict from '@/components/PricePredict'
 Vue.use(Router)
 
 export default new Router({
@@ -77,6 +78,14 @@ export default new Router({
 				requireLogin: false
 			}
 		},
+		{
+			path: '/PricePredict',
+			name: 'PricePredict',
+			component: PricePredict,
+			meta:{
+				requireLogin:false
+			}
+		}
 		
 
   ]

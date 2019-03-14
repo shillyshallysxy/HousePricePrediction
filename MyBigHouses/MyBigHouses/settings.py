@@ -209,4 +209,5 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = 'default'
 
 # 配置静态资源目录
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/images")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media", "images")
+MEDIA_URL = "media/images/"

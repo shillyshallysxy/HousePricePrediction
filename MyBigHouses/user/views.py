@@ -158,7 +158,23 @@ class UploadAvatarView(View):
 
         user.avatar = avatar
         user.save()
-        return JsonResponse({"code": 0, "msg": "修改成功", "img_url": settings.MEDIA_ROOT + user.avatar.url})
+        return JsonResponse({"code": 0, "msg": "修改成功", "img_url": user.avatar.url})
+
+
+# url: /user/get_avatar/
+class GetAvatarView(View):
+    def get(self, request):
+        session_user = json.loads(request.session['user'])
+        user_id = session_user.get('id')
+
+        try:
+            user = User.objects.get(id=user_id)
+        except:
+            return JsonResponse({"code": 1, "msg": "无此用户"})
+
+        img_url = user.avatar.url
+        print(img_url)
+        return JsonResponse({"code": 0, "img_url": img_url})
 
 
 # url: /user/star?house_id=xxxx

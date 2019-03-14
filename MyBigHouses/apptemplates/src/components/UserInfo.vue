@@ -185,6 +185,7 @@
 <script>
 	import store from '@/store'
 	import global_ from '@/components/Global'
+	import iView from 'iview'
 	import {
 		getCookie,
 		setCookie,
@@ -201,9 +202,33 @@
 								'X-CSRFToken': getCookie('csrftoken')}
 			};
 		},
+		created() {
+			this.getAvatar()
+		},
+		mounted() {
+			
+		},
 		methods: {
-			handleAvatarSuccess(res, file) {
-				this.imageUrl = URL.createObjectURL(file.raw);
+			getAvatar(){
+				this.$ajax({
+					method: 'get',
+					async: false,
+					url: global_.IpUrl + '/user/get_avatar',
+				}).then(function(response){
+					if (response.data.code == 0) {
+						this.imageUrl = global_.IpUrl + '/' + response.data.img_url
+					} else {
+						iView.Message.info(response.data.msg)
+					}
+				}.bind(this))
+			},
+			handleAvatarSuccess(response, file) {
+				if(response.code == 0){
+					// this.imageUrl = URL.createObjectURL(file.raw);
+					this.imageUrl = global_.IpUrl + '/' + response.img_url
+				}else{
+					iView.Message.info(response.msg)
+				}
 			},
 			beforeAvatarUpload(file) {
 				const isJPG = file.type === 'image/jpeg';
@@ -268,7 +293,7 @@
 		color: rgb(252, 124, 0);
 	}
   .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
+   border: 1px dashed #d9d9d9;
     border-radius: 6px;
     cursor: pointer;
     position: relative;
@@ -286,7 +311,7 @@
     text-align: center;
   }
   .avatar {
-    width: 178px;
+   width: 178px;
     height: 178px;
     display: block;
   }

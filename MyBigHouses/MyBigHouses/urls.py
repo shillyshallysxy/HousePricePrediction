@@ -16,11 +16,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
 from django.views.generic import TemplateView
-
+from django.views.static import serve
+from django.conf import settings
 
 urlpatterns = [
     path(r'admin/', admin.site.urls),
     path(r'user/', include('user.urls', namespace='user')),
     path(r'house/', include('house.urls', namespace='house')),
+    url(r'^media/images/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     url(r'', TemplateView.as_view(template_name="index.html")),
 ]

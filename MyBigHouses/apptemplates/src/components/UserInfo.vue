@@ -1,25 +1,31 @@
 <template>
 	<div style="width: 100%;height: 100%;padding-left: 0px;">
 		<div style="background-color: lightgray;width: 100%;max-height: 200px;padding-top:100px;padding-left: 0px;">
-			<div style="width: 300px;height: 100px;margin-left: 150px;text-align: left;padding: 0px;">			
-				<div style="background: #AAAAAA;max-height: 120px;max-width: 120px;border-radius:8px;float: left;">
-					<img src="../assets/user.png" style="max-height: 120px;max-width: 120px;"/>
-				</div>
-				<p style="font-size: 15px;font-weight: 300;max-height: 20px;margin-top: 0;margin-left: 150px;">Username</p>
-				<p style="font-size: 15px;font-weight: 300;max-height: 20px;margin-top:0;margin-left: 150px;">12345678@qq.com</p>
-				<el-button size="small" round style="margin-top: 3px;margin-left: 20px;">编辑个人资料</el-button>
+			<div style="width: 300px;height: 100px;margin-left: 150px;text-align: left;padding: 0px;">
+				<!-- <div style="background: #AAAAAA;max-height: 120px;max-width: 120px;border-radius:8px;float: left;"> -->
+					<el-upload class="avatar-uploader" name="file"
+					:action="post_img_url" :headers="import_headers" :show-file-list="false" :on-success="handleAvatarSuccess"
+					 :before-upload="beforeAvatarUpload">
+						<img v-if="imageUrl" :src="imageUrl" class="avatar">
+						<i v-else class="el-icon-plus avatar-uploader-icon"></i>
+					</el-upload>
+					<!-- <img src="../assets/user.png" style="max-height: 120px;max-width: 120px;"/> -->
+				<!-- </div> -->
+				<p style="font-size: 15px;font-weight: 300;max-height: 20px;margin-top: 0;margin-left: 150px;">{{user_name}}</p>
+				<!-- <p style="font-size: 15px;font-weight: 300;max-height: 20px;margin-top:0;margin-left: 150px;">12345678@qq.com</p> -->
+				<!-- <el-button size="small" round style="margin-top: 3px;margin-left: 20px;">编辑个人资料</el-button> -->
 			</div>
 		</div>
-		
+
 		<div style="width: 100%;padding: 0px;border-right: 0px;padding-left: 5%;">
 			<div style="margin-left: 15%;margin-top: 50px;min-height: 30px;min-width: 80%;">
 				<p style="font-size: 25px;float: left;"><b>我的收藏</b></p>
 			</div>
 			<div style="margin-left: 15%;height: 3px;width: 30%;background:black;overflow:hidden;margin-top: 40px;"></div>
-			
+
 			<ul style="width: 100%;position: relative;overflow: hidden;">
 				<li v-bind:class="{collect:true}">
-					<img src="../assets/login_back.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;"/>
+					<img src="../assets/login_back.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;" />
 					<div style="min-width: 500px;display: inline-block;padding: 0;position: absolute;top: 0px;left: 210px;">
 						<p style="font-size: 18px;font-weight: 500;">
 							满五年唯一 正规一居室可改二居 正对小区里头 安静
@@ -45,9 +51,9 @@
 						</p>
 					</div>
 					<div style="height: 1px;width: 80%;background:lightgrey;overflow:hidden;margin-top: 10px;"></div>
-				</li>			
+				</li>
 				<li v-bind:class="{collect:true}">
-					<img src="../assets/2.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;"/>
+					<img src="../assets/2.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;" />
 					<div style="min-width: 500px;display: inline-block;padding: 0;position: absolute;top: 0px;left: 210px;">
 						<p style="font-size: 18px;font-weight: 500;">
 							满五年唯一 正规一居室可改二居 正对小区里头 安静
@@ -73,9 +79,9 @@
 						</p>
 					</div>
 					<div style="height: 1px;width: 80%;background:lightgrey;overflow:hidden;margin-top: 10px;"></div>
-				</li>			
+				</li>
 				<li v-bind:class="{collect:true}">
-					<img src="../assets/2.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;"/>
+					<img src="../assets/2.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;" />
 					<div style="min-width: 500px;display: inline-block;padding: 0;position: absolute;top: 0px;left: 210px;">
 						<p style="font-size: 18px;font-weight: 500;">
 							满五年唯一 正规一居室可改二居 正对小区里头 安静
@@ -101,9 +107,9 @@
 						</p>
 					</div>
 					<div style="height: 1px;width: 80%;background:lightgrey;overflow:hidden;margin-top: 10px;"></div>
-				</li>			
+				</li>
 				<li v-bind:class="{collect:true}">
-					<img src="../assets/2.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;"/>
+					<img src="../assets/2.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;" />
 					<div style="min-width: 500px;display: inline-block;padding: 0;position: absolute;top: 0px;left: 210px;">
 						<p style="font-size: 18px;font-weight: 500;">
 							满五年唯一 正规一居室可改二居 正对小区里头 安静
@@ -129,9 +135,9 @@
 						</p>
 					</div>
 					<div style="height: 1px;width: 80%;background:lightgrey;overflow:hidden;margin-top: 10px;"></div>
-				</li>			
+				</li>
 				<li v-bind:class="{collect:true}">
-					<img src="../assets/2.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;"/>
+					<img src="../assets/2.jpg" style="max-height: 145px;max-width: 200px;min-height: 145px;min-width: 200px;background-size: 100% 100%;display: inline-block;" />
 					<div style="min-width: 500px;display: inline-block;padding: 0;position: absolute;top: 0px;left: 210px;">
 						<p style="font-size: 18px;font-weight: 500;">
 							满五年唯一 正规一居室可改二居 正对小区里头 安静
@@ -157,10 +163,10 @@
 						</p>
 					</div>
 					<div style="height: 1px;width: 80%;background:lightgrey;overflow:hidden;margin-top: 10px;"></div>
-				</li>			
-				
+				</li>
+
 			</ul>
-		
+
 			<ul style="width: 100%;position: relative;margin-top: 30px;">
 				<li v-bind:class="{item:true}">
 					<a>1</a>
@@ -177,50 +183,136 @@
 </template>
 
 <script>
+	import store from '@/store'
+	import global_ from '@/components/Global'
+	import iView from 'iview'
+	import {
+		getCookie,
+		setCookie,
+		delCookie
+	} from '@/utils/utils'
+	export default {
+		data() {
+			return {
+				post_img_url: global_.IpUrl + '/user/modify_avatar',
+				imageUrl:'',
+				user_name: store.state.UserInfo.username,
+				import_headers:{
+								// 'Content-Type': 'multipart/form-data',
+								'X-CSRFToken': getCookie('csrftoken')}
+			};
+		},
+		created() {
+			this.getAvatar()
+		},
+		mounted() {
+			
+		},
+		methods: {
+			getAvatar(){
+				this.$ajax({
+					method: 'get',
+					async: false,
+					url: global_.IpUrl + '/user/get_avatar',
+				}).then(function(response){
+					if (response.data.code == 0) {
+						this.imageUrl = global_.IpUrl + '/' + response.data.img_url
+					} else {
+						iView.Message.info(response.data.msg)
+					}
+				}.bind(this))
+			},
+			handleAvatarSuccess(response, file) {
+				if(response.code == 0){
+					// this.imageUrl = URL.createObjectURL(file.raw);
+					this.imageUrl = global_.IpUrl + '/' + response.img_url
+				}else{
+					iView.Message.info(response.msg)
+				}
+			},
+			beforeAvatarUpload(file) {
+				const isJPG = file.type === 'image/jpeg';
+				const isLt2M = file.size / 1024 / 1024 < 2;
+
+				if (!isJPG) {
+					this.$message.error('上传头像图片只能是 JPG 格式!');
+				}
+				if (!isLt2M) {
+					this.$message.error('上传头像图片大小不能超过 2MB!');
+				}
+				return isJPG && isLt2M;
+			}
+		}
+	}
 </script>
 
 <style>
-.item{
-	display: inline-block;
-    vertical-align: middle;
-    min-width: 32px;
-    height: 32px;
-    line-height: 30px;
-    margin-right: 4px;
-    text-align: center;
-    list-style: none;
-    background-color: #fff;
-    user-select: none;
-    cursor: pointer;
-    font-family: Arial;
-    font-weight: 500;
-    border: 1px solid #dcdee2;
-    border-radius: 4px;
-    transition: border .2s ease-in-out,color .2s ease-in-out;
-}
-.item a{
-	font-family: Monospaced Number;
-    margin: 0 6px;
-    text-decoration: none;
-    color: #515a6e;
-}
-.collect{
-	min-height: 150px;
-	min-width: 1000px;
-	max-height: 150px;
-	margin-left: 15%;
-	float: left;
-	text-align: left;
-	padding-top: 0;
-	position: relative;
-	margin-top: 20px;
-	list-style: none;
-}
+	.item {
+		display: inline-block;
+		vertical-align: middle;
+		min-width: 32px;
+		height: 32px;
+		line-height: 30px;
+		margin-right: 4px;
+		text-align: center;
+		list-style: none;
+		background-color: #fff;
+		user-select: none;
+		cursor: pointer;
+		font-family: Arial;
+		font-weight: 500;
+		border: 1px solid #dcdee2;
+		border-radius: 4px;
+		transition: border .2s ease-in-out, color .2s ease-in-out;
+	}
 
-.textColor{
-	font-size: 28px;
-	font-weight: 400;
-	margin-top: 10px;
-	color: rgb(252,124,0);
-}
+	.item a {
+		font-family: Monospaced Number;
+		margin: 0 6px;
+		text-decoration: none;
+		color: #515a6e;
+	}
+
+	.collect {
+		min-height: 150px;
+		min-width: 1000px;
+		max-height: 150px;
+		margin-left: 15%;
+		float: left;
+		text-align: left;
+		padding-top: 0;
+		position: relative;
+		margin-top: 20px;
+		list-style: none;
+	}
+
+	.textColor {
+		font-size: 28px;
+		font-weight: 400;
+		margin-top: 10px;
+		color: rgb(252, 124, 0);
+	}
+  .avatar-uploader .el-upload {
+   border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+   width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>

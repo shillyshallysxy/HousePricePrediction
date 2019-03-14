@@ -2,11 +2,13 @@ from django.http import HttpResponse, JsonResponse
 from .models import House, HistoryPrice
 from django.views.generic import View
 from django.db.models import Q
+from django.core.paginator import Paginator
 import pickle
 from pymongo import MongoClient
 from django_redis import get_redis_connection
 import datetime
 import json
+import base64
 
 # url: house/price/<city>/history?last_n_month=xx
 class History(View):
@@ -217,6 +219,7 @@ class HouseMainPageView(View):
         return JsonResponse({"code": 0, "data": overview_infos})
 
 
+# url: house/filter/<city_name>
 class HouseListFilterView(View):
     '''房子列表展示的地区筛选'''
     def __init__(self):
@@ -253,6 +256,7 @@ class HouseDetailView(View):
 
             # 检查是否已收藏
             star_list = conn.lrange(user_key, 0, -1)
+            star_list = [item.decode() for item in star_list]
             if str(house_id) in star_list:
                 star_flag = True
             else:
@@ -295,3 +299,10 @@ class HouseDetailView(View):
 
         return JsonResponse({"code": 0, "data": data, "view_count": view_count, "star_count": star_count, \
                              "star_flag": star_flag})
+
+# url: house/list/<location>
+class HouseListView(View):
+    '''房源列表接口'''
+
+    def get(self, request, city_name):
+        pass

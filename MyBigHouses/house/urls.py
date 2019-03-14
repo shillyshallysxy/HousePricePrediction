@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.views.generic import TemplateView
-from .views import History, CityInfoView, SubLocationPriceView, HouseOverView, HouseListFilterView, HouseDetailView, HouseMainPageView
+from .views import History, CityInfoView, SubLocationPriceView, HouseOverView, HouseListFilterView,\
+                    HouseDetailView, HouseMainPageView, HouseListView
 
 
 app_name = 'house'
@@ -10,8 +11,9 @@ urlpatterns = [
     url(r'city_info/(?P<location>.*)', CityInfoView.as_view(), name="city_info"),
     url(r'price/(?P<city_name>(\w*?))/sub_location', SubLocationPriceView.as_view(), name="sub_price"),
     url(r'price/(?P<city_name>(\w*?))/overview', HouseOverView.as_view(), name="house_overview"),
-    url(r'list/(?P<city_name>.*)', HouseListFilterView.as_view(), name="house_list_filter"),
+    url(r'filter/(?P<city_name>.*)', HouseListFilterView.as_view(), name="house_list_filter"),
     url(r'detail/(?P<house_id>\d+)', HouseDetailView.as_view(), name="house_detail"),
-    url(r'price/(?P<city_name>(\w*?))/mainpage_overview', HouseMainPageView.as_view(), name="mainpage_overview")
+    url(r'price/(?P<city_name>(\w*?))/mainpage_overview', HouseMainPageView.as_view(), name="mainpage_overview"),
+    url(r'list/(?P<location>.*)', HouseListView.as_view(), name='list')
 
 ]

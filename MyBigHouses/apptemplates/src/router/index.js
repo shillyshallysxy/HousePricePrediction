@@ -9,6 +9,7 @@ import UserInfo from '@/components/UserInfo'
 import SelectHouse from '@/components/SelectHouse'
 import ItemPage from '@/components/ItemPage'
 import PricePredict from '@/components/PricePredict'
+import HouseChoosing from '@/components/HouseChoosing'
 Vue.use(Router)
 
 export default new Router({
@@ -83,6 +84,14 @@ export default new Router({
 			name: 'PricePredict',
 			component: PricePredict,
 			meta:{
+				requireLogin:false
+			}
+		},
+		{
+			path: '/HouseChoosing',
+			name: 'HouseChoosing',
+			component: HouseChoosing,
+			meta: {
 				requireLogin:false
 			}
 		}

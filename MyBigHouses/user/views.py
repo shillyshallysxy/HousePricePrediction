@@ -4,6 +4,7 @@ from django.views.generic import View
 from .models import User
 from house.models import House
 import json
+from math import floor
 from hashlib import md5  # 加密密码
 from django.conf import settings
 from django.middleware.csrf import get_token, rotate_token
@@ -162,9 +163,19 @@ class UploadAvatarView(View):
         return JsonResponse({"code": 0, "msg": "修改成功", "img_url": user.avatar.url})
 
 
-# url: /user/info/
+# url: /user/info/?pag_num=xx
 class GetInfoView(View):
     def get(self, request):
+        item_num_one_page = 5
+        page_num = request.GET.get('house_id', None)
+        if page_num is None:
+            page_num = 1
+        else:
+            try:
+                page_num = int(float(page_num))
+            except TypeError:
+                return JsonResponse({"code": 1, "msg": "页码格式不合法！"})
+
         conn = get_redis_connection("User&House")
         session_user = json.loads(request.session['user'])
         user_id = session_user.get('id')
@@ -176,14 +187,16 @@ class GetInfoView(View):
 
         user_key = "user_{}".format(user_id)
         collection_infos = list()
-        collection_list = conn.lrange(user_key, 0, -1)[0:5:-1]
+        collection_list = conn.lrange(user_key, 0, -1)[::-1]
+        total_page_num = floor(len(collection_list)/item_num_one_page)
+        collection_list = collection_list[(page_num-1)*item_num_one_page:
+                                          page_num*item_num_one_page]
         collection_list = [item.decode() for item in collection_list]
-
         for collection in collection_list:
             house_info = dict()
             house_key = "house_{}".format(collection)
             star_count = conn.hget(house_key, "star_count").decode()
-            house_obj = House.object.get(id=int(collection))
+            house_obj = House.objects.get(id=int(collection))
             house_info["description"] = house_obj.description
             house_info["layout"] = house_obj.layout
             house_info["layer"] = house_obj.layer
@@ -201,7 +214,8 @@ class GetInfoView(View):
             collection_infos.append(house_info)
 
         img_url = user.avatar.url
-        return JsonResponse({"code": 0, "img_url": img_url, "data": collection_infos})
+        return JsonResponse({"code": 0, "img_url": img_url, "data": collection_infos,
+                             'page_num':page_num, 'total_page_num': total_page_num})
 
 
 # url: /user/star?house_id=xxxx
@@ -248,7 +262,6 @@ class StarCountView(View):
             conn.lpush(user_key, house_id)
             conn.hincrby(house_key, "star_count", 1)
             star_flag = True
-
 
         # 获取更新之后的收藏量
         star_count = conn.hget(house_key, "star_count").decode()

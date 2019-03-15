@@ -3,6 +3,7 @@ from .models import House, HistoryPrice
 from django.views.generic import View
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.conf import settings
 import pickle
 from pymongo import MongoClient
 from django_redis import get_redis_connection
@@ -300,9 +301,51 @@ class HouseDetailView(View):
         return JsonResponse({"code": 0, "data": data, "view_count": view_count, "star_count": star_count, \
                              "star_flag": star_flag})
 
-# url: house/list/<location>
+
+# url: house/list/<city>?page_num =zz&district=xx&zone=yy
 class HouseListView(View):
     '''房源列表接口'''
 
     def get(self, request, city_name):
-        pass
+        decoded_location = base64.b64decode(city_name).decode()
+        try:
+            house_list = House.objects.filter(city=decoded_location)
+        except:
+            return JsonResponse({"code": 1, "msg": "城市信息有误"})
+        page_num = request.GET.get('house_id', None)
+        if page_num is None:
+            page_num = 1
+        else:
+            try:
+                page_num = int(float(page_num))
+            except TypeError:
+                return JsonResponse({"code": 1, "msg": "页码格式不合法！"})
+        # 链接redis数据库
+        conn = get_redis_connection("User&House")
+        collection_infos = list()
+        pageinator = Paginator(house_list, settings.LIST_PAGE_ITEMS)
+        for house_obj in pageinator.page(page_num).object_list:
+            house_info = dict()
+            house_key = "house_{}".format(house_obj.id)
+            star_count = conn.hget(house_key, "star_count")
+            if star_count is None:
+                star_count = 0
+            else:
+                star_count = star_count.decode()
+            house_info["description"] = house_obj.description
+            house_info["layout"] = house_obj.layout
+            house_info["layer"] = house_obj.layer
+            house_info["built_year"] = house_obj.built_year
+            house_info["area"] = house_obj.area
+            house_info["price"] = house_obj.price
+            house_info["total_price"] = house_obj.total_price
+            house_info["orientation"] = house_obj.orientation
+            house_info["garden"] = house_obj.garden
+            house_info["developer"] = house_obj.developer
+            house_info["architecture"] = house_obj.architecture
+            house_info["id"] = house_obj.id
+            house_info["img_url"] = "static/images/2.jpg"
+            house_info["star_count"] = star_count
+            collection_infos.append(house_info)
+
+        return JsonResponse({"code": 0, "data": collection_infos})

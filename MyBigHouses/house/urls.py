@@ -14,6 +14,6 @@ urlpatterns = [
     url(r'filter/(?P<city_name>.*)', HouseListFilterView.as_view(), name="house_list_filter"),
     url(r'detail/(?P<house_id>\d+)', HouseDetailView.as_view(), name="house_detail"),
     url(r'price/(?P<city_name>(\w*?))/mainpage_overview', HouseMainPageView.as_view(), name="mainpage_overview"),
-    url(r'list/(?P<location>.*)', HouseListView.as_view(), name='list')
+    url(r'list/(?P<city_name>.*)', HouseListView.as_view(), name='list')
 
 ]

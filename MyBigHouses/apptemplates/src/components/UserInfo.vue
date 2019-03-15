@@ -57,8 +57,7 @@
 					</li>
 				</ul>
 
-				<mo-paging :page-index="currentPage" :totla="count" :page-size="pageSize" @change="pageChange">
-				</mo-paging>
+				<v-pagination :total="total" :current-page='current' @pagechange="pagechange"></v-pagination>
 
 
 			</div>
@@ -71,16 +70,16 @@
 <script>
 	import store from '@/store'
 	import global_ from '@/components/Global'
-	import MoPaging from '@/components/MyPagenation'
+	import pagination from '@/components/MyPagenation'
 	import {
 		getCookie,
 		setCookie,
 		delCookie
 	} from '@/utils/utils'
 	export default {
-		components : {
-            MoPaging 
-        },
+		components: {
+			'v-pagination': pagination,
+		},
 		data() {
 			return {
 				post_img_url: global_.IpUrl + '/user/modify_avatar',
@@ -92,9 +91,9 @@
 				},
 				favor_info: [],
 				//分页实现内容
-				pageSize : 20 , //每页显示20条数据
-                currentPage : 1, //当前页码
-                count : 0, //总记录数
+				total: 0, // 记录总条数
+				display: 15, // 每页显示条数
+				current: 1, // 当前的页数
 			};
 
 		},
@@ -102,19 +101,16 @@
 			this.getAvatar()
 		},
 		mounted() {
-
+			this.getList()
 		},
 		methods: {
-			getList(){
-			},
-			getAvatar() {
+			getList() {
+				let url = global_.IpUrl + '/user/get_info?pag_num=' + this.current
 				this.$ajax({
+					url: url,
 					method: 'get',
-					async: false,
-					url: global_.IpUrl + '/user/get_info',
 				}).then(function(response) {
-					if (response.data.code == 0) {
-						this.imageUrl = global_.IpUrl + '/' + response.data.img_url
+					if (response.data.code === 0) {
 						var favor = response.data.data
 						for (var i = 0; i < favor.length; i++) {
 							var temp = {}
@@ -133,9 +129,26 @@
 							temp["img_url"] = favor[i].img_url
 							temp["star_count"] = favor[i].star_count
 							this.favor_info.push(temp)
+							this.total = 4
 						}
+					} else {
+						iView.Message.info(response.data.msg)
+					}
+				}.bind(this))
 
-
+			},
+			pagechange(page) {
+				this.current = page
+				this.getList()
+			},
+			getAvatar() {
+				this.$ajax({
+					method: 'get',
+					async: false,
+					url: global_.IpUrl + '/user/get_info',
+				}).then(function(response) {
+					if (response.data.code == 0) {
+						this.imageUrl = global_.IpUrl + '/' + response.data.img_url
 					} else {
 						iView.Message.info(response.data.msg)
 					}

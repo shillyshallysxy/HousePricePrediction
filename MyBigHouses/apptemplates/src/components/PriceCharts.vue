@@ -18,7 +18,7 @@
 				<el-cascader placeholder="选择城市以添加" :options="options_choose_city_col" filterable change-on-select v-model="city_selected_col"
 				  @change="changeCity_col"></el-cascader>
 				<el-date-picker v-model="month_selected" type="month" placeholder="选择日期" format="yyyy 年 MM 月" value-format="yyyy-MM"
-				></el-date-picker>
+				:picker-options="picker_option_month"></el-date-picker>
 				<el-button type="primary" :loading="loading_flag_col" @click="getSelectedCityCol">添加</el-button>
 				
 				<vue-highcharts :highcharts="Highcharts" :options="options_chart_column" ref="HisPriceCharts_column"></vue-highcharts>
@@ -40,6 +40,17 @@
 		store,
 		data() {
 			return {
+				picker_option_month:{
+					disabledDate(time) {
+						// 获得当前时间
+						let curDate = (new Date()).getTime();
+						// 设置时间范围到多久之前 days*hour*second*ms
+						let three = 10 * 365 * 24 * 3600 * 1000;
+						let limitMonths = curDate - three;
+						// 限制时间范围
+						return time.getTime() > Date.now() || time.getTime() < limitMonths;;
+					}
+				},
 				loading_flag: false,
 				loading_flag_col: false,
 				year_selected: '12',
@@ -36173,26 +36184,30 @@
 						url: global_.IpUrl + '/house/price/' + choosed_city + '/sub_location' + url_
 					}).then(function(response) {
 						if (response.data.code === 0) {
-							// 加载highchart自带的方法
-							// his_chart.delegateMethod('get', 'showLoading', 'Loading...')
-							// 接受get请求返回的数据
-							let hist_price_list = []
-							let x_axis = []
-							for (let i = 0; i >= 0; i--) {
-								let hist_price = []
-								for (let s of response.data.data[i]) {
-									// console.log(s)
-									hist_price.push(parseFloat(s[1]))
-									if (i == 0) {
-										x_axis.push(s[0])
+							if(response.data.time[0] == 'undefined'){
+								iView.Message.info('没有该日期的数据')
+							}else{
+								// 加载highchart自带的方法
+								// his_chart.delegateMethod('get', 'showLoading', 'Loading...')
+								// 接受get请求返回的数据
+								let hist_price_list = []
+								let x_axis = []
+								for (let i = 0; i >= 0; i--) {
+									let hist_price = []
+									for (let s of response.data.data[i]) {
+										// console.log(s)
+										hist_price.push(parseFloat(s[1]))
+										if (i == 0) {
+											x_axis.push(s[0])
+										}
 									}
+									his_chart.addSeries({
+										id: choosed_city+ ':' + response.data.time[i],
+										name: response.data.location_cn + ':' + response.data.time[i],
+										data: hist_price,
+									})
+									his_chart.getChart().xAxis[0].setCategories(x_axis)
 								}
-								his_chart.addSeries({
-									id: choosed_city+ ':' + response.data.time[i],
-									name: response.data.location_cn + ':' + response.data.time[i],
-									data: hist_price,
-								})
-								his_chart.getChart().xAxis[0].setCategories(x_axis)
 							}
 						} else {
 							iView.Message.info(response.data.msg)

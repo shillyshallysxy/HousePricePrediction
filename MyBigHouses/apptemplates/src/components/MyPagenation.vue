@@ -1,205 +1,136 @@
 <template>
-	<ul class="mo-paging">
-		<!-- prev -->
-		<li :class="['paging-item', 'paging-item--prev', {'paging-item--disabled' : index === 1}]" @click="prev">prev</li>
-
-		<!-- first -->
-		<li :class="['paging-item', 'paging-item--first', {'paging-item--disabled' : index === 1}]" @click="first">first</li>
-
-		<li :class="['paging-item', 'paging-item--more']" v-if="showPrevMore">...</li>
-
-		<li :class="['paging-item', {'paging-item--current' : index === pager}]" v-for="pager in pagers" @click="go(pager)">{{ pager }}</li>
-
-		<li :class="['paging-item', 'paging-item--more']" v-if="showNextMore">...</li>
-
-		<!-- last -->
-		<li :class="['paging-item', 'paging-item--last', {'paging-item--disabled' : index === pages}]" @click="last">last</li>
-
-		<!-- next -->
-		<li :class="['paging-item', 'paging-item--next', {'paging-item--disabled' : index === pages}]" @click="next">next</li>
-	</ul>
+	<nav>
+		<ul class="pagination">
+			<li :class="{'disabled': current == 1}"><a href="javascript:;" @click="setCurrent(current - 1)"> « </a></li>
+			<li :class="{'disabled': current == 1}"><a href="javascript:;" @click="setCurrent(1)"> 首页 </a></li>
+			<li v-for="p in grouplist" :class="{'active': current == p.val}"><a href="javascript:;" @click="setCurrent(p.val)">
+					{{ p.text }} </a>
+			</li>
+			<li :class="{'disabled': current == page}"><a href="javascript:;" @click="setCurrent(page)"> 尾页 </a></li>
+			<li :class="{'disabled': current == page}"><a href="javascript:;" @click="setCurrent(current + 1)"> »</a></li>
+		</ul>
+	</nav>
 </template>
-<script>
-	export default {
-    name : 'MoPaging',
-    //通过props来接受从父组件传递过来的值
-    props : {
 
-        //页面中的可见页码，其他的以...替代, 必须是奇数
-        perPages : { 
-            type : Number,
-            default : 5 
-        },
-
-        //当前页码
-        pageIndex : {
-            type : Number,
-            default : 1
-        },
-
-        //每页显示条数
-        pageSize : {
-            type : Number,
-            default : 10
-        },
-
-        //总记录数
-        total : {
-            type : Number,
-            default : 1
-        },
-
+<script type="es6">
+	export default{
+    data(){
+      return {
+        current: this.currentPage
+      }
     },
-    methods : {
-        prev(){
-            if (this.index > 1) {
-                this.go(this.index - 1)
-            }
-        },
-        next(){
-            if (this.index < this.pages) {
-                this.go(this.index + 1)
-            }
-        },
-        first(){
-            if (this.index !== 1) {
-                this.go(1)
-            }
-        },
-        last(){
-            if (this.index != this.pages) {
-                this.go(this.pages)
-            }
-        },
-        go (page) {
-            if (this.index !== page) {
-                this.index = page
-                //父组件通过change方法来接受当前的页码
-                this.$emit('change', this.index)
-            }
+    props: {
+      total: {// 数据总条数
+        type: Number,
+        default: 0
+      },
+      display: {// 每页显示条数
+        type: Number,
+        default: 10
+      },
+      currentPage: {// 当前页码
+        type: Number,
+        default: 1
+      },
+      pagegroup: {// 分页条数
+        type: Number,
+        default: 5,
+        coerce: function (v) {
+          v = v > 0 ? v : 5;
+          return v % 2 === 1 ? v : v + 1;
         }
+      }
     },
-    computed : {
-
-        //计算总页码
-        pages(){
-            return Math.ceil(this.size / this.limit)
-        },
-
-        //计算页码，当count等变化时自动计算
-        pagers () {
-            const array = []
-            const perPages = this.perPages
-            const pageCount = this.pages
-            let current = this.index
-            const _offset = (perPages - 1) / 2
-
-            
-            const offset = {
-                start : current - _offset,
-                end   : current + _offset
-            }
-
-            //-1, 3
-            if (offset.start < 1) {
-                offset.end = offset.end + (1 - offset.start)
-                offset.start = 1
-            }
-            if (offset.end > pageCount) {
-                offset.start = offset.start - (offset.end - pageCount)
-                offset.end = pageCount
-            }
-            if (offset.start < 1) offset.start = 1
-
-            this.showPrevMore = (offset.start > 1)
-            this.showNextMore = (offset.end < pageCount)
-
-            for (let i = offset.start; i <= offset.end; i++) {
-                array.push(i)
-            }
-
-            return array
+    computed: {
+      page: function () { // 总页数
+        return Math.ceil(this.total / this.display);
+      },
+      grouplist: function () { // 获取分页页码
+        var len = this.page, temp = [], list = [], count = Math.floor(this.pagegroup / 2), center = this.current;
+        if (len <= this.pagegroup) {
+          while (len--) {
+            temp.push({text: this.page - len, val: this.page - len});
+          }
+          ;
+          return temp;
         }
+        while (len--) {
+          temp.push(this.page - len);
+        }
+        ;
+        var idx = temp.indexOf(center);
+        (idx < count) && ( center = center + count - idx);
+        (this.current > this.page - count) && ( center = this.page - count);
+        temp = temp.splice(center - count - 1, this.pagegroup);
+        do {
+          var t = temp.shift();
+          list.push({
+            text: t,
+            val: t
+          });
+        } while (temp.length);
+        if (this.page > this.pagegroup) {
+          (this.current > count + 1) && list.unshift({text: '...', val: list[0].val - 1});
+          (this.current < this.page - count) && list.push({text: '...', val: list[list.length - 1].val + 1});
+        }
+        return list;
+      }
     },
-    data () {
-        return {
-            index : this.pageIndex, //当前页码
-            limit : this.pageSize, //每页显示条数
-            size : this.total || 1, //总记录数
-            showPrevMore : false,
-            showNextMore : false
+    methods: {
+      setCurrent: function (idx) {
+        if (this.current != idx && idx > 0 && idx < this.page + 1) {
+          this.current = idx;
+          this.$emit('pagechange', this.current);
         }
-    },
-    watch : {
-        pageIndex(val) {
-            this.index = val || 1
-        },
-        pageSize(val) {
-            this.limit = val || 10
-        },
-        total(val) {
-            this.size = val || 1
-        }
+      }
     }
-}
+  }
 </script>
 
-<style>
-	.mo-paging {
-		display: inline-block;
-		padding: 0;
-		margin: 1rem 0;
-		font-size: 0;
-		list-style: none;
-		user-select: none;
+<style lang="less">
+	.pagination {
+		overflow: hidden;
+		display: table;
+		margin: 0 auto;
+		/*width: 100%;*/
+		height: 50px;
 
-		>.paging-item {
-			display: inline;
-			font-size: 14px;
-			position: relative;
-			padding: 6px 12px;
-			line-height: 1.42857143;
-			text-decoration: none;
-			border: 1px solid #ccc;
-			background-color: #fff;
-			margin-left: -1px;
-			cursor: pointer;
-			color: #0275d8;
+		li {
+			float: left;
+			height: 30px;
+			border-radius: 5px;
+			margin: 3px;
+			color: #666;
+			list-style: none;
+			& :hover {
+				background: #000;
 
-			&:first-child {
-				margin-left: 0;
+				a {
+					color: #fff;
+				}
+
 			}
 
-			&:hover {
-				background-color: #f0f0f0;
-				color: #0275d8;
+			a {
+				display: block;
+				width: 30px;
+				height: 30px;
+				text-align: center;
+				line-height: 30px;
+				font-size: 12px;
+				border-radius: 5px;
+				text-decoration: none
 			}
 
-			&.paging-item--disabled,
-			&.paging-item--more {
-				background-color: #fff;
-				color: #505050;
-			}
+		}
 
-			//禁用
-			&.paging-item--disabled {
-				cursor: not-allowed;
-				opacity: .75;
-			}
+		.active {
+			background: #000;
 
-			&.paging-item--more,
-			&.paging-item--current {
-				cursor: default;
-			}
-
-			//选中
-			&.paging-item--current {
-				background-color: #0275d8;
+			a {
 				color: #fff;
-				position: relative;
-				z-index: 1;
-				border-color: #0275d8;
 			}
+
 		}
 	}
 </style>

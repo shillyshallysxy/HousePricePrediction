@@ -14,7 +14,7 @@
 			<el-menu-item style="margin-left: 20%;color: black;font-size: 18px;" index="/">主页</el-menu-item>
 			<el-menu-item index="/price_condition" style="color: black;font-size: 18px;">房价</el-menu-item>
 			<el-menu-item style="color: black;font-size: 18px;"  index="/PricePredict">预测</el-menu-item>
-			<el-menu-item style="color: black;font-size: 18px;" index="/SelectHouse">挑房</el-menu-item>
+			<el-menu-item style="color: black;font-size: 18px;" index="/HouseChoosing">挑房</el-menu-item>
 
 			<el-menu-item style="float: right;color: black;" index="/register" v-if="!isLogin">注册</el-menu-item>
 			<el-menu-item index="/login" style="float: right;color: black;" v-if="!isLogin">

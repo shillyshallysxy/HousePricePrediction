@@ -38,7 +38,7 @@
 <script>
 </script>
 
-<style>
+<style scoped>
 table,th,td{
   border: 0px solid black;
 }

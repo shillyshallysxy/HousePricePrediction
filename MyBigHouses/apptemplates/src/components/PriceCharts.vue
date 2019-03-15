@@ -36214,7 +36214,7 @@
 		}
 	}
 </script>
-<style>
+<style scoped>
 .root{
 	margin-top:35px;
 }

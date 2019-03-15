@@ -133,7 +133,7 @@
 				}
 			}
 		},
-		mounted() {
+		created(){
 			var House_id = this.$route.query.HouseId
 			var _this = this
 			_this.$ajax({
@@ -164,6 +164,9 @@
 				}
 			})
 		},
+		mounted() {
+			
+		},
 		methods:{
 			star(){
 				var _this = this
@@ -177,7 +180,7 @@
 					}else{
 						if(response.data.code ===3){
 							iView.Message.info("请先登录")
-							setTimeout(this.go, 1000);
+							setTimeout(_this.go, 1000);
 						}
 					}
 				})
@@ -206,7 +209,7 @@
 	}
 </script>
 
-<style>
+<style scoped>
 .pre{
 	position: absolute;
     top: 0;

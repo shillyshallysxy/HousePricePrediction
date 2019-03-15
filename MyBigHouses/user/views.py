@@ -167,7 +167,8 @@ class UploadAvatarView(View):
 class GetInfoView(View):
     def get(self, request):
         item_num_one_page = 5
-        page_num = request.GET.get('house_id', None)
+        page_num = request.GET.get('pag_num', None)
+        print(page_num)
         if page_num is None:
             page_num = 1
         else:

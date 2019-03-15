@@ -92,7 +92,7 @@
 				favor_info: [],
 				//分页实现内容
 				total: 0, // 记录总条数
-				display: 15, // 每页显示条数
+				display: 5, // 每页显示条数
 				current: 1, // 当前的页数
 			};
 
@@ -129,7 +129,7 @@
 							temp["img_url"] = favor[i].img_url
 							temp["star_count"] = favor[i].star_count
 							this.favor_info.push(temp)
-							this.total = 4
+							this.total = response.data.total_item_num
 						}
 					} else {
 						iView.Message.info(response.data.msg)

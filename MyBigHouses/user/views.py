@@ -188,7 +188,8 @@ class GetInfoView(View):
         user_key = "user_{}".format(user_id)
         collection_infos = list()
         collection_list = conn.lrange(user_key, 0, -1)[::-1]
-        total_page_num = floor(len(collection_list)/item_num_one_page)
+        total_item_num = len(collection_list)
+        total_page_num = floor(total_item_num/item_num_one_page)
         collection_list = collection_list[(page_num-1)*item_num_one_page:
                                           page_num*item_num_one_page]
         collection_list = [item.decode() for item in collection_list]
@@ -215,7 +216,8 @@ class GetInfoView(View):
 
         img_url = user.avatar.url
         return JsonResponse({"code": 0, "img_url": img_url, "data": collection_infos,
-                             'page_num':page_num, 'total_page_num': total_page_num})
+                             'page_num': page_num, 'total_page_num': total_page_num,
+                             'total_item_num': total_item_num})
 
 
 # url: /user/star?house_id=xxxx

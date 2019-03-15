@@ -105,7 +105,9 @@
 		},
 		methods: {
 			getList() {
-				let url = global_.IpUrl + '/user/get_info?pag_num=' + this.current
+				this.favor_info = []
+				console.log(this.current)
+				let url = global_.IpUrl + '/user/get_info/?pag_num=' + this.current
 				this.$ajax({
 					url: url,
 					method: 'get',
@@ -129,7 +131,9 @@
 							temp["img_url"] = favor[i].img_url
 							temp["star_count"] = favor[i].star_count
 							this.favor_info.push(temp)
+							console.log(response.data.total_item_num)
 							this.total = response.data.total_item_num
+							
 						}
 					} else {
 						iView.Message.info(response.data.msg)

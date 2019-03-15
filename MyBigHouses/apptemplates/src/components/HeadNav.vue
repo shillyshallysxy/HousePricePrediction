@@ -68,6 +68,32 @@
 			show() {
 				alert(this.isLogin)
 			},
+      get_ip_city(){
+				this.$ajax({
+					methods: 'get',
+					dataType: 'JSONP',
+					url: "http://api.map.baidu.com/location/ip?ak=zDGd0AGNoHiQRg40IEED6bIGlQEgXd8K&coor=bd09ll&callback=showLocation",
+					jsonp: 'callback',
+					jsonpCallback: "callback",
+					
+				}).then(function(response){
+					if(response.data.status == 0){
+						console.log(response.data.content)
+						var area = {}
+						area["province"] = response.data.content.address_detail.province
+						area["city"] = response.data.content.address_detail.city
+						area["area"] = ''
+						area["street"] = ''
+						area["province_eng"] = "jiangsu"
+						area["city_eng"] = "suzhou"
+						area["area_eng"] = ''
+						area["street_eng"] = ''
+						store.commit('change_AreaInfo', area)
+					}else{
+						iView.message.info("error code:"+response.data.status)
+					}
+				}.bind(this))
+			},
 			loginout() {
 				store.commit('change_LoginOut')
 				delCookie("username")

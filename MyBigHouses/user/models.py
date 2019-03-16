@@ -8,7 +8,7 @@ import hashlib
 
 
 def user_path_url(instance, filename):
-    filename = '{}.{}'.format(hashlib.md5(filename.encode('utf-8')).hexdigest(), filename.rpartition('.')[2])
+    filename = '{}.{}'.format(hashlib.md5("{}_{}".format(instance.id, "avatar").encode('utf-8')).hexdigest(), filename.rpartition('.')[2])
     path = "avatars/user_{0}/{1}".format(instance.id, filename)
     if os.path.exists(os.path.join(settings.MEDIA_ROOT, path)):
         os.remove(os.path.join(settings.MEDIA_ROOT, path))

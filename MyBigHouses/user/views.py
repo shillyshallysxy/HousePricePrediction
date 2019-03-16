@@ -167,7 +167,8 @@ class UploadAvatarView(View):
 class GetInfoView(View):
     def get(self, request):
         item_num_one_page = 5
-        page_num = request.GET.get('house_id', None)
+        page_num = request.GET.get('pag_num', None)
+        print(page_num)
         if page_num is None:
             page_num = 1
         else:
@@ -188,7 +189,8 @@ class GetInfoView(View):
         user_key = "user_{}".format(user_id)
         collection_infos = list()
         collection_list = conn.lrange(user_key, 0, -1)[::-1]
-        total_page_num = floor(len(collection_list)/item_num_one_page)
+        total_item_num = len(collection_list)
+        total_page_num = floor(total_item_num/item_num_one_page)
         collection_list = collection_list[(page_num-1)*item_num_one_page:
                                           page_num*item_num_one_page]
         collection_list = [item.decode() for item in collection_list]
@@ -215,7 +217,8 @@ class GetInfoView(View):
 
         img_url = user.avatar.url
         return JsonResponse({"code": 0, "img_url": img_url, "data": collection_infos,
-                             'page_num':page_num, 'total_page_num': total_page_num})
+                             'page_num': page_num, 'total_page_num': total_page_num,
+                             'total_item_num': total_item_num})
 
 
 # url: /user/star?house_id=xxxx

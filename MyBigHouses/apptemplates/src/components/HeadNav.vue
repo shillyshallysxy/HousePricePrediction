@@ -14,7 +14,7 @@
 			<el-menu-item style="margin-left: 20%;color: black;font-size: 18px;" index="/">主页</el-menu-item>
 			<el-menu-item index="/price_condition" style="color: black;font-size: 18px;">房价</el-menu-item>
 			<el-menu-item style="color: black;font-size: 18px;"  index="/PricePredict">预测</el-menu-item>
-			<el-menu-item style="color: black;font-size: 18px;" index="/SelectHouse">挑房</el-menu-item>
+			<el-menu-item style="color: black;font-size: 18px;" index="/HouseChoosing">挑房</el-menu-item>
 
 			<el-menu-item style="float: right;color: black;" index="/register" v-if="!isLogin">注册</el-menu-item>
 			<el-menu-item index="/login" style="float: right;color: black;" v-if="!isLogin">
@@ -67,6 +67,32 @@
 		methods: {
 			show() {
 				alert(this.isLogin)
+			},
+      get_ip_city(){
+				this.$ajax({
+					methods: 'get',
+					dataType: 'JSONP',
+					url: "http://api.map.baidu.com/location/ip?ak=zDGd0AGNoHiQRg40IEED6bIGlQEgXd8K&coor=bd09ll&callback=showLocation",
+					jsonp: 'callback',
+					jsonpCallback: "callback",
+					
+				}).then(function(response){
+					if(response.data.status == 0){
+						console.log(response.data.content)
+						var area = {}
+						area["province"] = response.data.content.address_detail.province
+						area["city"] = response.data.content.address_detail.city
+						area["area"] = ''
+						area["street"] = ''
+						area["province_eng"] = "jiangsu"
+						area["city_eng"] = "suzhou"
+						area["area_eng"] = ''
+						area["street_eng"] = ''
+						store.commit('change_AreaInfo', area)
+					}else{
+						iView.message.info("error code:"+response.data.status)
+					}
+				}.bind(this))
 			},
 			loginout() {
 				store.commit('change_LoginOut')

@@ -27,6 +27,13 @@ class House(models.Model):
     orientation = models.CharField(max_length=20, null=True,default="暂无朝向信息" ,verbose_name="朝向")
     source_url = models.CharField(max_length=100, null=True, default="暂无来源", verbose_name="数据源")
 
+    pic_url = models.URLField(max_length=100, null=True, verbose_name="图片URL")
+    agent_name = models.CharField(max_length=5, null=True, verbose_name="经纪人")
+    agent_contact = models.CharField(max_length=20, null=True, verbose_name="经纪人联系方式")
+    layout_img_url = models.URLField(max_length=100, null=True, verbose_name="户型图片URL")
+    detail = models.CharField(max_length=300, null=True, verbose_name="详细信息")
+    visit_frequency = models.CharField(max_length=50, null=True, verbose_name="看房频率")
+
     class Meta:
         db_table = "House"
         verbose_name = "住房"

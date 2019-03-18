@@ -4,110 +4,39 @@
 			<div class="Content">
 				<div class="bar">
 					<div class="bar_1">
-						<el-col :span="12">
-							<span class="demonstration">总价:</span>
-							<el-dropdown trigger="click">
-								<span class="el-dropdown-link">
-									选择价格<i class="el-icon-arrow-down el-icon--right"></i>
-								</span>
-								<el-dropdown-menu slot="dropdown">
-									<el-dropdown-item icon="el-icon-plus">0～60万</el-dropdown-item>
-									<el-dropdown-item icon="el-icon-circle-plus">60～100万</el-dropdown-item>
-									<el-dropdown-item icon="el-icon-circle-plus-outline">100～150万</el-dropdown-item>
-									<el-dropdown-item icon="el-icon-check">150～200万</el-dropdown-item>
-									<el-dropdown-item icon="el-icon-circle-check-outline">200～300万</el-dropdown-item>
-									<el-dropdown-item icon="el-icon-circle-check-outline">300～500万</el-dropdown-item>
-									<el-dropdown-item icon="el-icon-circle-check-outline">500万以上</el-dropdown-item>
-								</el-dropdown-menu>
-							</el-dropdown>
-						</el-col>
+						<el-popover placement="bottom" width="200" trigger="click" v-model='price_value'>
+							<el-table :data="price_data" @row-click="show_price_select">
+								<el-table-column width="150" property="price" ></el-table-column>
+							</el-table>
+							<el-button slot="reference" id="show_area" class="bar_1_1">{{price}}</el-button>
+						</el-popover>
 					</div>
 					<div class="bar_1">
-						<div class="bar_1_1" id="show_area">
+						<!-- <div class="bar_1_1" id="show_area">
 							<p style="margin-top: 32px;">面积：90-120平</p>
-						</div>
-						<div class="bar_1_2" id="area_detail">
-							<div class="menu_price">
-								<div class="price_radio" style="font-size: 15px;font-weight: 600;text-align: center;">
-									选择面积：
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio1" label="area_buxian">面积不限</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio1" label="area1" class="price_radio">0～50平</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio1" label="area2" class="price_radio">50～70平</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio1" label="area3" class="price_radio">70～90平</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio1" label="area4" class="price_radio">90～120平</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio1" label="area5" class="price_radio">120～150平</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio1" label="area6" class="price_radio">150～200平</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio1" label="area7" class="price_radio">200平以上</el-radio>
-								</div>
-							</div>
-							<div class="line"></div>
-							<div class="zdy_price">
-								<p class="zdy_text">自定义：</p>
-								<input class="zdy_input"></el-input>
-								<p class="zdy_text" style="margin-left: 5px;margin-right: 5px;"> ~ </p>
-								<input class="zdy_input"></el-input>
-								<button class="zdy_button">确定</button>
-							</div>
-
-						</div>
+						</div> -->
+						<el-popover placement="bottom" width="200" trigger="click" v-model='area_value'>
+							<el-table :data="area_data" @row-click="show_area_select">
+								<el-table-column width="150" property="area" ></el-table-column>
+							</el-table>
+							<el-button slot="reference" id="show_area" class="bar_1_1">{{area}}</el-button>
+						</el-popover>
 					</div>
 					<div class="bar_1">
-						<div class="bar_1_1" id="show_apartment">
-							<p style="margin-top: 32px;">户型：两室</p>
-						</div>
-						<div class="bar_1_2" id="apartment_detail" style="height: 135px;width: 350px;">
-							<div class="menu_price">
-								<div class="price_radio" style="font-size: 15px;font-weight: 600;text-align: center;">
-									选择面积：
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio2" label="apartment_buxian">居室不限</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio2" label="apartment1" class="price_radio">一室</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio2" label="apartment2" class="price_radio">两室</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio2" label="apartment3" class="price_radio">三室</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio2" label="apartment4" class="price_radio">四室</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio2" label="apartment5" class="price_radio">五室</el-radio>
-								</div>
-								<div class="price_radio">
-									<el-radio v-model="radio2" label="apartment6" class="price_radio">五室以上</el-radio>
-								</div>
-							</div>
-						</div>
-
+						<el-popover placement="bottom" width="200" trigger="click" v-model='house_value'>
+							<el-table :data="house_data" @row-click="show_house_select">
+								<el-table-column width="150" property="house" ></el-table-column>
+							</el-table>
+							<el-button slot="reference" id="show_area" class="bar_1_1">{{house}}</el-button>
+						</el-popover>
 					</div>
 					<div class="bar_1">
-						<div class="bar_1_1" id="show_region">
-							<p style="margin-top: 32px;">楼层：高楼层</p>
-						</div>
-						<div class="bar_1_2" id="region_detail" style="height: 135px;width: 350px;">
-							<!--动态添加区域-->
-						</div>
+						<el-popover placement="bottom" width="200" trigger="click" v-model='region_value'>
+							<el-table :data="region_data" @row-click="show_region_select">
+								<el-table-column width="150" property="region" ></el-table-column>
+							</el-table>
+							<el-button slot="reference" id="show_area" class="bar_1_1">{{region}}</el-button>
+						</el-popover>
 					</div>
 					<div class="bar_2">
 						<p class="bar_2_1">标签：</p>
@@ -186,49 +115,119 @@
 </template>
 
 <script>
-	window.onload = function() {
-
-
-		document.getElementById("show_area").onclick = function() {
-			document.getElementById("area_detail").style.display = ((document.getElementById("area_detail").style.display ==
-				'none') ? 'block' : 'none');
-			document.getElementById("price_detail").style.display = "none";
-			document.getElementById("apartment_detail").style.display = "none";
-			document.getElementById("region_detail").style.display = "none";
-		}
-
-		document.getElementById("show_apartment").onclick = function() {
-			document.getElementById("apartment_detail").style.display = ((document.getElementById("apartment_detail").style.display ==
-				'none') ? 'block' : 'none');
-			document.getElementById("area_detail").style.display = "none";
-			document.getElementById("price_detail").style.display = "none";
-			document.getElementById("region_detail").style.display = "none";
-		}
-
-		document.getElementById("show_region").onclick = function() {
-			document.getElementById("region_detail").style.display = ((document.getElementById("region_detail").style.display ==
-				'none') ? 'block' : 'none');
-			document.getElementById("area_detail").style.display = "none";
-			document.getElementById("apartment_detail").style.display = "none";
-			document.getElementById("price_detail").style.display = "none";
-		}
-
-	}
+	import global_ from '@/components/Global'
+	import store from '@/store'
 	export default {
 		data() {
 			return {
 				radio: '1',
 				radio1: '1',
-				radio2: '1'
+				radio2: '1',
+				area_value: false,
+				area: '选择面积',
+				area_data: [{
+						area: '不限',
+					}, {
+						area: '0～50平',
+					},
+					{
+						area: '50～70平',
+					}, {
+						area: '70～90平',
+					}, {
+						area: '90～120平',
+					}, {
+						area: '120～150平',
+					}, {
+						area: '150～200平',
+					}, {
+						area: '200平以上',
+					}
+				],
+				price_value: false,
+				price: '选择价格',
+				price_data: [{
+						price: '不限',
+					}, {
+						price: '0～60w'
+					}, {
+						price: '60～100w'
+					}, {
+						price: '100～150w'
+					}, {
+						price: '150～200w'
+					}, {
+						price: '200～300w'
+					}, {
+						price: '300～500w'
+					}, {
+						price: '500w以上'
+					}
+				],
+				house_value: false,
+				house:"选择户型",
+				house_data:[{
+					house:'居室不限'
+				},{
+					house:'一室'
+				},{
+					house:'两室'
+				},{
+					house:'三室'
+				},{
+					house:'四室'
+				},{
+					house:'五室'
+				},{
+					house:'五室以上'
+				}],
+				region_value: false,
+				region: "选择地区",
+				region_data:[],
 			};
 		},
+		mounted() {
+			this.set_region()
+		},
 		methods: {
-			show_price() {
-				document.getElementById("price_detail").style.display = ((document.getElementById("price_detail").style.display ==
-					'none') ? 'block' : 'none');
-				document.getElementById("area_detail").style.display = "none";
-				document.getElementById("apartment_detail").style.display = "none";
-				document.getElementById("region_detail").style.display = "none";
+			set_region(){
+				let temp_region = this.get_region
+				for(var i=0;i<temp_region.length;i++){
+					var temp={}
+					temp['region'] = temp_region[i]
+					this.region_data.push(temp)
+				}
+				
+			},
+			show_area_select(row) {
+				this.area = row.area
+				this.area_value = false
+			},
+			show_price_select(row){
+				this.price = row.price
+				this.price_value = false
+			},
+			show_house_select(row){
+				this.house = row.house
+				this.house_value = false
+			},
+			show_region_select(row){
+				this.region = row.region
+				this.region_value = false
+			}
+		},
+		computed:{
+			get_region(){
+				var temp_region = this.get_city
+				var arr = this.get_city.split('')
+				if(arr[arr.length-1]=="市"){
+					arr.splice(arr.length-1,1)
+					temp_region = arr.join('')
+				}
+				return global_.city_region_mapping[temp_region]
+			},
+			get_city(){
+				return store.state.area.city
 			}
 		}
 	}

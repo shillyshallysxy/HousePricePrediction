@@ -10,7 +10,9 @@
 			          </el-form-item>
 
 			           <el-form-item prop="userpassword">
-				           <el-input v-model="ruleForm.userpassword" v-bind:class="{text_input: true}" placeholder="请输入密码"></el-input>
+
+				           <el-input v-model="ruleForm.userpassword" v-bind:class="{text_input: true}" type="password" placeholder="请输入密码"></el-input>
+
 			           </el-form-item>
 
 			          <el-form-item style="width: 100px; text-align: left; margin-left: 10px;margin-top: -10px;">
@@ -35,6 +37,7 @@
 <script>
 	import store from '@/store'
 	import iView from 'iview';
+	import global_ from '@/components/Global'
 	import {
 		getCookie,
 		setCookie,
@@ -83,17 +86,18 @@
 		mounted() {
 			this.$ajax({
 				method: 'get',
-				url: 'http://127.0.0.1:8000/user/login/',
+				url: global_.IpUrl+'/user/login/',
 			})
 		},
 		methods: {
 			submitForm(formName) {
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
+						console.log(global_.IpUrl)
 						var arr = getCookie('csrftoken')
 						this.$ajax({
 							method: 'post',
-							url: 'http://127.0.0.1:8000/user/login/',
+							url: global_.IpUrl+'/user/login/',
 							data: {
 								username: this.ruleForm.username,
 								password: this.ruleForm.userpassword,
@@ -118,7 +122,7 @@
 								//window.localStorage.setItem("Flag", "isLogin")
 								setTimeout(this.go, 1000);
 							} else {
-								alert(response.data.msg)
+								iView.Message.info(response.data.msg)
 							}
 						}.bind(this))
 					} else {

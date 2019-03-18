@@ -9,8 +9,11 @@ import axios from 'axios'
 import VueHighCharts from 'vue-highcharts'
 import Highcharts from 'highcharts'
 import store from '@/store'
+import BMap from 'BMap';
 import iView from 'iview';
 import 'iview/dist/styles/iview.css'
+import global_ from './components/Global'//引用文件
+
 import {
 		getCookie,
 		setCookie,
@@ -19,11 +22,14 @@ import {
 //import {Message} from 'iview'
 
 /* 使用element-ui插件 */
+Vue.use(iView) 
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 Vue.prototype.$ajax = axios
 //Vue.prototype.$Message = Message
 Vue.use(VueHighCharts,{Highcharts})
+//挂载ip全局变量
+Vue.prototype.GLOBAL = global_//挂载到Vue实例上面
 /*
 main.js的文件调用顺序：
 （1）确定将被挂载的元素  el:'#app'
@@ -45,6 +51,7 @@ router.beforeEach((to, from ,next) =>{
 	let city_eng = localStorage.getItem("city_eng")
 	let area_eng = localStorage.getItem("area_eng")
 	let street_eng = localStorage.getItem("street_eng")
+
 	if(province!=null){
 		store.state.area.province = province
 		store.state.area.city = city
@@ -54,12 +61,20 @@ router.beforeEach((to, from ,next) =>{
 		store.state.area_eng.city = city_eng
 		store.state.area_eng.area = area_eng
 		store.state.area_eng.street = street_eng
+		
 
+	}else{
+		var location = getCurrentCity()
+		console.log("there is "+location[0])
 	}
   if(flag==='isLogin'){
-    store.state.isLogin = true
-    store.state.UserInfo.username = username
-    next()
+		if(to.path == '/register'){
+			next('/')
+		}else{
+			store.state.isLogin = true
+			store.state.UserInfo.username = username
+			next()
+		}   
   }else{
     store.state.isLogin =false
     if(to.meta.requireLogin){
@@ -72,6 +87,26 @@ router.beforeEach((to, from ,next) =>{
 
 })
 
+function getCurrentCity() {    //定义获取城市方法
+  const geolocation = new BMap.Geolocation();
+  let self = this
+	let city
+	let province
+  geolocation.getCurrentPosition(function getinfo(position) {
+		city = position.address.city;             //获取城市信息
+		province = position.address.province;    //获取省份信息
+		console.log(city+":"+province)
+// 		store.state.area.city = city
+// 		store.state.area.province = province
+    // sessionStorage.setItem('currentCity', city.substr(0, city.length - 1))
+  }, function (e) {
+  }, {provider: 'baidu'});
+	let location= []
+	location.push(city)
+	location.push(province)
+	return location
+};
+
 /* eslint-disable no-new */
 new Vue({
   /* 为实例提供挂载的文件*/
@@ -81,7 +116,10 @@ new Vue({
   /* 注册哪些组件，需在顶部引入文件*/
   components: { App },
   /* 替换挂载元素的模版组件*/
-  template: '<App/>'
+  template: '<App/>',
+// 	mounted() {
+// 		getCurrentCity()
+// 	}
 })
 
 

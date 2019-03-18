@@ -3,9 +3,13 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import MainPage from '@/components/MainPage'
 import Register from '@/components/Register'
-import PriceDemo from '@/components/PriceDemo'
+import PriceCharts from '@/components/PriceCharts'
 import AreaSelect from '@/components/AreaSelect'
 import UserInfo from '@/components/UserInfo'
+import SelectHouse from '@/components/SelectHouse'
+import ItemPage from '@/components/ItemPage'
+import PricePredict from '@/components/PricePredict'
+import HouseChoosing from '@/components/HouseChoosing'
 Vue.use(Router)
 
 export default new Router({
@@ -37,8 +41,8 @@ export default new Router({
     },
 		{
 			path: '/price_condition',
-			name: 'PriceDemo',
-			component: PriceDemo,
+			name: 'PriceCharts',
+			component: PriceCharts,
 			meta:{
         requireLogin: true
       }
@@ -57,6 +61,38 @@ export default new Router({
 			component: UserInfo,
 			meta:{
 				requireLogin: true
+			}
+		},
+		{
+			path: '/SelectHouse',
+			name: 'SelectHouse',
+			component: SelectHouse,
+			meta:{
+				requireLogin: false
+			}
+		},
+		{
+			path: '/ItemPage',
+			name: 'ItemPage',
+			component: ItemPage,
+			meta:{
+				requireLogin: false
+			}
+		},
+		{
+			path: '/PricePredict',
+			name: 'PricePredict',
+			component: PricePredict,
+			meta:{
+				requireLogin:false
+			}
+		},
+		{
+			path: '/HouseChoosing',
+			name: 'HouseChoosing',
+			component: HouseChoosing,
+			meta: {
+				requireLogin:false
 			}
 		}
 		

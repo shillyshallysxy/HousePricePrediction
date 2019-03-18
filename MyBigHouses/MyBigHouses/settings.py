@@ -197,6 +197,10 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
+    },
+    "User&House": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://42.159.122.43:6380/1",
     }
 }
 
@@ -205,4 +209,8 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = 'default'
 
 # 配置静态资源目录
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/images")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media", "images")
+MEDIA_URL = "media/images/"
+
+# 房源列表每页数目
+LIST_PAGE_ITEMS = 15

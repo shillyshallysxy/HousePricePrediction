@@ -4,7 +4,6 @@
     <HeadNav></HeadNav>
     </header>
     <div style="width:100%;text-align: center;margin:0 auto">
-
     <router-view/>
     </div>
     <footer style="margin-top: -200;">
@@ -24,7 +23,24 @@ export default {
     HeadNav,
 		FootNav
   },
-	
+	provide(){
+		return{
+			reload: this.reload
+		}
+	},
+	data(){
+		return{
+			isRouterAlive: true
+		}
+	},
+	methods:{
+		reload(){
+			this.isRouterAlive = false
+			this.$nextTick(function(){
+				this.isRouterAlive = true
+			})
+		}
+	},
   name: 'App'
 }
 

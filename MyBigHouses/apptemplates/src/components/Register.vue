@@ -2,6 +2,7 @@
   <div v-bind:class="{body: true}">
 	  <div v-bind:class="{background: true}">
     	<div v-bind:class="{register_window: true}">
+			
     			<img src="../assets/user.png" style="height: 30px; width: 30px;" />
       		<div style="margin-top: 10px; max-height: 260px;min-height: 260px;max-width: 250px;min-width: 250px;padding-left: 10px;">
       			  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -12,10 +13,10 @@
 				          <el-input v-model="ruleForm.username" v-bind:class="{text_input: true}" placeholder="username"></el-input>
 			          </el-form-item>
 			          <el-form-item prop="password">
-				          <el-input type="password" v-model="ruleForm.password" autocomplete="off" v-bind:class="{text_input: true}" placeholder="password"></el-input>
+				          <el-input v-model="ruleForm.password" autocomplete="off" type="password" v-bind:class="{text_input: true}" placeholder="password"></el-input>
 			          </el-form-item>
 			          <el-form-item prop="confirm_password">
-				          <el-input type="password" v-model="ruleForm.confirm_password" autocomplete="off" placeholder="confirm password" v-bind:class="{text_input: true}"></el-input>
+				          <el-input v-model="ruleForm.confirm_password" autocomplete="off" type="password" placeholder="confirm password" v-bind:class="{text_input: true}"></el-input>
 			          </el-form-item>
 			            <el-button type="primary" @click="submitForm('ruleForm')" v-bind:class="{button: true, register_btn:true}">注册</el-button></br>
 			          <el-form-item style="width: 200px; margin-left:70px; text-align: right;">
@@ -30,6 +31,8 @@
 
 <script>
 	import store from '@/store'
+	import global_ from '@/components/Global'
+	import iView from 'iview';
 	export default {
 		data() {
 			var validatePass = (rule, value, callback) => {
@@ -101,7 +104,7 @@
 						var arr = this.getCookie('csrftoken')
 						this.$ajax({
 							method: 'post',
-							url: 'http://127.0.0.1:8000/user/register/',
+							url: global_.IpUrl + '/user/register/',
 							data: {
 								username: this.ruleForm.username,
 								password: this.ruleForm.password,
@@ -114,10 +117,10 @@
 								'X-CSRFToken': arr
 							}
 						}).then(function(response) {
-
 							if (response.data.code === 0) {
+								iView.Message.info('注册成功,请至邮箱激活您的账号')
 							} else {
-							    alert(response.data.msg);
+								iView.Message.info(response.data.msg)
 							}
 						})
 					} else {

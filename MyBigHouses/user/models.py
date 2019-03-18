@@ -1,11 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+import os
+from django.conf import settings
+import hashlib
 
 # Create your models here.
 
 
 def user_path_url(instance, filename):
-    return "avatars/user_{0}/{1}".format(instance.id, filename)
+    filename = '{}.{}'.format(hashlib.md5("{}_{}".format(instance.id, "avatar").encode('utf-8')).hexdigest(), filename.rpartition('.')[2])
+    path = "avatars/user_{0}/{1}".format(instance.id, filename)
+    if os.path.exists(os.path.join(settings.MEDIA_ROOT, path)):
+        os.remove(os.path.join(settings.MEDIA_ROOT, path))
+    return path
 
 
 class User(AbstractBaseUser, PermissionsMixin):

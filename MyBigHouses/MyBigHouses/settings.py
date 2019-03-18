@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 全文搜索框架
+    'haystack',
     # 注册 user app
     'user',
     # 注册 house app
@@ -214,3 +216,14 @@ MEDIA_URL = "media/images/"
 
 # 房源列表每页数目
 LIST_PAGE_ITEMS = 15
+
+# haystack 配置
+HAYSTACK_CONNECTIONSS = {
+    'default':{
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index')
+    }
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10  # 搜索结果每页显示个数

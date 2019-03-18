@@ -179,6 +179,7 @@
 				})
 			},
 			get_city() {
+				console.log("获取了城市")
 				return store.state.area_eng.city
 			},
 			get_mainpage_info() {

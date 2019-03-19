@@ -27,7 +27,7 @@
 						<img :src="o.img_url" class="item_img" />
 
 						<div class="block">
-							<p style="font-size: 18px;font-weight: 500;">
+							<p style="font-size: 18px;font-weight: 500;cursor: pointer;" @click="go_to_detail(o.id)">
 								{{o.description}}
 							</p>
 							<p class="desCollect">
@@ -36,7 +36,7 @@
 								{{o.developer}}
 							</p>
 							<div class="cancelCollect">
-								<p style="font-size: 12px;font-weight: 300;margin-left: 10px;">
+								<p style="font-size: 12px;font-weight: 300;margin-left: 10px; cursor: pointer;" @click="cancel_favour(o.id)">
 									取消收藏
 								</p>
 							</div>
@@ -178,6 +178,17 @@
 				}
 				return isJPG && isLt2M;
 			},
+			cancel_favour(id){
+				console.log(id)
+			},
+			go_to_detail(id){
+				this.$router.push({
+					path: 'ItemPage',
+					query: {
+						HouseId: id
+					}
+				})
+			}
 
 		}
 	}

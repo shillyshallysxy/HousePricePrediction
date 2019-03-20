@@ -306,13 +306,20 @@ class HouseDetailView(View):
 class HouseListView(View):
     '''房源列表接口'''
 
+    def __init__(self):
+        with open("./house/city_mapping_e2c.pkl", "rb") as f:
+            self.city_mapping = pickle.load(f)
+
     def get(self, request, city_name):
-        decoded_location = base64.b64decode(city_name).decode()
+        decoded_location = self.city_mapping.get(city_name, None)
+        # decoded_location = base64.b64decode(city_name).decode()
         try:
-            house_list = House.objects.filter(city=decoded_location)
+            house_list = House.objects.filter(Q(city=decoded_location) & ~Q(price=0))
         except:
             return JsonResponse({"code": 1, "msg": "城市信息有误"})
-        page_num = request.GET.get('house_id', None)
+        page_num = request.GET.get('page_num', None)
+        print(page_num)
+        total_item_num = len(house_list)
         if page_num is None:
             page_num = 1
         else:
@@ -347,5 +354,5 @@ class HouseListView(View):
             house_info["img_url"] = "static/images/2.jpg"
             house_info["star_count"] = star_count
             collection_infos.append(house_info)
-
-        return JsonResponse({"code": 0, "data": collection_infos})
+        print(collection_infos)
+        return JsonResponse({"code": 0, "data": collection_infos, "total_item_num": total_item_num})

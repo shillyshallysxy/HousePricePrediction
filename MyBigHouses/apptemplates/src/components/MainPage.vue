@@ -1,29 +1,44 @@
 <template>
-	<div v-bind:class="{body: true}" style="min-width: 1050px;">
-		<div v-bind:class="{background: true}">
-			<div v-bind:class="{price: true}">
-				<div v-bind:class="{city:true}">
-					<h2 style="font-family: 黑体;color: black;text-align: center;">
+	<div class="body" style="min-width: 1050px;">		
+		
+		<div class="swiper-container">
+			<div class="topic_line">
+				<p style="font-size: 36px;color: white;font-weight: 500;font-family: arial;">
+					House only for you.
+				</p>				
+			</div>
+			<div class="search_line">
+				<div class="search_block">
+					<el-input v-model="search" clearable></el-input>
+				</div>
+				<button class="search_button">搜索</button>
+			</div>
+			<div class="price">
+				<div class="city">
+					<h1 style="font-family: 黑体;color: black;text-align: center;font-size: 32px;">
 						{{city_name_cn}}
-						<!--todo这里的city后台传值进来-->
-					</h2>
-					<div>
-						<h4 style="font-family:times new roman;color: black;text-align: center;">
-							{{city_name_en}}
-							<!--todo这里的city后台传值进来-->
-						</h4>
-						<div style="margin-top: 5px;text-align: center;font-size: 5px;">
-							<h1 style="font-family:times new roman;color: black;text-align: center;">
-								均价:{{average_price}}w
-								<!--todo这里的价格后台传值进来-->
-							</h1>
-							<h4 style="font-family: 黑体;color: black;text-align: center;">
-								来源最近15天数据
-							</h4>
-						</div>
-					</div>
+					</h1>
+					<h3 style="font-family:times new roman;color: black;text-align: center;font-size: 18px;">
+						{{city_name_en}}
+					</h3>
+				</div>
+				<div class="price_body">
+					<h1 style="font-family:times new roman;color: black;text-align: center;font-size: 32px;">
+						均价:{{average_price}}w
+					</h1>
+				</div>
+				<div style="margin-top: 20px;">
+					<h4 style="font-family: 黑体;color: black;text-align: center;">
+						来源最近15天数据
+					</h4>
 				</div>
 			</div>
+			<div class="swiper-wrapper">
+		        <div class="swiper-slide" v-for="item in listImg">
+		        	<img :src="item.url"/>
+		        </div>
+		    </div>	
+		    <div class="swiper-pagination swiper-pagination-white"></div>
 		</div>
 
 		<!--bar代码-->
@@ -69,13 +84,21 @@
 						<el-col :span="8" v-for="(o, index) in ShowHouse" :key="o.id" :offset="index > 0 ? 2 : 0" style="margin-bottom: 2.5rem;margin-left:46px ;width: 182px;height: 250px;">
 							<el-card :body-style="{ padding: '0px', height:'250px'}" style="width: 180px;">
 								<img :src="o.pic_src" class="image">
-								<div style="padding: 14px;">
-									<p v-bind:class="{erShouName: true}" style="color: #009688;margin-top:10px">{{o.name}}</p>
-									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px;height: 36px;">{{o.detail}}</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 0px;">{{o.area}}平米</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;">{{o.price}}万</p>
-									<el-button type="text" class="button" style="margin-top: 10px;padding: 0; float: right;" data-index="o.id"
-									 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
+								<div style="padding-top: 10px;padding-left: 20px;padding-right: 20px;">
+									<div style="width: 140px;height: 20px;">
+										<p class="erShouName" style="color: #009688;">{{o.name}}</p>
+									</div>
+									<div style="width: 120px;margin-left: 10px;height: 40px;">
+										<p class="erShouName" style="color: darkgray;margin-top:5px;font-size: 12px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 2;overflow: hidden;">{{o.detail}}</p>
+									</div>
+									<div style="width: 140px;height: 20px;float: left;">
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;">{{o.area}}平米</p>
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
+									</div>
+									<div style="width: 140px;float: right;">
+										<el-button type="text" class="button" style="margin-top: 5px;padding: 0; float: right;" data-index="o.id"
+										 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
+									</div>
 								</div>
 							</el-card>
 						</el-col>
@@ -91,11 +114,17 @@
 						<el-col :span="8" v-for="(o, index) in ShowHouse2" :key="o.id" :offset="index > 0 ? 2 : 0" style="margin-bottom: 2.5rem;margin-left:46px ;width: 182px;height: 250px;">
 							<el-card :body-style="{ padding: '0px', height:'250px'}" style="width: 180px;">
 								<img :src="o.pic_src" class="image">
-								<div style="padding: 14px;">
-									<p v-bind:class="{erShouName: true}" style="color: #009688;margin-top:10px">{{o.name}}</p>
-									<p v-bind:class="{erShouName: true}" style="color: darkgray;margin-top:5px;height: 36px;">{{o.detail}}</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;left: 0px;">{{o.area}}平米</p>
-									<p style="display: inline-block;font-size: 15px;font-weight: 500;color: red;">{{o.price}}万</p>
+								<div style="padding-top: 10px;padding-left: 20px;padding-right: 20px;">
+									<div style="width: 140px;height: 20px;">
+										<p class="erShouName" style="color: #009688;">{{o.name}}</p>
+									</div>
+									<div style="width: 120px;margin-left: 10px;height: 40px;">
+										<p class="erShouName" style="color: darkgray;margin-top:5px;font-size: 12px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 2;overflow: hidden;">{{o.detail}}</p>
+									</div>
+									<div style="width: 140px;height: 20px;float: left;">
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;">{{o.area}}平米</p>
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
+									</div>
 									<el-button type="text" class="button" style="margin-top: 10px;padding: 0; float: right;" @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 								</div>
 							</el-card>
@@ -123,6 +152,8 @@
 	import store from '@/store'
 	import global_ from '@/components/Global'
 	import iView from 'iview'
+	import Swiper from 'swiper';
+	import 'swiper/dist/css/swiper.min.css';
 	export default {
 		data() {
 			return {
@@ -130,7 +161,14 @@
 				city_name_en: 'SuZhou',
 				average_price: '1.64',
 				ShowHouse: [],
-				ShowHouse2: []
+				ShowHouse2: [],
+				search: '',
+				//图片路径
+				listImg:[
+					{url:require('../../src/assets/main_bg.jpg')},
+					{url:'../../static/images/2.jpg'},
+					{url:require('../../src/assets/login_back.jpg')}	
+				]
 			}
 		},
 		mounted() {
@@ -167,7 +205,23 @@
 				}
 				
 			})
-
+			
+			console.log('mounted', this)
+			var mySwiper = new Swiper ('.swiper-container', {
+			    loop: true, 
+			    pagination: {
+			      el: '.swiper-pagination',
+			    },    
+			    // 如果需要前进后退按钮
+			    navigation: {
+			      nextEl: '.swiper-button-next',
+			      prevEl: '.swiper-button-prev',
+			    },
+			    autoplay: {
+			    disableOnInteraction: false,
+			  },
+				speed:800,
+			})  
 		},
 		methods: {
 			go_to_detail_page(id) {
@@ -201,7 +255,7 @@
 </script>
 
 <style scoped>
-	.body {
+.body {
 		height: 100%;
 		width: 100%;
 		padding: 0px;
@@ -209,39 +263,102 @@
 		display: block;
 		position: relative;
 		background-position-y: 0px
-	}
+}	
+.topic_line{
+	width: 500px;
+	height: 40px;
+	margin-left: 50px;
+	margin-top: 150px;
+	z-index: 1;
+	float: left;
+	z-index: 10;
+	position: absolute;
+}
+.swiper-container {
+	width: 100%; 
+	max-width: 1920px;
+	min-width: 1024px;
+	height: 700px;
+	position: relative;
+}
+.swiper-wrapper {width: 100%; height: 100%; }
+.swiper-slide { width: 100%;   height: 100%; z-index: 1;}
+.swiper-pagination-bullet { 
+	width:0.833rem;
+    height: 0.833rem;
+	display: inline-block;
+	background: #7c5e53;
+}  
+.swiper-slide img{
+	width: 100%;
+	height: 100%;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
 
-	.background {
-		width: 100%;
-		max-width: 1920px;
-		min-width: 1024px;
-		height: 700px;
-		background-image: url(../assets/main_bg.jpg);
-		background-repeat: no-repeat;
-		background-size: cover;
-	}
-
-	.price {
-		width: 200px;
-		height: 200px;
-		background-color: white;
-		margin-right: 150px;
-		margin-top: 200px;
-		float: right;
-		filter: alpha(Opacity=70);
-		-moz-opacity: 0.7;
-		opacity: 0.7;
-		z-index: 1;
-	}
-
-	.city {
-		width: 200px;
-		height: 150px;
+.background {
+	width: 100%;
+	max-width: 1920px;
+	min-width: 1024px;
+	height: 700px;
+	background-image: url(../assets/main_bg.jpg);
+	background-repeat: no-repeat;
+	background-size: cover;
+	padding-top: 1px;
+}
+.search_line{
+	width: 500px;
+	height: 40px;
+	margin-left: 100px;
+	margin-top: 300px;
+	float: left;
+	z-index: 10;
+	position: absolute;
+}
+.search_block{
+	width: 400px;
+	height: 40px;
+	opacity: 0.5;
+	display: block;
+	float: left;
+}
+.search_button{
+	width: 80px;
+	height: 40px;
+	margin-left: 10px;
+	background-color: darkred;
+	opacity: 0.7;
+	float: left;
+	display: block;
+	font-size: 16px;
+	color: white;
+	font-weight: 600;
+	border: 0;
+	border-radius: 5px;
+}
+.price {
+	width: 250px;
+	height: 250px;
+	background-color: white;
+	margin-top: 200px;
+	margin-left: 70%;
+	filter: alpha(Opacity=70);
+	-moz-opacity: 0.7;
+	opacity: 0.7;
+	z-index: 10;
+	position: absolute;
+}
+.city {
+		width: 250px;
+		height: 100px;
 		margin-top: 20px;
 		z-index: 2;
 		font-family: "黑体";
-	}
-
+	}	
+.price_body{
+	width: 250px;
+	height: 60px;
+}
 	.erShouFang {
 		width: 180px;
 		height: 240px;
@@ -254,11 +371,9 @@
 	}
 
 	.erShouName {
-		font-size: 12px;
-		font-family: "黑体";
+		font-size: 16px;
 		font-weight: 500;
 		text-align: left;
-		margin-left: 10px;
 	}
 
 	.time {

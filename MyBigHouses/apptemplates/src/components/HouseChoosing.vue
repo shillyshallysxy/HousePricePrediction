@@ -1,5 +1,5 @@
 <template>
-	<div class="body">
+	<div class="body"  v-loading.fullscreen.lock="fullscreenLoading">
 		<div class="choose_body">
 			<div class="Content">
 				<div class="bar">
@@ -41,7 +41,7 @@
 					<div class="bar_2">
 
 						<p class="bar_2_1">标签：</p>
-						<el-checkbox v-model="underground" label="近地铁" border class="bar_2_2"></el-checkbox>
+						<el-checkbox v-model="underground" label="近地铁" border class="bar_2_2" style=""></el-checkbox>
 						<el-checkbox v-model="five_year" label="满五年" border class="bar_2_2"></el-checkbox>
 						<el-checkbox v-model="decoration" label="精装修" border class="bar_2_2"></el-checkbox>
 						<el-checkbox v-model="price_low" label="总价低" border class="bar_2_2"></el-checkbox>
@@ -71,7 +71,7 @@
 						<el-checkbox v-model="checked3" label="备选项1" border class="bar_2_2"></el-checkbox>
 						<el-checkbox v-model="checked4" label="备选项2" border class="bar_2_2"></el-checkbox> -->
 						<div class="bar_2_4">
-							<p class="bar_2_5" style="margin-top: 6px;color: white;">
+							<p class="bar_2_5" style="margin-top: 6px;color: white;cursor: pointer;" @click="get_select_List">
 								筛选
 							</p>
 						</div>
@@ -131,7 +131,38 @@
 						</div>
 					</div>
 				</div>
-				<div class="list">
+				<div class="list_content">
+					<ul class="list">
+						<li class="collect" v-for="(o, index) in favor_info" key='o.id'>
+							<img :src="o.img_url" class="item_img" />
+					
+							<div class="block">
+								<p style="font-size: 18px;font-weight: 500;cursor: pointer;" @click="go_to_detail(o.id,index)">
+									{{o.description}}
+								</p>
+								<p class="desCollect">
+									{{o.layout}}，{{o.area}}平米，{{o.layer}}
+									{{o.garden}}，{{o.architecture}}，{{o.built_year}}
+									{{o.developer}}
+								</p>
+								
+					
+							</div>
+							<div class="item_right">
+								<p class="textColor">
+									{{o.total_price}}万
+								</p>
+								<p style="font-size: 12px;font-weight: 300;">
+									单价：{{o.price}}万
+								</p>
+								<p style="font-size: 12px;font-weight: 300;margin-top: 20px;">
+									{{o.star_count}}人已收藏
+								</p>
+							</div>
+							<div class="line1"></div>
+						</li>
+					</ul>
+					<v-pagination :total="total" :current-page='current' @pagechange="pagechange"></v-pagination>	
 				</div>
 			</div>
 		</div>
@@ -141,9 +172,19 @@
 <script>
 	import global_ from '@/components/Global'
 	import store from '@/store'
+	
+	import pagination from '@/components/MyPagenation'
 	export default {
+		components: {
+			'v-pagination': pagination,
+		},
 		data() {
 			return {
+				favor_info: [],
+				//分页实现内容
+				total: 0, // 记录总条数
+				display: 15, // 每页显示条数
+				current: 1, // 当前的页数
 				radio: '1',
 				radio1: '1',
 				radio2: '1',
@@ -246,8 +287,83 @@
 		},
 		mounted() {
 			this.set_region()
+			this.get_default_list()
+			
 		},
 		methods: {
+			go_to_detail(id) {
+				this.$router.push({
+					path: 'ItemPage',
+					query: {
+						HouseId: id
+					}
+				})
+			},
+			get_select_List(){
+				var data = {}
+				data["area"] = this.area=="选择面积" ? "":this.area,
+				data["price"] = this.price=="选择价格"?"":this.price,
+				data["house"] = this.house=="选择户型"?"":this.house,
+				data["region"] = this.region=="选择地区"?"":this.region,
+				data["underground"] = this.underground?1:0
+				data["five_year"] = this.five_year?1:0
+				data["decoration"] = this.decoration?1:0
+				data["price_low"] = this.price_low?1:0
+				data["watch"] = this.watch?1:0
+				data["south_north"] = this.south_north?1:0
+				
+				console.log(data)
+			},
+			pagechange(page) {
+				this.current = page
+				this.get_default_list()
+				document.documentElement.scrollTop=0
+			},
+			get_default_list() {
+				const loading = this.$loading({
+					lock: true,
+					text: 'Loading',
+					spinner: 'el-icon-loading',
+					background: 'rgba(0, 0, 0, 0.7)'
+				});
+				
+				let url = global_.IpUrl + '/house/list/'+this.get_city_eng+'?page_num=' + this.current
+				this.$ajax({
+					url: url,
+					method: 'get',
+				}).then(function(response) {
+					if (response.data.code === 0) {
+						var favor = response.data.data
+						
+						this.favor_info = []
+						for (var i = 0; i < favor.length; i++) {
+							var temp = {}
+							temp["description"] = favor[i].description
+							temp["layout"] = favor[i].layout
+							temp["layer"] = favor[i].layer
+							temp["built_year"] = favor[i].built_year
+							temp["area"] = favor[i].area
+							temp["price"] = favor[i].price
+							temp["total_price"] = favor[i].total_price
+							temp["orientation"] = favor[i].orientation
+							temp["garden"] = favor[i].garden
+							temp["developer"] = favor[i].developer
+							temp["architecture"] = favor[i].architecture
+							temp["id"] = favor[i].id
+							temp["img_url"] = favor[i].img_url
+							temp["star_count"] = favor[i].star_count
+							this.favor_info.push(temp)
+							this.total = response.data.total_item_num
+							
+						}
+						loading.close();
+					} else {
+						iView.Message.info(response.data.msg)
+					}
+				}.bind(this))
+			
+			},
+			
 			set_region() {
 				let temp_region = this.get_region
 				for (var i = 0; i < temp_region.length; i++) {
@@ -322,6 +438,9 @@
 			},
 			get_city() {
 				return store.state.area.city
+			},
+			get_city_eng(){
+				return store.state.area_eng.city
 			}
 		}
 	}
@@ -330,20 +449,20 @@
 <style scoped>
 	.body {
 		width: 100%;
-		height: 1000px;
-		min-width: 1273px;
+		height: 100%;
+		min-width: 1050px;
 	}
 
 	.choose_body {
 		width: 100%;
-		height: 1000px;
+		height: 3000px;
 		background-color: white;
 		padding-left: 50%;
 	}
 
 	.Content {
 		width: 950px;
-		height: 950px;
+		height: 3000px;
 		margin-left: -475px;
 		padding-top: 50px;
 	}
@@ -457,10 +576,10 @@
 
 	.bar_2_2 {
 		/*未选中*/
-		width: 70px;
-		height: 25px;
+		width: 80px;
 		background-color: rgb(226, 226, 226);
 		margin-top: 12px;
+		margin-left: 0px;
 		float: left;
 		border-radius: 5px;
 		padding: 1px;
@@ -555,7 +674,7 @@
 
 	.list {
 		width: 100%;
-		height: 530px;
+		height: 2400px;
 		border: 0px;
 	}
 
@@ -573,5 +692,72 @@
 		color: #8492a6;
 		font-size: 14px;
 		margin-bottom: 20px;
+	}
+	
+	.list {
+		width: 100%;
+		position: relative;
+		overflow: hidden;
+	}
+	
+	.block {
+		width: 500px;
+		height: 150px;
+		display: inline-block;
+		padding: 0;
+		position: absolute;
+		top: 0px;
+		left: 210px;
+	}
+	
+	.item_img {
+		max-height: 145px;
+		max-width: 200px;
+		min-height: 145px;
+		min-width: 200px;
+		background-size: 100% 100%;
+		display: inline-block;
+		float: left;
+	}
+	
+	.desCollect {
+		font-size: 12px;
+		font-weight: 300;
+		margin-left: 10px;
+		margin-top: 20px;
+		height: 80px;
+		width: 400px;
+	}
+	
+	.item_right {
+		height: 150px;
+		width: 150px;
+		display: inline-block;
+		padding: 0;
+		position: absolute;
+		top: 0px;
+		left: 800px;
+	}
+	.textColor {
+		font-size: 28px;
+		font-weight: 400;
+		margin-top: 10px;
+		color: rgb(252, 124, 0);
+	}
+	.collect {
+		min-height: 150px;
+		width: 950px;
+		max-height: 150px;
+		float: left;
+		text-align: left;
+		padding-top: 0;
+		position: relative;
+		margin-top: 20px;
+		list-style: none;
+	}
+	.list_content {
+		width: 950px;
+		height: 2400px;
+		padding-top: 30px;
 	}
 </style>

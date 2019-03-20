@@ -20,7 +20,7 @@
 			          </el-form-item>
 
 			          <el-form-item style="margin-left: 5px;">
-				          <el-button type="primary" @click="submitForm('ruleForm')" v-bind:class="{button: true}">立即登陆</el-button>
+				          <el-button type="primary" @click="submitForm('ruleForm')" v-bind:class="{button: true}" :loading="login_loading_flag">立即登陆</el-button>
 				        </el-form-item>
 
 				      <el-form-item style="width: 100px; text-align: right;margin-left: 150px;">
@@ -81,6 +81,7 @@
 					],
 				},
 				checked: false,
+				login_loading_flag: false,
 			};
 		},
 		mounted() {
@@ -91,6 +92,7 @@
 		},
 		methods: {
 			submitForm(formName) {
+				this.login_loading_flag = true
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
 						console.log(global_.IpUrl)
@@ -108,6 +110,7 @@
 								'X-CSRFToken': arr
 							}
 						}).then(function(response) {
+							this.login_loading_flag = false
 							if (response.data.code === 0) {
 								iView.Message.info('登录成功')
 								store.commit('change_isLogin', response.data.username)
@@ -126,10 +129,12 @@
 							}
 						}.bind(this))
 					} else {
+						this.login_loading_flag = false
 						console.log('error submit!!');
 						return false;
 					}
 				});
+				
 			},
 			go() {
 				this.$router.go(-1)
@@ -209,7 +214,7 @@
 .register_btn:hover{
 	cursor: pointer;
 }
-input::-webkit-input-placeholder{  
+input::-webkit-input-placeholder{
         color:black;
 }
 </style>

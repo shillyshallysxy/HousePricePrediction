@@ -221,12 +221,6 @@ MEDIA_URL = "media/images/"
 LIST_PAGE_ITEMS = 15
 
 # haystack 配置
-# HAYSTACK_CONNECTIONS = {
-#     'default':{
-#         'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
-#         'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
-#     }
-# }
 
 HAYSTACK_CONNECTIONS = {
     'default': {

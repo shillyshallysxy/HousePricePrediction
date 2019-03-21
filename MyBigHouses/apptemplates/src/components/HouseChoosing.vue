@@ -328,6 +328,12 @@
 				})
 			},
 			get_select_List(){
+				const loading = this.$loading({
+					lock: true,
+					text: 'Loading',
+					spinner: 'el-icon-loading',
+					background: 'rgba(0, 0, 0, 0.7)'
+				});
 				var data = {}
 				this.istrue = true
 				data["area"] = this.area_paras,
@@ -382,6 +388,7 @@
 							_this.total = response.data.total_item_num
 							
 						}
+						loading.close();
 						console.log(_this.favor_info.length)
 					}
 				})

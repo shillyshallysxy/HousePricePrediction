@@ -151,7 +151,6 @@ class UploadAvatarView(View):
 
         avatar = request.FILES.get("file", None)
         if avatar is None:
-            print("avatar is None")
             return JsonResponse({"code": 0, "msg": "No avatar selected"})
 
         try:
@@ -169,7 +168,6 @@ class GetInfoView(View):
     def get(self, request):
         item_num_one_page = 5
         page_num = request.GET.get('pag_num', None)
-        print(page_num)
         if page_num is None:
             page_num = 1
         else:
@@ -199,7 +197,10 @@ class GetInfoView(View):
             house_info = dict()
             house_key = "house_{}".format(collection)
             star_count = conn.hget(house_key, "star_count").decode()
-            house_obj = House.objects.get(id=int(collection))
+            try:
+                house_obj = House.objects.get(id=int(collection))
+            except House.DoesNotExist:
+                continue
             house_info["description"] = house_obj.description
             house_info["layout"] = house_obj.layout
             house_info["layer"] = house_obj.layer
@@ -212,7 +213,7 @@ class GetInfoView(View):
             house_info["developer"] = house_obj.developer
             house_info["architecture"] = house_obj.architecture
             house_info["id"] = house_obj.id
-            house_info["img_url"] = "static/images/2.jpg"
+            house_info["img_url"] = house_obj.pic_url
             house_info["star_count"] = star_count
             collection_infos.append(house_info)
 

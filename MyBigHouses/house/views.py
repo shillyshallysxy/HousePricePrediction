@@ -489,6 +489,7 @@ class FilterView(View):
             house_info["img_url"] = house_obj.pic_url
             house_info["star_count"] = star_count
             collections.append(house_info)
+        print(page.num_pages*settings.LIST_PAGE_ITEMS)
         return JsonResponse({"code": 0, "data": collections, \
                              'total_item_num': page.num_pages*settings.LIST_PAGE_ITEMS})
 

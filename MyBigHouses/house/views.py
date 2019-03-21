@@ -125,7 +125,7 @@ class SubLocationPriceView(View):
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
             # 建立到 MongoDB 的连接
-        client = MongoClient(host="42.159.122.43", port=27018)
+        client = MongoClient(host=settings.MONGODB_IP, port=settings.MONGODB_PORT)
         db = client.MBH
         self.city_relations = db.city_relations
         # 查询一次，存储在 cursor 中
@@ -193,7 +193,7 @@ class HouseOverView(View):
         for info in infos:
             overview_infos.append({'id': info.id, 'garden': info.garden, 'description': info.description,
                                    'area': info.area, 'total_price': info.total_price,
-                                   'img_url': "static/images/2.jpg"})
+                                   'img_url': info.pic_url})
         return JsonResponse({"code": 0, "data": overview_infos})
 
 
@@ -298,7 +298,7 @@ class HouseDetailView(View):
         data['location'] = "{} {}".format(house.district, house.zone)
         data['developer'] = house.developer
         data['property_company'] = house.property_company
-        data['contact'] = '13800010001'
+        data['contact'] = house.agent_contact
 
         return JsonResponse({"code": 0, "data": data, "view_count": view_count, "star_count": star_count, \
                              "star_flag": star_flag})
@@ -320,8 +320,7 @@ class HouseListView(View):
         except:
             return JsonResponse({"code": 1, "msg": "城市信息有误"})
         page_num = request.GET.get('page_num', None)
-        print(page_num)
-        total_item_num = len(house_list)
+
         if page_num is None:
             page_num = 1
         else:
@@ -333,6 +332,9 @@ class HouseListView(View):
         conn = get_redis_connection("User&House")
         collection_infos = list()
         pageinator = Paginator(house_list, settings.LIST_PAGE_ITEMS)
+
+        total_item_num = pageinator.count
+
         for house_obj in pageinator.page(page_num).object_list:
             house_info = dict()
             house_key = "house_{}".format(house_obj.id)
@@ -353,35 +355,11 @@ class HouseListView(View):
             house_info["developer"] = house_obj.developer
             house_info["architecture"] = house_obj.architecture
             house_info["id"] = house_obj.id
-            house_info["img_url"] = "static/images/2.jpg"
+            house_info["img_url"] = house_obj.pic_url
             house_info["star_count"] = star_count
             collection_infos.append(house_info)
 
-        return JsonResponse({"code": 0, "data": collection_infos, 'total_item_num': len(house_list)})
-
-
-#url: house/search/?q=xx
-class MySearchView(SearchView):
-    '''自定义搜索视图'''
-
-    def get_queryset(self):
-        queryset = super(MySearchView, self).get_queryset()
-        return queryset.all()
-
-    def get_context_data(self, *args, **kwargs):
-        mySearchView = super(MySearchView, self)
-        context = mySearchView.get_context_data(*args, **kwargs)
-        return context
-
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        if len(queryset) == 0:
-            return JsonResponse({"code": 1, "msg": "查询结果集为空"})
-        else:
-            house_id_list = list()
-            for item in queryset:
-                house_id_list.append(item.pk)
-        return JsonResponse({"code": 0, "length": len(house_id_list), "data":house_id_list})
+        return JsonResponse({"code": 0, "data": collection_infos, 'total_item_num': total_item_num})
 
 
 # url: house/filter?
@@ -441,8 +419,8 @@ class FilterView(View):
         district = data.get('region', None)
         orientation = data.get('south_north', None)
         page_num = int(data.get('page', 1))
-        if not all([city, area, price, layout, district, orientation]):
-            return JsonResponse({'code': 1, "msg": "条件不全"})
+#         if not all([city, area, price, layout, district, orientation]):
+#             return JsonResponse({'code': 1, "msg": "条件不全"})
         try:
             records = House.objects.filter(city=city)
         except House.DoesNotExist:
@@ -450,8 +428,8 @@ class FilterView(View):
 
         if district != '':
             records = records.filter(district=district)
-
         # 对面积筛选
+
         area_lowbound, area_highbound = map(int, area.split('~'))
         if area_highbound == area_lowbound:
             if area_lowbound == 200:
@@ -469,7 +447,7 @@ class FilterView(View):
             records = records.filter(Q(total_price__gt=price_lowbound) & Q(total_price__lt=price_highbound))
 
         # 对朝向筛选
-        records = records.filter(orientation__contains=orientation)
+        records = records.filter(Q(orientation__contains="南") | Q(orientation__contains="北"))
 
         # 对户型筛选
         # 过滤掉没有户型信息的数据
@@ -481,6 +459,7 @@ class FilterView(View):
         if layout in list(range(1, 6)):
             # 1-5室
             records = records.filter(layout__startswith=str(layout))
+
         # 分页
         page = Paginator(records, settings.LIST_PAGE_ITEMS)
         collections = list()
@@ -510,9 +489,8 @@ class FilterView(View):
             house_info["img_url"] = house_obj.pic_url
             house_info["star_count"] = star_count
             collections.append(house_info)
-
         return JsonResponse({"code": 0, "data": collections, \
-                             'total_item_num': page.num_pages*settings.LIST_PAGE_ITEM})
+                             'total_item_num': page.num_pages*settings.LIST_PAGE_ITEMS})
 
 
 from drf_haystack.viewsets import HaystackViewSet

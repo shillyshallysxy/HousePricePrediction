@@ -1,0 +1,31 @@
+{% block content %}
+
+    <h2>Search</h2>
+    <h2>关键词： {{ query }}</h2>
+    <h2>总页数: {{ paginator.num_pages }}</h2>
+        {% if query %}
+            <h3>Results</h3>
+            <ul>
+            {% for result in page.object_list %}
+                <li>
+                    {{ result.object.id }}<br>
+                   {{ result.object.city }}<br>
+                    {{ result.object.district }}<br>
+                    {{ result.object.zone }}<br>
+                    {{ result.object.garden }}<br>
+                </li>
+            {% empty %}
+                <p>No results found.</p>
+            {% endfor %}
+            </ul>
+            {% if page.has_previous or page.has_next %}
+                <div>
+                    {% if page.has_previous %}<a href="?q={{ query }}&page={{ page.previous_page_number }}">{% endif %} Previous{% if page.has_previous %}</a>{% endif %}
+                    |
+                    {% if page.has_next %}<a href="?q={{ query }}&page={{ page.next_page_number }}">{% endif %}Next {% if page.has_next %}</a>{% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            {# Show some example queries to run, maybe query syntax, something else? #}
+        {% endif %}
+{% endblock %}

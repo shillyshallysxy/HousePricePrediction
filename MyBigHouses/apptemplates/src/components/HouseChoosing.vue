@@ -172,7 +172,11 @@
 <script>
 	import global_ from '@/components/Global'
 	import store from '@/store'
-	
+	import {
+		getCookie,
+		setCookie,
+		delCookie
+	} from '@/utils/utils'
 	import pagination from '@/components/MyPagenation'
 	export default {
 		components: {
@@ -185,65 +189,89 @@
 				total: 0, // 记录总条数
 				display: 15, // 每页显示条数
 				current: 1, // 当前的页数
-				radio: '1',
-				radio1: '1',
-				radio2: '1',
+				istrue: false,
 				area_value: false,
 				area: '选择面积',
+				area_paras : '0~0',
 				area_data: [{
 						area: '不限',
+						area_para: '0~0',
 					}, {
 						area: '0～50平',
+						area_para: '0~50',
 					},
 					{
 						area: '50～70平',
+						area_para: '50~70',
 					}, {
 						area: '70～90平',
+						area_para: '70~90',
 					}, {
 						area: '90～120平',
+						area_para: '90~120',
 					}, {
 						area: '120～150平',
+						area_para: '120~150',
 					}, {
 						area: '150～200平',
+						area_para: '150~200',
 					}, {
 						area: '200平以上',
+						area_para: '200~200',
 					}
 				],
 				price_value: false,
 				price: '选择价格',
+				price_paras:'0~0',
 				price_data: [{
 					price: '不限',
+					price_para:'0~0',
 				}, {
-					price: '0～60w'
+					price: '0～60w',
+					price_para:'0~60',
 				}, {
-					price: '60～100w'
+					price: '60～100w',
+					price_para:'60~100',
 				}, {
-					price: '100～150w'
+					price: '100～150w',
+					price_para:'100~150',
 				}, {
-					price: '150～200w'
+					price: '150～200w',
+					price_para:'150~200',
 				}, {
-					price: '200～300w'
+					price: '200～300w',
+					price_para:'200~300',
 				}, {
-					price: '300～500w'
+					price: '300～500w',
+					price_para:'300~200',
 				}, {
-					price: '500w以上'
+					price: '500w以上',
+					price_para:'500~500',
 				}],
 				house_value: false,
 				house: "选择户型",
+				house_paras:'0',
 				house_data: [{
-					house: '居室不限'
+					house: '居室不限',
+					house_para: '0'
 				}, {
-					house: '一室'
+					house: '一室',
+					house_para: '1'
 				}, {
-					house: '两室'
+					house: '两室',
+					house_para: '2'
 				}, {
-					house: '三室'
+					house: '三室',
+					house_para: '3'
 				}, {
-					house: '四室'
+					house: '四室',
+					house_para: '4'
 				}, {
-					house: '五室'
+					house: '五室',
+					house_para: '5'
 				}, {
-					house: '五室以上'
+					house: '五室以上',
+					house_para: '6'
 				}],
 				region_value: false,
 				region: "选择地区",
@@ -301,9 +329,10 @@
 			},
 			get_select_List(){
 				var data = {}
-				data["area"] = this.area=="选择面积" ? "":this.area,
-				data["price"] = this.price=="选择价格"?"":this.price,
-				data["house"] = this.house=="选择户型"?"":this.house,
+				this.istrue = true
+				data["area"] = this.area_paras,
+				data["price"] = this.price_paras
+				data["house"] = this.house_paras,
 				data["region"] = this.region=="选择地区"?"":this.region,
 				data["underground"] = this.underground?1:0
 				data["five_year"] = this.five_year?1:0
@@ -311,13 +340,102 @@
 				data["price_low"] = this.price_low?1:0
 				data["watch"] = this.watch?1:0
 				data["south_north"] = this.south_north?1:0
-				
-				console.log(data)
+				data["city"] = this.get_city
+				data["page"] = this.current
+				var arr = getCookie('csrftoken')
+				var _this = this
+				_this.$ajax({
+					url:global_.IpUrl+ "/house/filter",
+					method:"post",
+					data:data,
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+						'X-CSRFToken': arr
+					}
+				}).then(function(response){
+					if(response.data.code != 0)
+					{
+						console.log(response.data.msg)
+					}
+					else
+					{
+						var favor = response.data.data
+						
+						_this.favor_info = []
+						for (var i = 0; i < favor.length; i++) {
+							var temp = {}
+							temp["description"] = favor[i].description
+							temp["layout"] = favor[i].layout
+							temp["layer"] = favor[i].layer
+							temp["built_year"] = favor[i].built_year
+							temp["area"] = favor[i].area
+							temp["price"] = favor[i].price
+							temp["total_price"] = favor[i].total_price
+							temp["orientation"] = favor[i].orientation
+							temp["garden"] = favor[i].garden
+							temp["developer"] = favor[i].developer
+							temp["architecture"] = favor[i].architecture
+							temp["id"] = favor[i].id
+							temp["img_url"] = favor[i].img_url
+							temp["star_count"] = favor[i].star_count
+							_this.favor_info.push(temp)
+							_this.total = response.data.total_item_num
+							
+						}
+						console.log(_this.favor_info.length)
+					}
+				})
 			},
+// 			get_select_page_change(){
+// 				
+// 				console.log("get")
+// 				var _this = this 
+// 				_this.$ajax({
+// 					url: global_.IpUrl+"/house/filter?page="+this.current,
+// 					method:'get'
+// 				}).then(function(response){
+// 					if(response.data.code != 0)
+// 					{
+// 						console.log(response.data.msg)
+// 					}
+// 					else
+// 					{
+// 						var favor = response.data.data
+// 						_this.favor_info = []
+// 						for (var i = 0; i < favor.length; i++) {
+// 							var temp = {}
+// 							temp["description"] = favor[i].description
+// 							temp["layout"] = favor[i].layout
+// 							temp["layer"] = favor[i].layer
+// 							temp["built_year"] = favor[i].built_year
+// 							temp["area"] = favor[i].area
+// 							temp["price"] = favor[i].price
+// 							temp["total_price"] = favor[i].total_price
+// 							temp["orientation"] = favor[i].orientation
+// 							temp["garden"] = favor[i].garden
+// 							temp["developer"] = favor[i].developer
+// 							temp["architecture"] = favor[i].architecture
+// 							temp["id"] = favor[i].id
+// 							temp["img_url"] = favor[i].img_url
+// 							temp["star_count"] = favor[i].star_count
+// 							_this.favor_info.push(temp)
+// 							_this.total = response.data.total_item_num
+// 							
+// 						}
+// 					}
+// 				})
+// 			},
 			pagechange(page) {
 				this.current = page
-				this.get_default_list()
-				document.documentElement.scrollTop=0
+				
+				if(this.istrue){
+					this.get_select_List()
+					document.documentElement.scrollTop=0
+				}else{
+					this.get_default_list()
+					document.documentElement.scrollTop=0
+				}
+				
 			},
 			get_default_list() {
 				const loading = this.$loading({
@@ -375,14 +493,18 @@
 			},
 			show_area_select(row) {
 				this.area = row.area
+				this.area_paras = row.area_para
 				this.area_value = false
 			},
 			show_price_select(row) {
 				this.price = row.price
+				this.price_paras = row.price_para
 				this.price_value = false
+				
 			},
 			show_house_select(row) {
 				this.house = row.house
+				this.house_paras = row.house_para
 				this.house_value = false
 			},
 			show_region_select(row) {

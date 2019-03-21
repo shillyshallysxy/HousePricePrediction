@@ -433,50 +433,53 @@ class FilterView(View):
         layout = data.get('house', None)
         district = data.get('region', None)
         orientation = data.get('south_north', None)
-
+        page_num = int(data.get('page', 1))
         if not all([city, area, price, layout, district, orientation]):
             return JsonResponse({'code': 1, "msg": "条件不全"})
         try:
-            records = House.objects.filter(Q(city=city) & Q(district=district))
+            records = House.objects.filter(city=city)
         except House.DoesNotExist:
             return JsonResponse({"code": 2, "msg": "没有符合条件的数据"})
+
+        if district != '':
+            records = records.filter(district=district)
 
         # 对面积筛选
         area_lowbound, area_highbound = map(int, area.split('~'))
         if area_highbound == area_lowbound:
             if area_lowbound == 200:
                 # 200 以上
-                records.filter(area__gte=200)
+                records = records.filter(area__gte=200)
         else:
-            records.filter(Q(area__gt=area_lowbound) & Q(area__lt=area_highbound))
+            records = records.filter(Q(area__gt=area_lowbound) & Q(area__lt=area_highbound))
 
         # 对总价筛选
         price_lowbound, price_highbound = map(int, price.split('~'))
         if price_lowbound == price_highbound:
             if price_lowbound == 500:
-                records.filter(total_price__gte=500)
+                records = records.filter(total_price__gte=500)
         else:
-            records.filter(Q(total_price__gt=price_lowbound) & Q(total_price__lt=price_highbound))
+            records = records.filter(Q(total_price__gt=price_lowbound) & Q(total_price__lt=price_highbound))
 
         # 对朝向筛选
-        records.filter(orientation__contains=orientation)
+        records = records.filter(orientation__contains=orientation)
 
         # 对户型筛选
         # 过滤掉没有户型信息的数据
-        records.filter(layout__contains='室')
+        records = records.filter(layout__contains='室')
         layout = int(layout)
         if layout == 6:
             # 5室以上
             pass
         if layout in list(range(1, 6)):
             # 1-5室
-            records.filter(layout__startswith=str(layout))
+            records = records.filter(layout__startswith=str(layout))
         # 分页
-        self.page = Paginator(records, settings.LIST_PAGE_ITEMS)
+        page = Paginator(records, settings.LIST_PAGE_ITEMS)
         collections = list()
 
-        for house_obj in self.page.page(1):
-            # 第一次返回第一页内容
+        for house_obj in page.page(page_num):
+            # 返回第 page_num 页内容
             house_info = dict()
 
             house_key = "house_{}".format(house_obj.id)
@@ -497,12 +500,12 @@ class FilterView(View):
             house_info["developer"] = house_obj.developer
             house_info["architecture"] = house_obj.architecture
             house_info["id"] = house_obj.id
-            house_info["img_url"] = "static/images/2.jpg"
+            house_info["img_url"] = house_obj.pic_url
             house_info["star_count"] = star_count
             collections.append(house_info)
 
         return JsonResponse({"code": 0, "data": collections, \
-                             'total_item_num': self.page.num_pages*settings.LIST_PAGE_ITEM})
+                             'total_item_num': page.num_pages*settings.LIST_PAGE_ITEM})
 
 
 from drf_haystack.viewsets import HaystackViewSet

@@ -10,6 +10,8 @@ from django_redis import get_redis_connection
 import datetime
 import json
 import base64
+from haystack.generic_views import SearchView
+from drf_haystack.serializers import HaystackSerializer
 
 # url: house/price/<city>/history?last_n_month=xx
 class History(View):
@@ -348,4 +350,168 @@ class HouseListView(View):
             house_info["star_count"] = star_count
             collection_infos.append(house_info)
 
-        return JsonResponse({"code": 0, "data": collection_infos})
+        return JsonResponse({"code": 0, "data": collection_infos, 'total_item_num': len(house_list)})
+
+
+#url: house/search/?q=xx
+class MySearchView(SearchView):
+    '''自定义搜索视图'''
+
+    def get_queryset(self):
+        queryset = super(MySearchView, self).get_queryset()
+        return queryset.all()
+
+    def get_context_data(self, *args, **kwargs):
+        mySearchView = super(MySearchView, self)
+        context = mySearchView.get_context_data(*args, **kwargs)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if len(queryset) == 0:
+            return JsonResponse({"code": 1, "msg": "查询结果集为空"})
+        else:
+            house_id_list = list()
+            for item in queryset:
+                house_id_list.append(item.pk)
+        return JsonResponse({"code": 0, "length": len(house_id_list), "data":house_id_list})
+
+
+# url: house/filter?
+class FilterView(View):
+    '''过滤条件'''
+    def __init__(self):
+        self.conn=get_redis_connection("User&House")
+
+    def get(self, request):
+        page_num = request.GET.get('page', None)
+
+        if page_num is None:
+            page_num = 1
+        else:
+            page_num = int(page_num)
+        # 检查页码合法性
+        if page_num not in self.page.page_range:
+            return JsonResponse({"code": 1, "msg": "页码不合法"})
+
+        collections = list()
+
+        for house_obj in self.page.page(page_num):
+            house_info = dict()
+
+            house_key = "house_{}".format(house_obj.id)
+            star_count = self.conn.hget(house_key, "star_count")
+            if star_count is None:
+                star_count = 0
+            else:
+                star_count = star_count.decode()
+
+            house_info["description"] = house_obj.description
+            house_info["layout"] = house_obj.layout
+            house_info["layer"] = house_obj.layer
+            house_info["built_year"] = house_obj.built_year
+            house_info["area"] = house_obj.area
+            house_info["price"] = house_obj.price
+            house_info["total_price"] = house_obj.total_price
+            house_info["orientation"] = house_obj.orientation
+            house_info["garden"] = house_obj.garden
+            house_info["developer"] = house_obj.developer
+            house_info["architecture"] = house_obj.architecture
+            house_info["id"] = house_obj.id
+            house_info["img_url"] = "static/images/2.jpg"
+            house_info["star_count"] = star_count
+            collections.append(house_info)
+
+        return JsonResponse({"code": 0, "data": collections, \
+                             'total_item_num': self.page.num_pages*settings.LIST_PAGE_ITEMS})
+
+    def post(self, request):
+        data = json.loads(request.body)
+        city = data.get('city', None)
+        area = data.get('area', None)
+        price = data.get('price', None)
+        layout = data.get('house', None)
+        district = data.get('region', None)
+        orientation = data.get('south_north', None)
+
+        if not all([city, area, price, layout, district, orientation]):
+            return JsonResponse({'code': 1, "msg": "条件不全"})
+        try:
+            records = House.objects.filter(Q(city=city) & Q(district=district))
+        except House.DoesNotExist:
+            return JsonResponse({"code": 2, "msg": "没有符合条件的数据"})
+
+        # 对面积筛选
+        area_lowbound, area_highbound = map(int, area.split('~'))
+        if area_highbound == area_lowbound:
+            if area_lowbound == 200:
+                # 200 以上
+                records.filter(area__gte=200)
+        else:
+            records.filter(Q(area__gt=area_lowbound) & Q(area__lt=area_highbound))
+
+        # 对总价筛选
+        price_lowbound, price_highbound = map(int, price.split('~'))
+        if price_lowbound == price_highbound:
+            if price_lowbound == 500:
+                records.filter(total_price__gte=500)
+        else:
+            records.filter(Q(total_price__gt=price_lowbound) & Q(total_price__lt=price_highbound))
+
+        # 对朝向筛选
+        records.filter(orientation__contains=orientation)
+
+        # 对户型筛选
+        # 过滤掉没有户型信息的数据
+        records.filter(layout__contains='室')
+        layout = int(layout)
+        if layout == 6:
+            # 5室以上
+            pass
+        if layout in list(range(1, 6)):
+            # 1-5室
+            records.filter(layout__startswith=str(layout))
+        # 分页
+        self.page = Paginator(records, settings.LIST_PAGE_ITEMS)
+        collections = list()
+
+        for house_obj in self.page.page(1):
+            # 第一次返回第一页内容
+            house_info = dict()
+
+            house_key = "house_{}".format(house_obj.id)
+            star_count = self.conn.hget(house_key, "star_count")
+            if star_count is None:
+                star_count = 0
+            else:
+                star_count = star_count.decode()
+            house_info["description"] = house_obj.description
+            house_info["layout"] = house_obj.layout
+            house_info["layer"] = house_obj.layer
+            house_info["built_year"] = house_obj.built_year
+            house_info["area"] = house_obj.area
+            house_info["price"] = house_obj.price
+            house_info["total_price"] = house_obj.total_price
+            house_info["orientation"] = house_obj.orientation
+            house_info["garden"] = house_obj.garden
+            house_info["developer"] = house_obj.developer
+            house_info["architecture"] = house_obj.architecture
+            house_info["id"] = house_obj.id
+            house_info["img_url"] = "static/images/2.jpg"
+            house_info["star_count"] = star_count
+            collections.append(house_info)
+
+        return JsonResponse({"code": 0, "data": collections, \
+                             'total_item_num': self.page.num_pages*settings.LIST_PAGE_ITEM})
+
+
+from drf_haystack.viewsets import HaystackViewSet
+from .serializers import HouseIndexSerializer, StandardResultSetPagination
+
+
+class HouseSearchViewSet(HaystackViewSet):
+    index_models = [House]
+    serializer_class = HouseIndexSerializer
+    pagination_class = StandardResultSetPagination
+
+

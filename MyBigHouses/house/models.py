@@ -1,4 +1,5 @@
 from django.db import models
+from tinymce.models import HTMLField
 
 # Create your models here.
 
@@ -24,7 +25,7 @@ class House(models.Model):
     area = models.DecimalField(decimal_places=1, max_digits= 10,null=True, default=0.0, verbose_name="住房面积")
     price = models.DecimalField(decimal_places=1, max_digits= 10, null=True, default=0.0, verbose_name="住房单价")
     total_price = models.DecimalField(decimal_places=2, max_digits= 13, null=True, default=0.0, verbose_name="房屋总价")
-    orientation = models.CharField(max_length=20, null=True,default="暂无朝向信息" ,verbose_name="朝向")
+    orientation = models.CharField(max_length=20, null=True,default="暂无朝向信息",verbose_name="朝向")
     source_url = models.CharField(max_length=100, null=True, default="暂无来源", verbose_name="数据源")
 
     pic_url = models.URLField(max_length=100, null=True, verbose_name="图片URL")
@@ -62,3 +63,17 @@ class HistoryPrice(models.Model):
 
     def __str__(self):
         return self.location
+
+
+class News(models.Model):
+    city = models.CharField(max_length=10, null=False, verbose_name="城市")
+    add_date = models.DateField(auto_now_add=True, verbose_name="添加时间")
+    pub_date = models.DateField(null=True, verbose_name="发布时间")
+    title = models.CharField(max_length=30, null=True, verbose_name="新闻标题")
+    body = HTMLField(blank=True, verbose_name="新闻内容")
+    source = models.CharField(max_length=20, verbose_name="新闻来源")
+
+    class Meta:
+        db_table = "News"
+        verbose_name = "新闻"
+        verbose_name_plural = verbose_name

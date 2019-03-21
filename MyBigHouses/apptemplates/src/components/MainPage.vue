@@ -9,9 +9,9 @@
 			</div>
 			<div class="search_line">
 				<div class="search_block">
-					<el-input v-model="search" clearable></el-input>
+					<el-input v-model="search_info" clearable></el-input>
 				</div>
-				<button class="search_button">搜索</button>
+				<button class="search_button" @click="search()">搜索</button>
 			</div>
 			<div class="price">
 				<div class="city">
@@ -162,7 +162,7 @@
 				average_price: '1.64',
 				ShowHouse: [],
 				ShowHouse2: [],
-				search: '',
+				search_info: '',
 				//图片路径
 				listImg:[
 					{url:require('../../src/assets/main_bg.jpg')},
@@ -250,6 +250,18 @@
 					}
 				}.bind(this))
 			},
+			search(){
+				if(this.search_info==''){
+					iView.Message.info("请输入搜索信息")
+				}else{
+					this.$router.push({
+						path: 'Search',
+						query: {
+							search_info : this.search_info
+						}
+					})
+				}
+			}
 		}
 	}
 </script>
@@ -335,6 +347,7 @@
 	font-weight: 600;
 	border: 0;
 	border-radius: 5px;
+	cursor: pointer;
 }
 .price {
 	width: 250px;

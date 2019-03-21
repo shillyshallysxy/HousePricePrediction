@@ -139,8 +139,9 @@
 							this.favor_info.push(temp)
 							console.log(response.data.total_item_num)
 							this.total = response.data.total_item_num
-							loading.close();
+							
 						}
+						loading.close();
 					} else {
 						iView.Message.info(response.data.msg)
 					}

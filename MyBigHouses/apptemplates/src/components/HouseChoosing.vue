@@ -187,7 +187,7 @@
 				favor_info: [],
 				//分页实现内容
 				total: 0, // 记录总条数
-				display: 15, // 每页显示条数
+				display: 14, // 每页显示条数
 				current: 1, // 当前的页数
 				istrue: false,
 				area_value: false,
@@ -366,7 +366,7 @@
 					else
 					{
 						var favor = response.data.data
-						
+						console.log(response.data.total_item_num)
 						_this.favor_info = []
 						for (var i = 0; i < favor.length; i++) {
 							var temp = {}
@@ -389,7 +389,7 @@
 							
 						}
 						loading.close();
-						console.log(_this.favor_info.length)
+						
 					}
 				})
 			},

@@ -1,5 +1,5 @@
 <template>
-	<div style="background-color: white;width: 100%;height: 200px;margin: 0;padding: 0;min-width: 1273px;">
+	<div style="background-color: white;width: 100%;height: 200px;margin: 0;padding: 0;min-width: 1050px;">
 		<div style="background-color: white; width: 100%;height: 183px;;margin: 0;padding: 0;display:block;">
 			<img src="../assets/logo1.png" style="max-height: 40px;float: left;margin-left: 16%;margin-top: 40px;"/>
 			<p style="float:left;font-size: 20px;color: black;font-weight: 700;margin-left: 10px;margin-top: 45px;">

@@ -3,8 +3,7 @@
 		<div class="charts">
 			<div class="charts_line">
 				<div class="button_line">
-					<el-cascader placeholder="选择城市以添加" :options="options_choose_city" filterable change-on-select v-model="city_selected"
-					></el-cascader>
+					<el-cascader placeholder="选择城市以添加" :options="options_choose_city" filterable change-on-select v-model="city_selected"></el-cascader>
 					<el-select v-model="year_selected" placeholder="请选择" @change="showBothCart">
 						<el-option v-for="item in options_select_year" :key="item.value" :label="item.label" :value="item.value">
 						</el-option>
@@ -16,11 +15,11 @@
 			</div>
 			<div class="charts_col">
 				<el-cascader placeholder="选择城市以添加" :options="options_choose_city_col" filterable change-on-select v-model="city_selected_col"
-				  @change="changeCity_col"></el-cascader>
+				 @change="changeCity_col"></el-cascader>
 				<el-date-picker v-model="month_selected" type="month" placeholder="选择日期" format="yyyy 年 MM 月" value-format="yyyy-MM"
-				:picker-options="picker_option_month"></el-date-picker>
+				 :picker-options="picker_option_month"></el-date-picker>
 				<el-button type="primary" :loading="loading_flag_col" @click="getSelectedCityCol">添加</el-button>
-				
+
 				<vue-highcharts :highcharts="Highcharts" :options="options_chart_column" ref="HisPriceCharts_column"></vue-highcharts>
 
 			</div>
@@ -40,7 +39,7 @@
 		store,
 		data() {
 			return {
-				picker_option_month:{
+				picker_option_month: {
 					disabledDate(time) {
 						// 获得当前时间
 						let curDate = (new Date()).getTime();
@@ -36041,11 +36040,11 @@
 			this.getSelectedCityCol()
 		},
 		methods: {
-			changeCity_col(){
+			changeCity_col() {
 				var city_sel_len = this.city_selected_col.length
 				if (city_sel_len == 0) {
 					iView.Message.info('请选择城市')
-				}else {
+				} else {
 					var city_now = this.city_selected_col[city_sel_len - 1]
 					console.log(city_now)
 					// this.showCart(12)
@@ -36067,7 +36066,7 @@
 				var city_sel_len = this.city_selected_col.length
 				if (city_sel_len == 0) {
 					iView.Message.info('请选择城市')
-				}else {
+				} else {
 					var city_now = this.city_selected_col[city_sel_len - 1]
 					this.getHisPrice_coloumn(city_now)
 					// this.showCart(12)
@@ -36080,8 +36079,9 @@
 					method: 'get',
 					url: global_.IpUrl + '/house/price/' + choosed_city + '/history?last_n_month=' + last_n_month
 				}).then(function(response) {
+					this.loading_flag = false
 					if (response.data.code === 0) {
-						if(typeof(this.his_price_line[response.data.city]) == 'undefined'){
+						if (typeof(this.his_price_line[response.data.city]) == 'undefined') {
 							let hist_price = []
 							let hist_tend = []
 							let x_axis = []
@@ -36091,7 +36091,7 @@
 								hist_price.push(parseFloat(s[1]))
 								x_axis.push(s[0])
 							}
-							
+
 							// 如果返回的数据较短，则扩充x轴长度并对列表中的原数据进行pad
 							if (parseInt(response.data.count) < last_n_month) {
 								for (var i = 0; i < last_n_month - parseInt(response.data.count); i++) {
@@ -36105,7 +36105,6 @@
 							this.his_price_tend[response.data.city] = hist_tend
 						}
 						this.showBothCart()
-						this.loading_flag = false
 					} else {
 						iView.Message.info(response.data.msg)
 					}
@@ -36154,13 +36153,13 @@
 				}
 			},
 			getHisPrice_coloumn(choosed_city) {
-				
+
 				// let choosed_city = store.state.area_eng.city
 				let time_arr = this.month_selected.split('-')
 				let year = time_arr[0]
 				let month = time_arr[1]
-				if(month.length == 1){
-					month = '0'+month
+				if (month.length == 1) {
+					month = '0' + month
 				}
 				let url_
 				if (typeof(month) == 'undefined') {
@@ -36171,22 +36170,23 @@
 				// 获得chart
 				let his_chart = this.$refs.HisPriceCharts_column
 				let series_ = his_chart.getChart().series[0]
-				if(typeof(series_) != 'undefined'){
-					if(series_.options.id.split(':')[0] != choosed_city){
+				if (typeof(series_) != 'undefined') {
+					if (series_.options.id.split(':')[0] != choosed_city) {
 						his_chart.removeSeries()
 					}
 				}
-				var vali_series = his_chart.getChart().get(choosed_city+ ':' + year + '-' + month)
+				var vali_series = his_chart.getChart().get(choosed_city + ':' + year + '-' + month)
 				if (typeof(vali_series) == "undefined") {
 					this.loading_flag_col = true
 					this.$ajax({
 						method: 'get',
 						url: global_.IpUrl + '/house/price/' + choosed_city + '/sub_location' + url_
 					}).then(function(response) {
+						this.loading_flag_col = false
 						if (response.data.code === 0) {
-							if(response.data.time[0] == 'undefined'){
+							if (response.data.time[0] == 'undefined') {
 								iView.Message.info('没有该日期的数据')
-							}else{
+							} else {
 								// 加载highchart自带的方法
 								// his_chart.delegateMethod('get', 'showLoading', 'Loading...')
 								// 接受get请求返回的数据
@@ -36202,7 +36202,7 @@
 										}
 									}
 									his_chart.addSeries({
-										id: choosed_city+ ':' + response.data.time[i],
+										id: choosed_city + ':' + response.data.time[i],
 										name: response.data.location_cn + ':' + response.data.time[i],
 										data: hist_price,
 									})
@@ -36212,11 +36212,11 @@
 						} else {
 							iView.Message.info(response.data.msg)
 						}
-						this.loading_flag_col = false
+
 						// this.loading_flag = false
 					}.bind(this))
 					// 添加数据
-					
+
 				} else {
 					iView.Message.info('请勿重复添加!')
 				}
@@ -36230,17 +36230,19 @@
 	}
 </script>
 <style scoped>
-.root{
-	margin-top:35px;
-}
-.charts{
-	margin-top: 12px;
-	width: 950px;
-	margin: 0 auto;
-    background-color: #fff;
-}
-.button_line{
-	width: 540;
-	margin: 0 auto;
-}
+	.root {
+		margin-top: 35px;
+	}
+
+	.charts {
+		margin-top: 12px;
+		width: 950px;
+		margin: 0 auto;
+		background-color: #fff;
+	}
+
+	.button_line {
+		width: 540;
+		margin: 0 auto;
+	}
 </style>

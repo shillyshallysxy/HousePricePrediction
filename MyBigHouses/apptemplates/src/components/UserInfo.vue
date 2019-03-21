@@ -1,5 +1,5 @@
 <template>
-	<div style="width: 100%;height: 100%;padding-left: 0px;">
+	<div style="width: 100%;height: 100%;padding-left: 0px;" v-loading.fullscreen.lock="fullscreenLoading">
 		<div style="background-color: lightgray;width: 100%;max-height: 200px;padding-top:100px;padding-left: 0px;">
 			<div style="width: 300px;height: 100px;margin-left: 150px;text-align: left;padding: 0px;">
 				<!-- <div style="background: #AAAAAA;max-height: 120px;max-width: 120px;border-radius:8px;float: left;"> -->
@@ -27,7 +27,7 @@
 						<img :src="o.img_url" class="item_img" />
 
 						<div class="block">
-							<p style="font-size: 18px;font-weight: 500;">
+							<p style="font-size: 18px;font-weight: 500;cursor: pointer;" @click="go_to_detail(o.id,index)">
 								{{o.description}}
 							</p>
 							<p class="desCollect">
@@ -36,7 +36,7 @@
 								{{o.developer}}
 							</p>
 							<div class="cancelCollect">
-								<p style="font-size: 12px;font-weight: 300;margin-left: 10px;">
+								<p style="font-size: 12px;font-weight: 300;margin-left: 10px; cursor: pointer;" @click="cancel_favour(o.id)">
 									取消收藏
 								</p>
 							</div>
@@ -105,6 +105,12 @@
 		},
 		methods: {
 			getList() {
+				const loading = this.$loading({
+					lock: true,
+					text: 'Loading',
+					spinner: 'el-icon-loading',
+					background: 'rgba(0, 0, 0, 0.7)'
+				});
 				this.favor_info = []
 				console.log(this.current)
 				let url = global_.IpUrl + '/user/get_info/?pag_num=' + this.current
@@ -133,7 +139,7 @@
 							this.favor_info.push(temp)
 							console.log(response.data.total_item_num)
 							this.total = response.data.total_item_num
-							
+							loading.close();
 						}
 					} else {
 						iView.Message.info(response.data.msg)
@@ -178,6 +184,31 @@
 				}
 				return isJPG && isLt2M;
 			},
+			cancel_favour(id, index) {
+				console.log(index)
+				var _this = this
+				_this.$ajax({
+					method: 'get',
+					url: global_.IpUrl + "/user/star?house_id=" + id
+				}).then(function(response) {
+					if (response.data.code === 0) {
+						_this.$router.go(0)
+					} else {
+						if (response.data.code === 2) {
+							iView.Message.info("请先登录")
+							setTimeout(this.go, 1000);
+						}
+					}
+				})
+			},
+			go_to_detail(id) {
+				this.$router.push({
+					path: 'ItemPage',
+					query: {
+						HouseId: id
+					}
+				})
+			}
 
 		}
 	}

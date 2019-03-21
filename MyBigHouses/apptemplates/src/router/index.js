@@ -10,6 +10,7 @@ import SelectHouse from '@/components/SelectHouse'
 import ItemPage from '@/components/ItemPage'
 import PricePredict from '@/components/PricePredict'
 import HouseChoosing from '@/components/HouseChoosing'
+import Search from '@/components/Search'
 Vue.use(Router)
 
 export default new Router({
@@ -92,6 +93,14 @@ export default new Router({
 			name: 'HouseChoosing',
 			component: HouseChoosing,
 			meta: {
+				requireLogin:false
+			}
+		},
+		{
+			path: '/Search',
+			name: 'Search',
+			component: Search,
+			meta:{
 				requireLogin:false
 			}
 		}

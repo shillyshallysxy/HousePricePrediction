@@ -39,13 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 全文搜索框架
-    'haystack',
     # 注册 user app
     'user',
     # 注册 house app
     'house',
-    'corsheaders'
+    'corsheaders',
+    # 全文搜索框架
+    'haystack',
+    # 富文本编辑器
+    'tinymce',
 ]
 
 MIDDLEWARE = [
@@ -75,6 +77,7 @@ TEMPLATES = [
             ],
         },
     },
+
 ]
 
 WSGI_APPLICATION = 'MyBigHouses.wsgi.application'
@@ -92,7 +95,8 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '123456',
         'HOST': '42.159.122.43',
-        'PORT': '3306'
+        'PORT': '3306',
+        'CONN_MAX_AGE': 9,
     }
 }
 
@@ -187,7 +191,6 @@ CORS_ALLOW_HEADERS = (
     'Access-Control-Allow-Origin',
     'Access-Control-Allow-Methods',
     'Access-Control-Allow-Headers'
-
 )
 
 
@@ -218,12 +221,27 @@ MEDIA_URL = "media/images/"
 LIST_PAGE_ITEMS = 15
 
 # haystack 配置
-HAYSTACK_CONNECTIONSS = {
-    'default':{
-        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
-        'PATH': os.path.join(BASE_DIR, 'whoosh_index')
+# HAYSTACK_CONNECTIONS = {
+#     'default':{
+#         'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+#         'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+#     }
+# }
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': "http://42.159.88.246:9200",
+        'INDEX_NAME': "house_index",
     }
 }
 
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10  # 搜索结果每页显示个数
+
+# 富文本编辑器
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'advanced',
+    'width': 600,
+    'height': 400,
+}

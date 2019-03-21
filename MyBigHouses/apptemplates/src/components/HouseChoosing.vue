@@ -71,7 +71,7 @@
 						<el-checkbox v-model="checked3" label="备选项1" border class="bar_2_2"></el-checkbox>
 						<el-checkbox v-model="checked4" label="备选项2" border class="bar_2_2"></el-checkbox> -->
 						<div class="bar_2_4">
-							<p class="bar_2_5" style="margin-top: 6px;color: white;cursor: pointer;" @click="get_select_List">
+							<p class="bar_2_5" style="margin-top: 6px;color: white;cursor: pointer;" @click="get_select_List_first">
 								筛选
 							</p>
 						</div>
@@ -162,7 +162,7 @@
 							<div class="line1"></div>
 						</li>
 					</ul>
-					<v-pagination :total="total" :current-page='current' @pagechange="pagechange"></v-pagination>	
+					<v-pagination :total="total" :currentPage='current' @pagechange="pagechange" :display = 'display'></v-pagination>	
 				</div>
 			</div>
 		</div>
@@ -315,7 +315,7 @@
 		},
 		mounted() {
 			this.set_region()
-			this.get_default_list()
+			this.get_select_List()
 			
 		},
 		methods: {
@@ -326,6 +326,10 @@
 						HouseId: id
 					}
 				})
+			},
+			get_select_List_first(){
+				this.current=1
+				this.get_select_List()
 			},
 			get_select_List(){
 				const loading = this.$loading({
@@ -361,6 +365,7 @@
 				}).then(function(response){
 					if(response.data.code != 0)
 					{
+						loading.close();
 						console.log(response.data.msg)
 					}
 					else
@@ -481,8 +486,10 @@
 							this.total = response.data.total_item_num
 							
 						}
+						console.log(this.total)
 						loading.close();
 					} else {
+						loading.close();
 						iView.Message.info(response.data.msg)
 					}
 				}.bind(this))
@@ -772,7 +779,7 @@
 
 	.tips {
 		width: 100%;
-		height: 100px;
+		height: 60px;
 		border: 0px;
 	}
 

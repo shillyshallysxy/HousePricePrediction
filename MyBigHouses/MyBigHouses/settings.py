@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'haystack',
     # 富文本编辑器
     'tinymce',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -239,3 +240,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'width': 600,
     'height': 400,
 }
+
+# Mongodb 地址
+MONGODB_IP = "42.159.122.43"
+MONGODB_PORT = 27018

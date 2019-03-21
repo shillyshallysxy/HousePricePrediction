@@ -76,6 +76,7 @@ class ActiveView(View):
         try:
             info = serializer.loads(token)
         except SignatureExpired as e:
+
             return HttpResponse('该链接已过期')
         except BadSignature as e:
             return HttpResponse('不合法的激活链接')

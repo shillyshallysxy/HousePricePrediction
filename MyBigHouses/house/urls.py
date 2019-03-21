@@ -16,8 +16,9 @@ urlpatterns = [
     url(r'detail/(?P<house_id>\d+)', HouseDetailView.as_view(), name="house_detail"),
     url(r'price/(?P<city_name>(\w*?))/mainpage_overview', HouseMainPageView.as_view(), name="mainpage_overview"),
     url(r'list/(?P<city_name>.*)', HouseListView.as_view(), name='list'),
-	url(r'filter',FilterView.as_view(), name="filter")
+	url(r'filter',FilterView.as_view(), name="filter"),
     # url(r'search/', HouseSearchViewSet, name="search")  # 搜索路由
+	
 ]
 
 router = DefaultRouter()

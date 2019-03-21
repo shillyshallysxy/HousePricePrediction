@@ -503,3 +503,21 @@ class HouseSearchViewSet(HaystackViewSet):
     serializer_class = HouseIndexSerializer
     pagination_class = StandardResultSetPagination
 
+# url: house/news/<city_name>
+class GetNewsInfo(View):
+    '''
+    获取新闻信息接口
+    '''
+
+    def get(self, request, city_name):
+        news_items = News.objects.filter(city=city_name).order_by("-pub_date")[:4]
+        news_collection = list()
+
+        for item in news_items:
+            news_info = dict()
+            news_info['title'] = item.title
+            news_info['source'] = item.source
+            news_info['pub_date'] = item.pub_date
+            news_collection.append(news_info)
+
+        return JsonResponse({"code": 0, "data": news_collection, "count": len(news_collection)})

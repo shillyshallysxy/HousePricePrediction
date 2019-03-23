@@ -125,7 +125,7 @@
 							} else {
 								iView.Message.info(response.data.msg)
 							}
-						}).bind(this)
+						}.bind(this))
 					} else {
 						this.register_loading_flag = false
 						return false;

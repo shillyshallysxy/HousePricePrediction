@@ -1,0 +1,4 @@
+
+{{ object.district }}
+{{ object.zone }}
+{{ object.garden }}

@@ -206,17 +206,17 @@ class HouseOverView(View):
             house_city_record = House.objects.filter(city=location_cn, price__gt=0, pic_url__startswith="http")
             sample = random.sample(range(house_city_record.count()), diff_num)
             records_append = [house_city_record.all()[i] for i in sample]
-        for info in records_append:
-            item = dict()
-            item["id"] = info.id
-            item['garden'] = info.garden
-            item['description'] = info.description
-            item['area'] = info.area
-            item['total_price'] = info.total_price
-            item['img_url'] = info.pic_url
-            item['orientation'] = info.orientation
-            item['layout'] = info.layout
-            topN_infos.append(item)
+            for info in records_append:
+                item = dict()
+                item["id"] = info.id
+                item['garden'] = info.garden
+                item['description'] = info.description
+                item['area'] = info.area
+                item['total_price'] = info.total_price
+                item['img_url'] = info.pic_url
+                item['orientation'] = info.orientation
+                item['layout'] = info.layout
+                topN_infos.append(item)
 
         return JsonResponse({"code": 0, "data": topN_infos, 'count': len(topN_infos)})
 

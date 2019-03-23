@@ -81,22 +81,24 @@
 				</div>
 				<div style="width: 100%;height: 300px;float: left; min-width: 950px;margin-left: -475px;">
 					<el-row>
-						<el-col :span="8" v-for="(o, index) in ShowHouse" :key="o.id" :offset="index > 0 ? 2 : 0" style="margin-bottom: 2.5rem;margin-left:46px ;width: 182px;height: 250px;">
-							<el-card :body-style="{ padding: '0px', height:'250px'}" style="width: 180px;">
+						<el-col :span="8" v-for="(o, index) in ShowHouse" :key="o.id" :offset="index > 0 ? 2 : 0" style="margin-bottom: 2.5rem;margin-left:26px ;width: 202px;height: 250px;">
+							<el-card :body-style="{ padding: '0px', height:'260px'}" style="width: 200px;">
 								<img :src="o.pic_src" class="image">
 								<div style="padding-top: 10px;padding-left: 20px;padding-right: 20px;">
-									<div style="width: 140px;height: 20px;">
-										<p class="erShouName" style="color: #009688;">{{o.name}}</p>
+									<div style="width: 160px;height: 20px;">
+										<p class="erShouName" style="color: #009688;float: left;width: 80px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;">{{o.name}}</p>
 									</div>
-									<div style="width: 120px;margin-left: 10px;height: 40px;">
+									<div style="width: 140px;margin-left: 10px;height: 40px;">
 										<p class="erShouName" style="color: darkgray;margin-top:5px;font-size: 12px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 2;overflow: hidden;">{{o.detail}}</p>
 									</div>
-									<div style="width: 140px;height: 20px;float: left;">
+									<!--
+									<div style="width: 150px;height: 20px;float: left;">
 										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;">{{o.area}}平米</p>
-										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
 									</div>
-									<div style="width: 140px;float: right;">
-										<el-button type="text" class="button" style="margin-top: 5px;padding: 0; float: right;" data-index="o.id"
+									-->
+									<div style="width: 150px;float: left;">
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
+										<el-button type="text" class="button" style="margin-top: 5px;padding: 0; float: left;margin-left: 10px;" data-index="o.id"
 										 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 									</div>
 								</div>
@@ -111,21 +113,26 @@
 				</div>
 				<div style="width: 100%;height: 300px;float: left;min-width: 950px;margin-left: -475px;margin-top: 18px;">
 					<el-row>
-						<el-col :span="8" v-for="(o, index) in ShowHouse2" :key="o.id" :offset="index > 0 ? 2 : 0" style="margin-bottom: 2.5rem;margin-left:46px ;width: 182px;height: 250px;">
-							<el-card :body-style="{ padding: '0px', height:'250px'}" style="width: 180px;">
+						<el-col :span="8" v-for="(o, index) in ShowHouse2" :key="o.id" :offset="index > 0 ? 2 : 0" style="margin-bottom: 2.5rem;margin-left:26px ;width: 202px;height: 250px;">
+							<el-card :body-style="{ padding: '0px', height:'260px'}" style="width: 200px;">
 								<img :src="o.pic_src" class="image">
 								<div style="padding-top: 10px;padding-left: 20px;padding-right: 20px;">
-									<div style="width: 140px;height: 20px;">
-										<p class="erShouName" style="color: #009688;">{{o.name}}</p>
+									<div style="width: 160px;height: 20px;">
+										<p class="erShouName" style="color: #009688;float: left;width: 80px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;">{{o.name}}</p>
 									</div>
-									<div style="width: 120px;margin-left: 10px;height: 40px;">
+									<div style="width: 140px;margin-left: 10px;height: 40px;">
 										<p class="erShouName" style="color: darkgray;margin-top:5px;font-size: 12px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 2;overflow: hidden;">{{o.detail}}</p>
 									</div>
-									<div style="width: 140px;height: 20px;float: left;">
+									<!--
+									<div style="width: 150px;height: 20px;float: left;">
 										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;">{{o.area}}平米</p>
-										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
 									</div>
-									<el-button type="text" class="button" style="margin-top: 10px;padding: 0; float: right;" @click.native="go_to_detail_page(o.id)">查看详情</el-button>
+									-->
+									<div style="width: 150px;float: left;">
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
+										<el-button type="text" class="button" style="margin-top: 5px;padding: 0; float: left;margin-left: 10px;" data-index="o.id"
+										 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
+									</div>
 								</div>
 							</el-card>
 						</el-col>
@@ -138,11 +145,15 @@
 		<!--房价趋势代码-->
 		<div style="background-color: #E8E8E8;width: 100%;height: 320px;margin: 0;padding: 0;display:block;min-width: 950px;">
 			<div style="width: 100%;height: 320px;clear: both;padding-top: 1px;padding-left: 50%;background-attachment: fixed;-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;">
-				<div style="width: 100%;height: 100px;margin-left: -425px;">
+				<div style="width: 100%;height: 80px;margin-left: -425px;">
 					<p style="font-size: 25px;float: left;margin-top: 25px;"><b>房价走势</b>，以史为鉴</p>
 				</div>
-				<div style="background-color: #0000FF;width: 320px;height: 200px;background-size: 100% 100%;float: left;margin-left: -425px;"></div>
-				<div style="background-color: red;width: 320px;height: 200px;background-size: 100% 100%;float: left;margin-left: 100px;"></div>
+				<div style="width: 380px;height: 220px;float: left;margin-left: -425px;">
+					<vue-highcharts :highcharts="Highcharts" :options="options_chart_line" ref="HisPriceCharts_line"></vue-highcharts>
+				</div>				
+				<div style="background-color: red;width: 320px;height: 220px;background-size: 100% 100%;float: left;margin-left: 100px;">
+					<img src="../assets/predict.png" style="width: 320px;height: 220px;" />
+				</div>
 			</div>
 		</div>
 	</div>
@@ -153,6 +164,8 @@
 	import global_ from '@/components/Global'
 	import iView from 'iview'
 	import Swiper from 'swiper';
+	import VueHighcharts from 'vue2-highcharts'
+	import HighCharts from 'highcharts'
 	import 'swiper/dist/css/swiper.min.css';
 	export default {
 		data() {
@@ -163,6 +176,75 @@
 				ShowHouse: [],
 				ShowHouse2: [],
 				search_info: '',
+				city_selected: [],
+				his_price_line: {},
+				x_axis_line: [],
+				id: 'history_price',
+				year_selected: '12',
+				options_chart_line: {
+					chart: {
+						zoomType: 'x',
+						type: 'line',
+						backgroundColor: "#ffffff",
+						height: "220px",
+						borderRadius: "2",
+						// shadow: true
+					},
+					title: {
+						text: false
+					},
+					subtitle: {
+					},
+					xAxis: {
+						labels:{
+							enabled: false
+						}
+					},
+					yAxis: {
+						title: {
+							text: '价格 (万元/平方米)'
+						},
+						labels: {
+							formatter: function() {
+								return this.value/10000;
+							}
+						}
+					},
+					plotOptions: {
+						series: {
+							cursor: 'pointer',
+							point: {},
+							marker: {
+								lineWidth: 1
+							}
+						},
+						line: {
+							dataLabels: {
+								// 开启数据标签
+								enabled: true
+							},
+							// 关闭鼠标跟踪，对应的提示框、点击事件会失效
+							enableMouseTracking: true
+						}
+					},
+					legend:{
+						layout: 'vertical',
+						align: 'right',
+						verticalAlign: 'middle',
+						borderWidth: 0
+					},
+					//去除水印
+					credits: {
+						enabled: false
+					},
+					style: {
+						fontFamily: "",
+						fontSize: '12px',
+						fontWeight: 'bold',
+						color: '#e8e8e8'
+					},
+					series: []
+				},
 				//图片路径
 				listImg:[
 					{url:require('../../src/assets/main_bg.jpg')},
@@ -174,6 +256,9 @@
 		mounted() {
 			this.city_name_cn = store.state.area.city
 			this.city_name_en = store.state.area_eng.city
+			this.city_selected = [store.state.area_eng.province, store.state.area_eng.city]
+			this.getSelectedCityPrice()
+
 			this.get_mainpage_info()
 			var _this = this
 			_this.$ajax({
@@ -206,7 +291,6 @@
 				
 			})
 			
-			console.log('mounted', this)
 			var mySwiper = new Swiper ('.swiper-container', {
 			    loop: true, 
 			    pagination: {
@@ -223,7 +307,71 @@
 				speed:800,
 			})  
 		},
+		components:{
+			VueHighcharts
+		},
 		methods: {
+			getSelectedCityPrice() {
+				var city_sel_len = this.city_selected.length
+				if (city_sel_len == 0) {
+					iView.Message.info('请选择城市')
+				} else if (city_sel_len == 1) {
+					iView.Message.info('请选择继续选择下一级')
+				} else {
+					var city_now = this.city_selected[city_sel_len - 1]
+					this.getHisPrice_line_data(city_now)
+				}
+			},
+			getHisPrice_line_data(choosed_city) {
+				let last_n_month = parseInt(this.year_selected)
+				this.$ajax({
+					method: 'get',
+					url: global_.IpUrl + '/house/price/' + choosed_city + '/history?last_n_month=' + last_n_month
+				}).then(function(response) {
+					if (response.data.code === 0) {
+						if (typeof(this.his_price_line[response.data.city]) == 'undefined') {
+							let hist_price = []
+							let x_axis = []
+							// 接受get请求返回的数据
+							for (let s of response.data.data) {
+								hist_price.push(parseFloat(s[1]))
+								x_axis.push(s[0])
+							}
+			
+							// 如果返回的数据较短，则扩充x轴长度并对列表中的原数据进行pad
+							if (parseInt(response.data.count) < last_n_month) {
+								for (var i = 0; i < last_n_month - parseInt(response.data.count); i++) {
+									hist_price.unshift(null)
+								}
+							} else {
+								this.x_axis_line = x_axis
+							}
+							this.his_price_line[response.data.city] = hist_price
+						}
+						this.showCart()
+					} else {
+						iView.Message.info(response.data.msg)
+					}
+				}.bind(this))
+			},
+			showCart(last_n_month = this.year_selected) {
+				last_n_month = parseInt(last_n_month)
+				// 获得chart
+				let his_chart = this.$refs.HisPriceCharts_line
+				his_chart.getChart().xAxis[0].setCategories(this.x_axis_line.slice(-last_n_month))
+				for (var hist_price_key in this.his_price_line) {
+					var vali_series = his_chart.getChart().get(hist_price_key)
+					if (typeof(vali_series) == "undefined") {
+						his_chart.addSeries({
+							id: hist_price_key,
+							name: hist_price_key,
+							data: this.his_price_line[hist_price_key].slice(-last_n_month),
+						})
+					} else {
+						vali_series.setData(this.his_price_line[hist_price_key].slice(-last_n_month))
+					}
+				}
+			},
 			go_to_detail_page(id) {
 				this.$router.push({
 					path: 'ItemPage',
@@ -233,7 +381,6 @@
 				})
 			},
 			get_city() {
-				console.log("获取了城市")
 				return store.state.area_eng.city
 			},
 			get_mainpage_info() {
@@ -403,7 +550,7 @@
 
 	.image {
 		width: 100%;
-		height: 120px;
+		height: 150px;
 		display: block;
 	}
 

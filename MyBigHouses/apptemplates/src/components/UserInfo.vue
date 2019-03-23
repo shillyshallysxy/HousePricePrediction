@@ -112,7 +112,6 @@
 					background: 'rgba(0, 0, 0, 0.7)'
 				});
 				this.favor_info = []
-				console.log(this.current)
 				let url = global_.IpUrl + '/user/get_info/?pag_num=' + this.current
 				this.$ajax({
 					url: url,
@@ -137,7 +136,6 @@
 							temp["img_url"] = favor[i].img_url
 							temp["star_count"] = favor[i].star_count
 							this.favor_info.push(temp)
-							console.log(response.data.total_item_num)
 							this.total = response.data.total_item_num
 							
 						}
@@ -186,7 +184,6 @@
 				return isJPG && isLt2M;
 			},
 			cancel_favour(id, index) {
-				console.log(index)
 				var _this = this
 				_this.$ajax({
 					method: 'get',

@@ -128,7 +128,6 @@
 						}).bind(this)
 					} else {
 						this.register_loading_flag = false
-						console.log('error submit!!');
 						return false;
 					}
 				});

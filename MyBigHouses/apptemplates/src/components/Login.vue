@@ -95,7 +95,6 @@
 				this.login_loading_flag = true
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
-						console.log(global_.IpUrl)
 						var arr = getCookie('csrftoken')
 						this.$ajax({
 							method: 'post',
@@ -130,7 +129,6 @@
 						}.bind(this))
 					} else {
 						this.login_loading_flag = false
-						console.log('error submit!!');
 						return false;
 					}
 				});

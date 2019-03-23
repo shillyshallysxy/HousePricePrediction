@@ -201,7 +201,7 @@ CACHES = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://42.159.122.43:6380/2",
         "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "User&House": {
@@ -244,3 +244,8 @@ TINYMCE_DEFAULT_CONFIG = {
 # Mongodb 地址
 MONGODB_IP = "42.159.122.43"
 MONGODB_PORT = 27018
+
+STAR_COUNT_TOP_N = 8
+
+# 默认的房屋图片，可以是相对路径或网络URL
+DEFAULT_HOUSE_PIC_URL = "static/images/2.jpg"

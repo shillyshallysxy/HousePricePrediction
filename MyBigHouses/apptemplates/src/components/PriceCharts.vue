@@ -1,5 +1,5 @@
 <template>
-	<div class="root">
+	<div class="root" v-loading.fullscreen.lock="fullscreenLoading">
 		<div class="charts">
 			<div class="charts_line">
 				<div class="button_line">
@@ -36032,12 +36032,19 @@
 			}
 		},
 		mounted() {
+			const loading = this.$loading({
+				lock: true,
+				text: 'Loading',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			});
 			this.city_selected = [store.state.area_eng.province, store.state.area_eng.city]
 			this.city_selected_col = [store.state.area_eng.province, store.state.area_eng.city]
 			// console.log(store.state.area_eng.city);
 			this.getSelectedCityPrice()
 			// this.showCart(12)
 			this.getSelectedCityCol()
+			loading.close();
 		},
 		methods: {
 			changeCity_col() {
@@ -36046,7 +36053,7 @@
 					iView.Message.info('请选择城市')
 				} else {
 					var city_now = this.city_selected_col[city_sel_len - 1]
-					console.log(city_now)
+					// console.log(city_now)
 					// this.showCart(12)
 				}
 			},
@@ -36081,7 +36088,7 @@
 				}).then(function(response) {
 					this.loading_flag = false
 					if (response.data.code === 0) {
-						if (typeof(this.his_price_line[response.data.city]) == 'undefined') {
+						if (typeof(this.his_price_line[response.data.city]) == "undefined") {
 							let hist_price = []
 							let hist_tend = []
 							let x_axis = []
@@ -36162,7 +36169,7 @@
 					month = '0' + month
 				}
 				let url_
-				if (typeof(month) == 'undefined') {
+				if (typeof(month) == "undefined") {
 					url_ = ''
 				} else {
 					url_ = '?year=' + year + '&month=' + month
@@ -36170,7 +36177,7 @@
 				// 获得chart
 				let his_chart = this.$refs.HisPriceCharts_column
 				let series_ = his_chart.getChart().series[0]
-				if (typeof(series_) != 'undefined') {
+				if (typeof(series_) != "undefined") {
 					if (series_.options.id.split(':')[0] != choosed_city) {
 						his_chart.removeSeries()
 					}
@@ -36184,7 +36191,7 @@
 					}).then(function(response) {
 						this.loading_flag_col = false
 						if (response.data.code === 0) {
-							if (response.data.time[0] == 'undefined') {
+							if (response.data.time[0] == undefined) {
 								iView.Message.info('没有该日期的数据')
 							} else {
 								// 加载highchart自带的方法
@@ -36192,6 +36199,7 @@
 								// 接受get请求返回的数据
 								let hist_price_list = []
 								let x_axis = []
+								// console.log(response.data)
 								for (let i = 0; i >= 0; i--) {
 									let hist_price = []
 									for (let s of response.data.data[i]) {
@@ -36201,12 +36209,17 @@
 											x_axis.push(s[0])
 										}
 									}
-									his_chart.addSeries({
-										id: choosed_city + ':' + response.data.time[i],
-										name: response.data.location_cn + ':' + response.data.time[i],
-										data: hist_price,
-									})
-									his_chart.getChart().xAxis[0].setCategories(x_axis)
+									try{
+										his_chart.addSeries({
+											id: choosed_city + ':' + response.data.time[i],
+											name: response.data.location_cn + ':' + response.data.time[i],
+											data: hist_price,
+										})
+										his_chart.getChart().xAxis[0].setCategories(x_axis)
+									}catch(e){
+										//TODO handle the exception
+										
+									}
 								}
 							}
 						} else {

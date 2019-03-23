@@ -14,7 +14,8 @@ class HouseSerializer(serializers.ModelSerializer):
     '''
     class Meta:
         model = House
-        fields = ('id', 'district', 'zone', 'garden')
+        fields = ('id', 'district', 'zone', 'garden','description','layout','layer',
+		'built_year','area','price','total_price','orientation','developer','architecture','pic_url')
 
 
 class HouseIndexSerializer(HaystackSerializer):

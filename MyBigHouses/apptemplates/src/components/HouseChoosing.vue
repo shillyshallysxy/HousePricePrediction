@@ -84,14 +84,14 @@
 				<div class="tips">
 					<div>
 						<div class="tip">
-							<el-button slot="reference" id="show_area" style="border: 0px;height: 33px;background-color: rgb(249, 249, 249);" @click="default_click">默认</el-button>
+							<el-button slot="reference" id="show_area" style="border: 0px;height: 33px;background-color: rgb(249, 249, 249);" @click="default_click" index='0'>默认</el-button>
 						</div>
 						<div class="tip">
 							<el-popover placement="bottom"  trigger="click" v-model='single_price_value'>
 								<el-table :data="single_price_data" @row-click="show_single_price_select">
 									<el-table-column width="150" property="single_price"></el-table-column>
 								</el-table>
-								<el-button slot="reference" id="show_single_price" style="border: 0px;height: 33px;width: 70px;background-color: rgb(249, 249, 249);">单价</el-button>
+								<el-button slot="reference" id="show_single_price" style="border: 0px;height: 33px;width: 70px;background-color: rgb(249, 249, 249);" index='1'>单价</el-button>
 							</el-popover>
 							<div class="tip2">
 								<i class="el-icon-caret-top"></i>
@@ -106,7 +106,7 @@
 								<el-table :data="total_price_data" @row-click="show_total_price_select">
 									<el-table-column width="150" property="total_price"></el-table-column>
 								</el-table>
-								<el-button slot="reference" id="show_total_price" style="border: 0px;height: 33px;width: 70px;background-color: rgb(249, 249, 249);">总价</el-button>
+								<el-button slot="reference" id="show_total_price" style="border: 0px;height: 33px;width: 70px;background-color: rgb(249, 249, 249);" index='2'>总价</el-button>
 							</el-popover>
 							<div class="tip2">
 								<i class="el-icon-caret-top"></i>
@@ -120,7 +120,7 @@
 								<el-table :data="total_area_data" @row-click="show_total_area_select">
 									<el-table-column width="150" property="total_area"></el-table-column>
 								</el-table>
-								<el-button slot="reference" id="show_total_area" style="border: 0px;height: 33px;width: 70px;background-color: rgb(249, 249, 249);">面积</el-button>
+								<el-button slot="reference" id="show_total_area" style="border: 0px;height: 33px;width: 70px;background-color: rgb(249, 249, 249);" index='3'>面积</el-button>
 							</el-popover>
 							<div class="tip2">
 								<i class="el-icon-caret-top"></i>
@@ -133,6 +133,9 @@
 				</div>
 				<div class="list_content">
 					<ul class="list">
+						<p v-if="isnull">
+							没有该条件下的筛选结果
+						</p>
 						<li class="collect" v-for="(o, index) in favor_info" key='o.id'>
 							<img :src="o.img_url" class="item_img" />
 					
@@ -153,7 +156,7 @@
 									{{o.total_price}}万
 								</p>
 								<p style="font-size: 12px;font-weight: 300;">
-									单价：{{o.price}}万
+									单价：{{o.price}}元
 								</p>
 								<p style="font-size: 12px;font-weight: 300;margin-top: 20px;">
 									{{o.star_count}}人已收藏
@@ -162,7 +165,7 @@
 							<div class="line1"></div>
 						</li>
 					</ul>
-					<v-pagination :total="total" :currentPage='current' @pagechange="pagechange" :display = 'display'></v-pagination>	
+					<v-pagination v-if="hackReset" :total="total" :currentPage='current' @pagechange="pagechange" :display = 'display'></v-pagination>	
 				</div>
 			</div>
 		</div>
@@ -184,6 +187,9 @@
 		},
 		data() {
 			return {
+				isnull: false,
+				hackReset : true,
+				sort_index : 0,
 				favor_info: [],
 				//分页实现内容
 				total: 0, // 记录总条数
@@ -289,8 +295,10 @@
 				single_price_data:[
 					{
 						single_price:'从高到低',
+						single_price_index :1,
 					},{
-						single_price:"从低到高"
+						single_price:"从低到高",
+						single_price_index :2,
 					}
 				],
 				total_price_value: false,
@@ -298,8 +306,10 @@
 				total_price_data:[
 					{
 						total_price:'从高到低',
+						total_price_index:3,
 					},{
-						total_price:"从低到高"
+						total_price:"从低到高",
+						total_price_index:4,
 					}
 				],
 				total_area_value: false,
@@ -307,8 +317,10 @@
 				total_area_data:[
 					{
 						total_area:'从高到低',
+						total_area_index:5,
 					},{
-						total_area:"从低到高"
+						total_area:"从低到高",
+						total_area_index:6,
 					}
 				],
 			};
@@ -329,6 +341,10 @@
 			},
 			get_select_List_first(){
 				this.current=1
+				this.hackReset = false
+				this.$nextTick(()=>{
+					this.hackReset=true
+				})
 				this.get_select_List()
 			},
 			get_select_List(){
@@ -352,6 +368,7 @@
 				data["south_north"] = this.south_north?1:0
 				data["city"] = this.get_city
 				data["page"] = this.current
+				data["sort"] = this.sort_index
 				var arr = getCookie('csrftoken')
 				var _this = this
 				_this.$ajax({
@@ -366,32 +383,38 @@
 					if(response.data.code != 0)
 					{
 						loading.close();
-						console.log(response.data.msg)
 					}
 					else
 					{
-						var favor = response.data.data
-						console.log(response.data.total_item_num)
-						_this.favor_info = []
-						for (var i = 0; i < favor.length; i++) {
-							var temp = {}
-							temp["description"] = favor[i].description
-							temp["layout"] = favor[i].layout
-							temp["layer"] = favor[i].layer
-							temp["built_year"] = favor[i].built_year
-							temp["area"] = favor[i].area
-							temp["price"] = favor[i].price
-							temp["total_price"] = favor[i].total_price
-							temp["orientation"] = favor[i].orientation
-							temp["garden"] = favor[i].garden
-							temp["developer"] = favor[i].developer
-							temp["architecture"] = favor[i].architecture
-							temp["id"] = favor[i].id
-							temp["img_url"] = favor[i].img_url
-							temp["star_count"] = favor[i].star_count
-							_this.favor_info.push(temp)
+						if(response.data.total_item_num == 0)
+						{
+							_this.isnull = true
+							_this.favor_info = []
 							_this.total = response.data.total_item_num
+						}
+						else{
+							var favor = response.data.data
+							_this.favor_info = []
+							for (var i = 0; i < favor.length; i++) {
+								var temp = {}
+								temp["description"] = favor[i].description
+								temp["layout"] = favor[i].layout
+								temp["layer"] = favor[i].layer
+								temp["built_year"] = favor[i].built_year
+								temp["area"] = favor[i].area
+								temp["price"] = favor[i].price
+								temp["total_price"] = favor[i].total_price
+								temp["orientation"] = favor[i].orientation
+								temp["garden"] = favor[i].garden
+								temp["developer"] = favor[i].developer
+								temp["architecture"] = favor[i].architecture
+								temp["id"] = favor[i].id
+								temp["img_url"] = favor[i].img_url
+								temp["star_count"] = favor[i].star_count
+								_this.favor_info.push(temp)
+								_this.total = response.data.total_item_num
 							
+							}						
 						}
 						loading.close();
 						
@@ -439,62 +462,57 @@
 // 			},
 			pagechange(page) {
 				this.current = page
+				this.get_select_List()
+				document.documentElement.scrollTop=0
 				
-				if(this.istrue){
-					this.get_select_List()
-					document.documentElement.scrollTop=0
-				}else{
-					this.get_default_list()
-					document.documentElement.scrollTop=0
-				}
 				
 			},
-			get_default_list() {
-				const loading = this.$loading({
-					lock: true,
-					text: 'Loading',
-					spinner: 'el-icon-loading',
-					background: 'rgba(0, 0, 0, 0.7)'
-				});
-				
-				let url = global_.IpUrl + '/house/list/'+this.get_city_eng+'?page_num=' + this.current
-				this.$ajax({
-					url: url,
-					method: 'get',
-				}).then(function(response) {
-					if (response.data.code === 0) {
-						var favor = response.data.data
-						
-						this.favor_info = []
-						for (var i = 0; i < favor.length; i++) {
-							var temp = {}
-							temp["description"] = favor[i].description
-							temp["layout"] = favor[i].layout
-							temp["layer"] = favor[i].layer
-							temp["built_year"] = favor[i].built_year
-							temp["area"] = favor[i].area
-							temp["price"] = favor[i].price
-							temp["total_price"] = favor[i].total_price
-							temp["orientation"] = favor[i].orientation
-							temp["garden"] = favor[i].garden
-							temp["developer"] = favor[i].developer
-							temp["architecture"] = favor[i].architecture
-							temp["id"] = favor[i].id
-							temp["img_url"] = favor[i].img_url
-							temp["star_count"] = favor[i].star_count
-							this.favor_info.push(temp)
-							this.total = response.data.total_item_num
-							
-						}
-						console.log(this.total)
-						loading.close();
-					} else {
-						loading.close();
-						iView.Message.info(response.data.msg)
-					}
-				}.bind(this))
-			
-			},
+// 			get_default_list() {
+// 				const loading = this.$loading({
+// 					lock: true,
+// 					text: 'Loading',
+// 					spinner: 'el-icon-loading',
+// 					background: 'rgba(0, 0, 0, 0.7)'
+// 				});
+// 				
+// 				let url = global_.IpUrl + '/house/list/'+this.get_city_eng+'?page_num=' + this.current
+// 				this.$ajax({
+// 					url: url,
+// 					method: 'get',
+// 				}).then(function(response) {
+// 					if (response.data.code === 0) {
+// 						var favor = response.data.data
+// 						
+// 						this.favor_info = []
+// 						for (var i = 0; i < favor.length; i++) {
+// 							var temp = {}
+// 							temp["description"] = favor[i].description
+// 							temp["layout"] = favor[i].layout
+// 							temp["layer"] = favor[i].layer
+// 							temp["built_year"] = favor[i].built_year
+// 							temp["area"] = favor[i].area
+// 							temp["price"] = favor[i].price
+// 							temp["total_price"] = favor[i].total_price
+// 							temp["orientation"] = favor[i].orientation
+// 							temp["garden"] = favor[i].garden
+// 							temp["developer"] = favor[i].developer
+// 							temp["architecture"] = favor[i].architecture
+// 							temp["id"] = favor[i].id
+// 							temp["img_url"] = favor[i].img_url
+// 							temp["star_count"] = favor[i].star_count
+// 							this.favor_info.push(temp)
+// 							this.total = response.data.total_item_num
+// 							
+// 						}
+// 						console.log(this.total)
+// 						loading.close();
+// 					} else {
+// 						loading.close();
+// 						iView.Message.info(response.data.msg)
+// 					}
+// 				}.bind(this))
+// 			
+// 			},
 			
 			set_region() {
 				let temp_region = this.get_region
@@ -524,18 +542,22 @@
 			show_region_select(row) {
 				this.region = row.region
 				this.region_value = false
+				this.get_select_List_first()
 			},
 			show_single_price_select(row){
-				this.single_price = row.single_price
+				this.sort_index = row.single_price_index
 				this.single_price_value =false
+				this.get_select_List_first()
 			},
 			show_total_price_select(row){
-				this.total_price = row.total_price
+				this.sort_index = row.total_price_index
 				this.total_price_value =false
+				this.get_select_List_first()
 			},
 			show_total_area_select(row){
-				this.total_area = row.total_area
+				this.sort_index = row.total_area_index
 				this.total_area_value =false
+				this.get_select_List_first()
 			},
 			default_click(){
 				

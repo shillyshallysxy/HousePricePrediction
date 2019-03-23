@@ -1,12 +1,12 @@
 <template>
-	<div class="body">
+	<div class="body" v-loading.fullscreen.lock="fullscreenLoading">
 		<div class="bar"></div>
 		<div class="PredictiveContent">
 			<div class="Content">
 				<div class="main_first">
 					<div class="main_left">
 						<div class="main_left_1">
-							<p class="left_part_1">苏州</p>
+							<p class="left_part_1">{{get_city}}</p>
 						</div>
 						<div class="main_left_2">
 							<div class="left_part_2">
@@ -14,7 +14,7 @@
 									当前房价
 								</p>
 								<p class="left_part_2_2">
-									45678
+									{{predict_info.present}}
 								</p>
 								<p class="left_part_2_3">元</p>				
 							</div>
@@ -23,7 +23,7 @@
 									预测1个月后房价
 								</p>
 								<p class="left_part_2_2">
-									45678
+									{{predict_info.one_month_later}}
 								</p>
 								<p class="left_part_2_3">元</p>
 							</div>
@@ -34,7 +34,7 @@
 									一个月前房价
 								</p>
 								<p class="left_part_3_2">
-									45678
+									{{predict_info.one_month_earlier}}
 								</p>
 							</div>
 							<div class="left_part_3">
@@ -42,7 +42,7 @@
 									半年前房价
 								</p>
 								<p class="left_part_3_2">
-									45678
+									{{predict_info.half_year_earlier}}
 								</p>
 							</div>
 							<div class="left_part_3">
@@ -50,7 +50,7 @@
 									预测3个月后房价
 								</p>
 								<p class="left_part_3_2">
-									45678
+									{{predict_info.three_month_later}}
 								</p>
 							</div>
 						</div>
@@ -59,14 +59,13 @@
 				</div>
 				<div class="main_second">
 					<div class="main_second_left">
-						<div class="main_second_left_1" style="margin-top: 50px;"></div>
-						<div class="main_second_left_1"></div>
-						<div class="main_second_left_1"></div>
-						<div class="main_second_left_1" style="border-bottom: 0px;"></div>
+						<div class="main_second_left_1" v-for="(o, index) in news_info" style="margin-top: 50px;" key="index" @click="change_news(index)">{{o.title}}</div>
+					
 					</div>
 					<div class="main_second_middle">	
 					</div>
-					<div class="main_second_right">	
+					<div class="main_second_right" id='main_second_right' v-html="html">
+						
 					</div>
 				</div>
 			</div>
@@ -75,6 +74,92 @@
 </template>
 
 <script>
+	import global_ from '@/components/Global'
+	import store from '@/store'
+	import iView from 'iview'
+	import Vue from 'vue'
+	export default{
+		data(){
+			return{
+				predict_info:{
+					present: '无数据',
+					one_month_later: '无数据',
+					one_month_earlier: '无数据',
+					half_year_earlier: '无数据',
+					three_month_later: '无数据'
+				},
+				news_info :[],
+				html:''
+			}
+		},
+		mounted() {
+			this.get_news_info()
+			this.get_price_info()
+		},
+		methods:{
+			change_news(index){
+				this.html = this.news_info[index].body
+			},
+			get_news_info(){
+				var _this = this 
+				const loading = this.$loading({
+					lock: true,
+					text: 'Loading',
+					spinner: 'el-icon-loading',
+					background: 'rgba(0, 0, 0, 0.7)'
+				});
+				_this.$ajax({
+					url: global_.IpUrl + '/house/news/'+ this.get_city,
+					methods:'get'
+				}).then(function(response){
+					loading.close();
+					if(response.data.code===0&&response.data.count!=0){
+						var news = response.data.data
+						_this.news_info = []
+						_this.html = news[0].body
+						for(var i=0; i<news.length;i++){
+							var temp_news ={}
+							temp_news["title"] = news[i].title
+							temp_news["source"] = news[i].source
+							temp_news["pub_date"] = news[i].pub_date
+							temp_news["body"] = news[i].body
+							_this.news_info.push(temp_news)
+						}
+					}else{
+						
+					}
+					
+				})
+				
+			},
+			get_price_info(){
+				var _this = this
+				_this.$ajax({
+					url: global_.IpUrl + '/house/predict/'+ this.get_city_eng,
+					methods:'get'
+				}).then(function(response){
+					if(response.data.code===0){
+						var temp_predict_info = response.data.data
+						_this.predict_info.present = temp_predict_info[2]
+						_this.predict_info.one_month_later = temp_predict_info[3]
+						_this.predict_info.one_month_earlier = temp_predict_info[1]
+						_this.predict_info.half_year_earlier = temp_predict_info[0]
+						_this.predict_info.three_month_later = temp_predict_info[4]
+					}else{
+						iView.$Message.info(response.data.msg)
+					}
+				})
+			}
+		},
+		computed:{
+			get_city(){
+				return store.state.area.city
+			},
+			get_city_eng(){
+				return store.state.area_eng.city
+			}
+		}
+	}
 </script>
 
 <style scoped>
@@ -221,5 +306,6 @@
 	margin-top: 50px;
 	background-color: white;
 	float: left;
+	overflow: auto;
 }
 </style>

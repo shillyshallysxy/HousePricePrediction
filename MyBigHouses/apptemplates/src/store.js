@@ -38,7 +38,7 @@ export default new Vuex.Store({
 				state.UserInfo.username = ''
 		},
 		change_AreaInfo(state, area) {
-			console.log("更改了城市")
+			// console.log("更改了城市")
 			state.area.province = area['province'],
 				state.area.city = area['city'],
 				state.area.area = area['area']

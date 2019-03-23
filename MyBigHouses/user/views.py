@@ -13,6 +13,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, Signatur
 from django_redis import get_redis_connection
 import datetime
 from django.conf import settings
+import pickle
 # Create your views here.
 
 
@@ -226,6 +227,9 @@ class GetInfoView(View):
 # url: /user/star?house_id=xxxx
 class StarCountView(View):
     '''收藏接口'''
+    def __init__(self):
+        with open("./house/city_mapping_e2c.pkl", "rb") as f:
+            self.city_mapping = pickle.load(f)
 
     def get(self, request):
         conn = get_redis_connection("User&House")
@@ -270,6 +274,20 @@ class StarCountView(View):
 
         # 获取更新之后的收藏量
         star_count = conn.hget(house_key, "star_count").decode()
+
+        # 更新该房子所在城市收藏量的 top_N
+        house_record = House.objects.get(id=house_id)
+        city = house_record.city
+        for k, v in self.city_mapping.items():
+            if v == city:
+                city_en = k
+
+        top_key = "{}_topN".format(city_en)
+        # 将 <star_count, house_id> 添加到 zset 中
+        k_v = dict()
+        k_v[house_id] = star_count
+        conn.zadd(top_key, k_v)
+
         return JsonResponse({"code": 0, "star_count": star_count, "star_flag": star_flag})
 
 

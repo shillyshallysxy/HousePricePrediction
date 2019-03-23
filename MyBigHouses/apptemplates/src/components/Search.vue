@@ -1,5 +1,13 @@
 <template>
 	<div class="body"  v-loading.fullscreen.lock="fullscreenLoading">
+		<div class="header_bar">
+			<div class="search_line">
+				<div class="search_block">
+					<el-input v-model="search_info" clearable></el-input>
+				</div>
+				<button class="search_button" @click="search()">搜索</button>
+			</div>
+		</div>
 		<div class="choose_body">
 			<div class="Content">
 				<div class="middle">
@@ -29,16 +37,16 @@
 									{{o.total_price}}万
 								</p>
 								<p style="font-size: 12px;font-weight: 300;">
-									单价：{{o.price}}万
+									单价：{{o.price}}元
 								</p>
 								<p style="font-size: 12px;font-weight: 300;margin-top: 20px;">
-									{{o.star_count}}人已收藏
+									
 								</p>
 							</div>
 							<div class="line1"></div>
 						</li>
 					</ul>
-					<v-pagination :total="total" :current-page='current' @pagechange="pagechange"></v-pagination>	
+					<v-pagination v-if="hackReset" :total="total" :currentPage='current' @pagechange="pagechange" :display = 'display'></v-pagination>	
 				</div>
 			</div>
 		</div>
@@ -48,6 +56,7 @@
 <script>
 	import global_ from '@/components/Global'
 	import store from '@/store'
+	import iView from 'iview'
 	import {
 		getCookie,
 		setCookie,
@@ -65,33 +74,80 @@
 				total: 0, // 记录总条数
 				display: 15, // 每页显示条数
 				current: 1, // 当前的页数
+				search_info:'',
+				hackReset:true
 			};
 		},
 		mounted() {
-			var search_info = this.$route.query.search_info
-			var _this = this
-			_this.$ajax({
-				url:global_.IpUrl+"/house/search/?page="+this.current+"&text="+search_info,
-				
-			})
+			this.search_info = this.$route.query.search_info
+			this.get_List()
 		},
 		methods: {
-			
-			pagechange(page) {
-				this.current = page
-				
-				if(this.istrue){
-					this.get_select_List()
-					document.documentElement.scrollTop=0
+			search(){
+				if(this.search_info!=''){
+					this.current=1
+					this.hackReset = false
+					this.$nextTick(()=>{
+						this.hackReset=true
+					})
+					this.get_List()
 				}else{
-					this.get_default_list()
-					document.documentElement.scrollTop=0
+					iView.$Message.info("请输入搜索内容")
 				}
 				
 			},
-			
-			
-			
+			get_List(){
+				var _this = this
+				const loading = this.$loading({
+					lock: true,
+					text: 'Loading',
+					spinner: 'el-icon-loading',
+					background: 'rgba(0, 0, 0, 0.7)'
+				});
+				_this.$ajax({
+					url:global_.IpUrl+"/house/search/?page="+this.current+"&text="+this.search_info,
+					method:'get',
+				}).then(function(response){
+					loading.close();
+					var favor = response.data.results
+					_this.favor_info = []
+					for (var i = 0; i < favor.length; i++) {
+						var temp = {}
+						if(favor[i].object == null){
+							continue
+						}
+						temp["description"] = favor[i].object.description
+						temp["layout"] = favor[i].object.layout
+						temp["layer"] = favor[i].object.layer
+						temp["built_year"] = favor[i].object.built_year
+						temp["area"] = favor[i].object.area
+						temp["price"] = favor[i].object.price
+						temp["total_price"] = favor[i].object.total_price
+						temp["orientation"] = favor[i].object.orientation
+						temp["garden"] = favor[i].object.garden
+						temp["developer"] = favor[i].object.developer
+						temp["architecture"] = favor[i].object.architecture
+						temp["id"] = favor[i].object.id
+						temp["img_url"] = favor[i].object.pic_url
+						_this.favor_info.push(temp)
+						_this.total = response.data.count
+					}
+					
+				})
+			},
+			pagechange(page) {
+				this.current = page
+				this.get_List()
+				document.documentElement.scrollTop=0
+			},
+			go_to_detail(id) {
+				this.$router.push({
+					path: 'ItemPage',
+					query: {
+						HouseId: id
+					}
+				})
+			},
 		},
 		computed: {
 		}
@@ -104,7 +160,42 @@
 		height: 100%;
 		min-width: 1050px;
 	}
-
+.header_bar{
+	min-width: 100%;
+	height: 60px;
+	background-color: rgb(237,237,237);
+}
+.search_line{
+	width: 500px;
+	height: 40px;
+	margin-left: 16%;
+	margin-top: 15px;
+	float: left;
+	z-index: 10;
+	position: absolute;
+}
+.search_block{
+	width: 400px;
+	height: 40px;
+	opacity: 0.5;
+	display: block;
+	float: left;
+}
+.search_button{
+	width: 80px;
+	height: 40px;
+	margin-left: 10px;
+	background-color: darkred;
+	opacity: 0.7;
+	float: left;
+	display: block;
+	font-size: 16px;
+	color: white;
+	font-weight: 600;
+	border: 0;
+	border-radius: 5px;
+	cursor: pointer;
+}
 	.choose_body {
 		width: 100%;
 		height: 3000px;
@@ -116,7 +207,7 @@
 		width: 950px;
 		height: 3000px;
 		margin-left: -475px;
-		padding-top: 50px;
+		padding-top: 10px;
 	}
 
 	.bar {

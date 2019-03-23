@@ -77,3 +77,19 @@ class News(models.Model):
         db_table = "News"
         verbose_name = "新闻"
         verbose_name_plural = verbose_name
+
+class PredictPrice(models.Model):
+    '''历史房均价'''
+
+    location = models.CharField(max_length=30, null=False, verbose_name="地点")
+    year = models.CharField(max_length=8, null=False, verbose_name="房价年份")
+    month = models.CharField(max_length=4, null=False, verbose_name="房价月份")
+    predict_price = models.DecimalField(max_digits=10, decimal_places=1, verbose_name="预测的均价")
+
+    class Meta:
+        db_table = "PredictPrice"
+        verbose_name = "预测房价表"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.location

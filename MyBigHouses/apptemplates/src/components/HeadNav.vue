@@ -56,7 +56,6 @@
 			var local_province = localStorage.getItem("province")
 			var self = this
 			if (local_province == null) {
-				console.log("11")
 				const geolocation = new BMap.Geolocation();
 				let self = this
 				let city
@@ -64,7 +63,6 @@
 				geolocation.getCurrentPosition(function getinfo(position) {
 					city = position.address.city; //获取城市信息
 					province = position.address.province; //获取省份信息
-					console.log(city + ":" + province)
 					
 					MessageBox.confirm('是否切换到'+city+'?', '提示', {
 						confirmButtonText: '确定',
@@ -76,16 +74,13 @@
 						
 						if(arr[arr.length-1]=="市"){
 							arr.splice(arr.length-1,1)
-							console.log(arr)
 							var new_city = arr.join('')
 						}
 						arr = province.split('')
 						if(arr[arr.length-1]=="省"){
 							arr.splice(arr.length-1,1)
-							console.log(arr)
 							var new_province = arr.join('')
 						}
-						console.log()
 						var area = {}
 						area["province"] = province
 						area["city"] = new_city
@@ -139,7 +134,6 @@
 
 				}).then(function(response) {
 					if (response.data.status == 0) {
-						console.log(response.data.content)
 						var area = {}
 						area["province"] = response.data.content.address_detail.province
 						area["city"] = response.data.content.address_detail.city

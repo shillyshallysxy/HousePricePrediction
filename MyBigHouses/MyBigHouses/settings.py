@@ -43,7 +43,12 @@ INSTALLED_APPS = [
     'user',
     # 注册 house app
     'house',
-    'corsheaders'
+    'corsheaders',
+    # 全文搜索框架
+    'haystack',
+    # 富文本编辑器
+    'tinymce',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -73,6 +78,7 @@ TEMPLATES = [
             ],
         },
     },
+
 ]
 
 WSGI_APPLICATION = 'MyBigHouses.wsgi.application'
@@ -90,7 +96,8 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '123456',
         'HOST': '42.159.122.43',
-        'PORT': '3306'
+        'PORT': '3306',
+        'CONN_MAX_AGE': 9,
     }
 }
 
@@ -166,8 +173,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-    '127.0.0.1:8000',
-    '127.0.0.1:8080'
+    '*'
 )
 
 CORS_ALLOW_METHODS = ('*')
@@ -185,7 +191,6 @@ CORS_ALLOW_HEADERS = (
     'Access-Control-Allow-Origin',
     'Access-Control-Allow-Methods',
     'Access-Control-Allow-Headers'
-
 )
 
 
@@ -195,12 +200,15 @@ CACHES = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://42.159.122.43:6380/2",
         "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "User&House": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://42.159.122.43:6380/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 
@@ -213,4 +221,33 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media", "images")
 MEDIA_URL = "media/images/"
 
 # 房源列表每页数目
-LIST_PAGE_ITEMS = 15
+LIST_PAGE_ITEMS = 14
+
+# haystack 配置
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': "http://42.159.88.246:9200",
+        'INDEX_NAME': "house_index",
+    }
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10  # 搜索结果每页显示个数
+
+# 富文本编辑器
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'advanced',
+    'width': 600,
+    'height': 400,
+}
+
+# Mongodb 地址
+MONGODB_IP = "42.159.122.43"
+MONGODB_PORT = 27018
+
+STAR_COUNT_TOP_N = 8
+
+# 默认的房屋图片，可以是相对路径或网络URL
+DEFAULT_HOUSE_PIC_URL = "static/images/2.jpg"

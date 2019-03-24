@@ -21,6 +21,7 @@ from django.conf import settings
 
 urlpatterns = [
     path(r'admin/', admin.site.urls),
+    path(r'tinymce', include('tinymce.urls')),
     path(r'user/', include('user.urls', namespace='user')),
     path(r'house/', include('house.urls', namespace='house')),
     url(r'^media/images/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),

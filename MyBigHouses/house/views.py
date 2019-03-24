@@ -1,5 +1,5 @@
 from django.http import HttpResponse, JsonResponse
-from .models import House, HistoryPrice
+from .models import House, HistoryPrice, News, PredictPrice
 from django.views.generic import View
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -8,9 +8,13 @@ import pickle
 from pymongo import MongoClient
 from django_redis import get_redis_connection
 import datetime
+from dateutil.relativedelta import relativedelta
 import json
 import base64
-
+from haystack.generic_views import SearchView
+from drf_haystack.serializers import HaystackSerializer
+import sys
+import random
 # url: house/price/<city>/history?last_n_month=xx
 class History(View):
     '''历史房价接口'''
@@ -123,7 +127,7 @@ class SubLocationPriceView(View):
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
             # 建立到 MongoDB 的连接
-        client = MongoClient(host="42.159.122.43", port=27018)
+        client = MongoClient(host=settings.MONGODB_IP, port=settings.MONGODB_PORT)
         db = client.MBH
         self.city_relations = db.city_relations
         # 查询一次，存储在 cursor 中
@@ -133,7 +137,6 @@ class SubLocationPriceView(View):
         location_cn = self.city_mapping.get(city_name, None)
         year = request.GET.get("year", None)
         month = request.GET.get("month", None)
-
         # 获取年份和月份信息
         if year is None:
             year = datetime.datetime.now().year
@@ -146,7 +149,6 @@ class SubLocationPriceView(View):
         else:
             if len(month) == 1:
                 month = '0'+month
-
         if location_cn is None:
             return JsonResponse({"code": 1, "msg": "没有这个城市"})
 
@@ -164,9 +166,8 @@ class SubLocationPriceView(View):
                 continue
             else:
                 ret[0].append([sub_info[0].location, sub_info[0].average_price])
-                if i == 0:
+                if len(date_time) == 0:
                     date_time.append('{}-{}'.format(sub_info[0].year, sub_info[0].month))
-
         return JsonResponse({"code": 0, "data": ret, "location_cn": location_cn, "time": date_time})
 
 
@@ -177,22 +178,47 @@ class HouseOverView(View):
             self.city_mapping = pickle.load(f)
 
     def get(self, request, city_name):
-        number = request.GET.get("number", None)
-        location_cn = self.city_mapping.get(city_name, None)
-        # 获取年份和月份信息
-        if number is None:
-            number = 8
-        else:
-            number = int(float(number))
-        overview_infos = list()
-        infos = House.objects.filter(Q(city=location_cn) & ~Q(description='暂无描述') & ~Q(description='暂无该房源的描述'))[:number]
-        if len(infos) < number:
-            JsonResponse({"code": 1, "msg": '该地区的房源信息不足'})
-        for info in infos:
-            overview_infos.append({'id': info.id, 'garden': info.garden, 'description': info.description,
-                                   'area': info.area, 'total_price': info.total_price,
-                                   'img_url': "static/images/2.jpg"})
-        return JsonResponse({"code": 0, "data": overview_infos})
+        conn = get_redis_connection('User&House')
+        city_top_key = "{}_topN".format(city_name)
+        top_list = conn.zrevrangebyscore(city_top_key, sys.maxsize, 0, withscores=True, \
+                                         start=0, num=settings.STAR_COUNT_TOP_N)
+        top_list = [v[0].decode() for v in top_list]
+        # 获取收藏量前列的房子信息
+        records = House.objects.filter(id__in=top_list)
+        diff_num = settings.STAR_COUNT_TOP_N - len(top_list)
+        topN_infos = list()
+        for info in records:
+            item = dict()
+            item["id"] = info.id
+            item['garden'] = info.garden
+            item['description'] = info.description
+            item['area'] = info.area
+            item['total_price'] = info.total_price
+            item['img_url'] = info.pic_url
+            item['orientation'] = info.orientation
+            item['layout'] = info.layout
+            topN_infos.append(item)
+        if diff_num > 0:
+            try:
+                location_cn = self.city_mapping[city_name]
+            except KeyError:
+                return JsonResponse({"code": 1, "msg": "错误的城市信息"})
+            house_city_record = House.objects.filter(city=location_cn, price__gt=0, pic_url__startswith="http")
+            sample = random.sample(range(house_city_record.count()), diff_num)
+            records_append = [house_city_record.all()[i] for i in sample]
+            for info in records_append:
+                item = dict()
+                item["id"] = info.id
+                item['garden'] = info.garden
+                item['description'] = info.description
+                item['area'] = info.area
+                item['total_price'] = info.total_price
+                item['img_url'] = info.pic_url
+                item['orientation'] = info.orientation
+                item['layout'] = info.layout
+                topN_infos.append(item)
+
+        return JsonResponse({"code": 0, "data": topN_infos, 'count': len(topN_infos)})
 
 
 # url:house/price/<city>/mainpage_overview
@@ -285,7 +311,7 @@ class HouseDetailView(View):
         data = dict()
         data['description'] = house.description
         data['total_price'] = house.total_price
-        data['price'] = house.price
+        data['price'] = house.average_price
         data['layout'] = house.layout
         data['orientation'] = house.orientation
         data['area'] = house.area
@@ -296,7 +322,8 @@ class HouseDetailView(View):
         data['location'] = "{} {}".format(house.district, house.zone)
         data['developer'] = house.developer
         data['property_company'] = house.property_company
-        data['contact'] = '13800010001'
+        data['contact'] = house.agent_contact
+        data['pic_url'] = house.pic_url
 
         return JsonResponse({"code": 0, "data": data, "view_count": view_count, "star_count": star_count, \
                              "star_flag": star_flag})
@@ -306,13 +333,19 @@ class HouseDetailView(View):
 class HouseListView(View):
     '''房源列表接口'''
 
+    def __init__(self):
+        with open("./house/city_mapping_e2c.pkl", "rb") as f:
+            self.city_mapping = pickle.load(f)
+
     def get(self, request, city_name):
-        decoded_location = base64.b64decode(city_name).decode()
+        decoded_location = self.city_mapping.get(city_name, None)
+        # decoded_location = base64.b64decode(city_name).decode()
         try:
-            house_list = House.objects.filter(city=decoded_location)
+            house_list = House.objects.filter(Q(city=decoded_location) & ~Q(price=0))
         except:
             return JsonResponse({"code": 1, "msg": "城市信息有误"})
-        page_num = request.GET.get('house_id', None)
+        page_num = request.GET.get('page_num', None)
+
         if page_num is None:
             page_num = 1
         else:
@@ -324,6 +357,9 @@ class HouseListView(View):
         conn = get_redis_connection("User&House")
         collection_infos = list()
         pageinator = Paginator(house_list, settings.LIST_PAGE_ITEMS)
+
+        total_item_num = pageinator.count
+
         for house_obj in pageinator.page(page_num).object_list:
             house_info = dict()
             house_key = "house_{}".format(house_obj.id)
@@ -337,15 +373,282 @@ class HouseListView(View):
             house_info["layer"] = house_obj.layer
             house_info["built_year"] = house_obj.built_year
             house_info["area"] = house_obj.area
-            house_info["price"] = house_obj.price
+            house_info["price"] = house_obj.average_price
             house_info["total_price"] = house_obj.total_price
             house_info["orientation"] = house_obj.orientation
             house_info["garden"] = house_obj.garden
             house_info["developer"] = house_obj.developer
             house_info["architecture"] = house_obj.architecture
             house_info["id"] = house_obj.id
-            house_info["img_url"] = "static/images/2.jpg"
+            house_info["img_url"] = house_obj.pic_url
             house_info["star_count"] = star_count
             collection_infos.append(house_info)
+        return JsonResponse({"code": 0, "data": collection_infos, 'total_item_num': total_item_num})
 
-        return JsonResponse({"code": 0, "data": collection_infos})
+
+# url: house/filter?
+class FilterView(View):
+    '''过滤条件'''
+    def __init__(self):
+        self.conn=get_redis_connection("User&House")
+
+    # def get(self, request):
+    #     page_num = request.GET.get('page', None)
+    #
+    #     if page_num is None:
+    #         page_num = 1
+    #     else:
+    #         page_num = int(page_num)
+    #     # 检查页码合法性
+    #     if page_num not in self.page.page_range:
+    #         return JsonResponse({"code": 1, "msg": "页码不合法"})
+    #
+    #     collections = list()
+    #
+    #     for house_obj in self.page.page(page_num):
+    #         house_info = dict()
+    #
+    #         house_key = "house_{}".format(house_obj.id)
+    #         star_count = self.conn.hget(house_key, "star_count")
+    #         if star_count is None:
+    #             star_count = 0
+    #         else:
+    #             star_count = star_count.decode()
+    #
+    #         house_info["description"] = house_obj.description
+    #         house_info["layout"] = house_obj.layout
+    #         house_info["layer"] = house_obj.layer
+    #         house_info["built_year"] = house_obj.built_year
+    #         house_info["area"] = house_obj.area
+    #         house_info["price"] = house_obj.price
+    #         house_info["total_price"] = house_obj.total_price
+    #         house_info["orientation"] = house_obj.orientation
+    #         house_info["garden"] = house_obj.garden
+    #         house_info["developer"] = house_obj.developer
+    #         house_info["architecture"] = house_obj.architecture
+    #         house_info["id"] = house_obj.id
+    #         house_info["img_url"] = "static/images/2.jpg"
+    #         house_info["star_count"] = star_count
+    #         collections.append(house_info)
+    #     return JsonResponse({"code": 0, "data": collections, \
+    #                          'total_item_num': self.page.num_pages*settings.LIST_PAGE_ITEMS})
+
+    def post(self, request):
+        data = json.loads(request.body)
+        city = data.get('city', None)
+        area = data.get('area', None)
+        price = data.get('price', None)
+        layout = data.get('house', None)
+        district = data.get('region', None)
+        orientation = data.get('south_north', None)
+        page_num = int(data.get('page', 1))
+        sort = int(data.get('sort', 0))
+        try:
+            records = House.objects.filter(city=city)
+        except House.DoesNotExist:
+            return JsonResponse({"code": 2, "msg": "没有符合条件的数据"})
+
+        if district != '':
+            records = records.filter(district=district)
+        # 对面积筛选
+        area_lowbound, area_highbound = map(int, area.split('~'))
+        if area_highbound == area_lowbound:
+            if area_lowbound == 200:
+                # 200 以上
+                records = records.filter(area__gte=200)
+        else:
+            records = records.filter(Q(area__gt=area_lowbound) & Q(area__lt=area_highbound))
+
+        # 对总价筛选
+        price_lowbound, price_highbound = map(int, price.split('~'))
+        if price_lowbound == price_highbound:
+            if price_lowbound == 500:
+                records = records.filter(total_price__gte=500)
+        else:
+            records = records.filter(Q(total_price__gt=price_lowbound) & Q(total_price__lt=price_highbound))
+
+        # 对朝向筛选
+        if orientation:
+            records = records.filter(Q(orientation__contains="南") | Q(orientation__contains="北"))
+
+        # 对户型筛选
+        # 过滤掉没有户型信息的数据
+        records = records.filter(layout__contains='室')
+        layout = int(layout)
+        if layout == 6:
+            # 5室以上
+            pass
+        if layout in list(range(1, 6)):
+            # 1-5室
+            records = records.filter(layout__startswith=str(layout))
+
+        # 排序相关
+        if sort == 1:
+            # 按单价降序
+            records = records.order_by("-average_price")
+        elif sort == 2:
+            # 按单价升序
+            records = records.order_by("average_price")
+        elif sort == 3:
+            # 按总价降序
+            records = records.order_by("-total_price")
+        elif sort == 4:
+            # 按总价升序
+            records = records.order_by("total_price")
+        elif sort == 5:
+            # 按面积降序
+            records = records.order_by("-area")
+        elif sort == 6:
+            # 按面积升序
+            records = records.order_by("area")
+
+        # 分页
+        page = Paginator(records, settings.LIST_PAGE_ITEMS)
+        collections = list()
+
+        for house_obj in page.page(page_num):
+            # 返回第 page_num 页内容
+            house_info = dict()
+
+            house_key = "house_{}".format(house_obj.id)
+            star_count = self.conn.hget(house_key, "star_count")
+            if star_count is None:
+                star_count = 0
+            else:
+                star_count = star_count.decode()
+            house_info["description"] = house_obj.description
+            house_info["layout"] = house_obj.layout
+            house_info["layer"] = house_obj.layer
+            house_info["built_year"] = house_obj.built_year
+            house_info["area"] = house_obj.area
+            house_info["price"] = house_obj.average_price
+            house_info["total_price"] = house_obj.total_price
+            house_info["orientation"] = house_obj.orientation
+            house_info["garden"] = house_obj.garden
+            house_info["developer"] = house_obj.developer
+            house_info["architecture"] = house_obj.architecture
+            house_info["id"] = house_obj.id
+            house_info["img_url"] = settings.DEFAULT_HOUSE_PIC_URL \
+                                    if house_obj.pic_url == "暂无房屋图片" else house_obj.pic_url
+            house_info["star_count"] = star_count
+            collections.append(house_info)
+        return JsonResponse({"code": 0, "data": collections, \
+                             'total_item_num': page.count})
+
+
+from drf_haystack.viewsets import HaystackViewSet
+from .serializers import HouseIndexSerializer, StandardResultSetPagination
+
+
+class HouseSearchViewSet(HaystackViewSet):
+    index_models = [House]
+    serializer_class = HouseIndexSerializer
+    pagination_class = StandardResultSetPagination
+
+# url: house/news/<city_name>
+class GetNewsInfo(View):
+    '''
+    获取新闻信息接口
+    '''
+
+    def get(self, request, city_name):
+        news_items = News.objects.filter(city=city_name).order_by("-pub_date")[:4]
+        news_collection = list()
+
+        for item in news_items:
+            news_info = dict()
+            news_info['title'] = item.title
+            news_info['body'] = item.body
+            news_info['source'] = item.source
+            news_info['pub_date'] = item.pub_date
+            news_collection.append(news_info)
+
+        return JsonResponse({"code": 0, "data": news_collection, "count": len(news_collection)})
+
+
+# url: house/predict/<city_name>
+class PredictPriceView(View):
+    '''
+    获取预测价格
+    '''
+
+    def __init__(self):
+        with open("./house/city_mapping_e2c.pkl", "rb") as f:
+            self.city_mapping = pickle.load(f)
+
+    def get_timepoint(self, month_gap=0):
+        '''
+        :param month_gap: 找几个月
+        :return: 符合条件的 {'year': year, 'month': month}
+        '''
+        cur_datetime = datetime.datetime.now()
+        offset_datetime = cur_datetime + relativedelta(months=month_gap)
+        month = offset_datetime.month
+        month = str(month) if month > 9 else '0' + str(month)
+        return {'year': offset_datetime.year, 'month': month}
+
+    def get(self, request, city_name):
+        city_cn = self.city_mapping.get(city_name, None)
+        if city_cn is None:
+            return JsonResponse({"code": 1, "msg": "城市有误"})
+
+        # 先过滤掉无关城市记录
+        predict_records = PredictPrice.objects.filter(location=city_cn)
+        history_records = HistoryPrice.objects.filter(location=city_cn)
+        # 获取指定的时间点，表格里的数字
+        current = self.get_timepoint()
+        one_month_before = self.get_timepoint(month_gap=-1)
+        half_year_before = self.get_timepoint(month_gap=-6)
+        one_month_after = self.get_timepoint(month_gap=1)
+        three_month_after = self.get_timepoint(month_gap=3)
+
+        history_timepoints = [half_year_before, one_month_before, current]
+        predict_timepoints = [one_month_after, three_month_after]
+
+        ret = list()
+        for timepoint in history_timepoints:
+            try:
+                entry = history_records.get(Q(year=timepoint['year']) & Q(month=timepoint['month']))
+            except:
+                return JsonResponse({"code": 2, "msg": "查不到该时间的历史价格"})
+            else:
+                ret.append(entry.average_price)
+
+        for timepoint in predict_timepoints:
+            try:
+                entry = predict_records.get(Q(year=timepoint['year']) & Q(month=timepoint['month']))
+            except:
+                return JsonResponse({"code": 3, "msg": "查不到该时间的预测价格"})
+            else:
+                ret.append(entry.predict_price)
+
+        # 获取前6后3的数据，用于趋势图
+        last_6_timepoints = list()
+        for i in range(1, 7):  # [1, 2, 3, 4, 5, 6]
+            last_6_timepoints.append(self.get_timepoint(month_gap=i-6))
+
+        fore_3_timepoints = list()
+        for i in range(3):
+            fore_3_timepoints.append(self.get_timepoint(month_gap=i+1))
+
+        chart_data = list()
+        date_time = list()
+        # 到历史房价结果集中找
+        for timepoint in last_6_timepoints:
+            try:
+                 entry = history_records.get(year=timepoint['year'], month=timepoint['month'])
+            except:
+                # 找不到当前时间点的记录，则跳过，查找下一个
+                continue
+            else:
+                chart_data.append(["{}-{}".format(timepoint["year"], timepoint["month"]), entry.average_price])
+        # 到预测结果集中找
+        for timepoint in fore_3_timepoints:
+            try:
+                entry = predict_records.get(year=timepoint['year'], month=timepoint['month'])
+            except:
+                continue
+            else:
+                chart_data.append(["{}-{}".format(timepoint["year"], timepoint["month"]), entry.predict_price])
+
+        return JsonResponse({"code": 0, "data": ret, "count": len(ret), 'chart_data': chart_data})

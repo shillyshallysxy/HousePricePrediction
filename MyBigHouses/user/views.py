@@ -13,6 +13,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, Signatur
 from django_redis import get_redis_connection
 import datetime
 from django.conf import settings
+import pickle
 # Create your views here.
 
 
@@ -76,6 +77,7 @@ class ActiveView(View):
         try:
             info = serializer.loads(token)
         except SignatureExpired as e:
+
             return HttpResponse('该链接已过期')
         except BadSignature as e:
             return HttpResponse('不合法的激活链接')
@@ -150,7 +152,6 @@ class UploadAvatarView(View):
 
         avatar = request.FILES.get("file", None)
         if avatar is None:
-            print("avatar is None")
             return JsonResponse({"code": 0, "msg": "No avatar selected"})
 
         try:
@@ -168,7 +169,6 @@ class GetInfoView(View):
     def get(self, request):
         item_num_one_page = 5
         page_num = request.GET.get('pag_num', None)
-        print(page_num)
         if page_num is None:
             page_num = 1
         else:
@@ -198,7 +198,10 @@ class GetInfoView(View):
             house_info = dict()
             house_key = "house_{}".format(collection)
             star_count = conn.hget(house_key, "star_count").decode()
-            house_obj = House.objects.get(id=int(collection))
+            try:
+                house_obj = House.objects.get(id=int(collection))
+            except House.DoesNotExist:
+                continue
             house_info["description"] = house_obj.description
             house_info["layout"] = house_obj.layout
             house_info["layer"] = house_obj.layer
@@ -211,7 +214,7 @@ class GetInfoView(View):
             house_info["developer"] = house_obj.developer
             house_info["architecture"] = house_obj.architecture
             house_info["id"] = house_obj.id
-            house_info["img_url"] = "static/images/2.jpg"
+            house_info["img_url"] = house_obj.pic_url
             house_info["star_count"] = star_count
             collection_infos.append(house_info)
 
@@ -224,6 +227,9 @@ class GetInfoView(View):
 # url: /user/star?house_id=xxxx
 class StarCountView(View):
     '''收藏接口'''
+    def __init__(self):
+        with open("./house/city_mapping_e2c.pkl", "rb") as f:
+            self.city_mapping = pickle.load(f)
 
     def get(self, request):
         conn = get_redis_connection("User&House")
@@ -268,6 +274,20 @@ class StarCountView(View):
 
         # 获取更新之后的收藏量
         star_count = conn.hget(house_key, "star_count").decode()
+
+        # 更新该房子所在城市收藏量的 top_N
+        house_record = House.objects.get(id=house_id)
+        city = house_record.city
+        for k, v in self.city_mapping.items():
+            if v == city:
+                city_en = k
+
+        top_key = "{}_topN".format(city_en)
+        # 将 <star_count, house_id> 添加到 zset 中
+        k_v = dict()
+        k_v[house_id] = star_count
+        conn.zadd(top_key, k_v)
+
         return JsonResponse({"code": 0, "star_count": star_count, "star_flag": star_flag})
 
 

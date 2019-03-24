@@ -2,7 +2,7 @@
   <div v-bind:class="{body: true}">
 	  <div v-bind:class="{background: true}">
     	<div v-bind:class="{register_window: true}">
-			
+
     			<img src="../assets/user.png" style="height: 30px; width: 30px;" />
       		<div style="margin-top: 10px; max-height: 260px;min-height: 260px;max-width: 250px;min-width: 250px;padding-left: 10px;">
       			  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -18,8 +18,8 @@
 			          <el-form-item prop="confirm_password">
 				          <el-input v-model="ruleForm.confirm_password" autocomplete="off" type="password" placeholder="confirm password" v-bind:class="{text_input: true}"></el-input>
 			          </el-form-item>
-			            <el-button type="primary" @click="submitForm('ruleForm')" v-bind:class="{button: true, register_btn:true}">注册</el-button></br>
-			          <el-form-item style="width: 200px; margin-left:70px; text-align: right;">
+			            <el-button type="primary" @click="submitForm('ruleForm')" v-bind:class="{button: true, register_btn:true}" :loading="register_loading_flag">注册</el-button></br>
+			          <el-form-item style="width: 200px; margin-left:70px; text-align: right; margin-top:3px">
 			            <el-button @click="resetForm('ruleForm')" v-bind:class="{button: true, reset_btn: true}">重置</el-button>
 			          </el-form-item>
 			        </el-form>
@@ -56,6 +56,7 @@
 			};
 
 			return {
+				register_loading_flag: false,
 				ruleForm: {
 					email: '',
 					username: '',
@@ -89,7 +90,18 @@
 					password: [{
 						validator: validatePass,
 						trigger: 'blur'
-					}, ],
+					}, {
+							required: true,
+							message: '请输入密码',
+							trigger: 'blur'
+						},
+						{
+							min: 6,
+							max: 30,
+							message: '长度在 6 到 30 个字符',
+							trigger: 'blur'
+						}
+					],
 					confirm_password: [{
 						validator: validatePass2,
 						trigger: 'blur'
@@ -99,6 +111,7 @@
 		},
 		methods: {
 			submitForm(formName) {
+				this.register_loading_flag = true,
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
 						var arr = this.getCookie('csrftoken')
@@ -117,17 +130,19 @@
 								'X-CSRFToken': arr
 							}
 						}).then(function(response) {
+							this.register_loading_flag = false
 							if (response.data.code === 0) {
 								iView.Message.info('注册成功,请至邮箱激活您的账号')
 							} else {
 								iView.Message.info(response.data.msg)
 							}
-						})
+						}.bind(this))
 					} else {
-						console.log('error submit!!');
+						this.register_loading_flag = false
 						return false;
 					}
 				});
+				
 			},
 			resetForm(formName) {
 				this.$refs[formName].resetFields();

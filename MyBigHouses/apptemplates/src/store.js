@@ -14,14 +14,14 @@ export default new Vuex.Store({
 		},
 		area: {
 			province: "江苏省",
-			city: "苏州",
-			area: "吴中区",
+			city: "无锡",
+			area: "",
 			street: ""
 		},
 		area_eng: {
 			province: "jiangsu",
-			city: "suzhou",
-			area: "wuzhong",
+			city: "wuxi",
+			area: "",
 			street: "",
 			average_price: '1.634',
 		}
@@ -38,6 +38,7 @@ export default new Vuex.Store({
 				state.UserInfo.username = ''
 		},
 		change_AreaInfo(state, area) {
+			// console.log("更改了城市")
 			state.area.province = area['province'],
 				state.area.city = area['city'],
 				state.area.area = area['area']

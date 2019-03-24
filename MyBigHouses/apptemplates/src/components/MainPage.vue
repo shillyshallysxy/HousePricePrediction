@@ -97,7 +97,7 @@
 									</div>
 									-->
 									<div style="width: 150px;float: left;">
-										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 2px;">{{o.price}}万</p>							
 										<el-button type="text" class="button" style="margin-top: 5px;padding: 0; float: left;margin-left: 10px;" data-index="o.id"
 										 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 									</div>
@@ -129,7 +129,7 @@
 									</div>
 									-->
 									<div style="width: 150px;float: left;">
-										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 2px;">{{o.price}}万</p>							
 										<el-button type="text" class="button" style="margin-top: 5px;padding: 0; float: left;margin-left: 10px;" data-index="o.id"
 										 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 									</div>

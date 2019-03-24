@@ -73,8 +73,8 @@
 						},
 						{
 							min: 6,
-							max: 15,
-							message: '长度在 6 到 15 个字符',
+							max: 30,
+							message: '长度在 6 到 30 个字符',
 							trigger: 'blur'
 						}
 

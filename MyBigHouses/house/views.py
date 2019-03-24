@@ -323,6 +323,7 @@ class HouseDetailView(View):
         data['developer'] = house.developer
         data['property_company'] = house.property_company
         data['contact'] = house.agent_contact
+        data['pic_url'] = house.pic_url
 
         return JsonResponse({"code": 0, "data": data, "view_count": view_count, "star_count": star_count, \
                              "star_flag": star_flag})
@@ -594,7 +595,7 @@ class PredictPriceView(View):
         # 先过滤掉无关城市记录
         predict_records = PredictPrice.objects.filter(location=city_cn)
         history_records = HistoryPrice.objects.filter(location=city_cn)
-
+        # 获取指定的时间点，表格里的数字
         current = self.get_timepoint()
         one_month_before = self.get_timepoint(month_gap=-1)
         half_year_before = self.get_timepoint(month_gap=-6)
@@ -621,4 +622,33 @@ class PredictPriceView(View):
             else:
                 ret.append(entry.predict_price)
 
-        return JsonResponse({"code": 0, "data": ret, "count": len(ret)})
+        # 获取前6后3的数据，用于趋势图
+        last_6_timepoints = list()
+        for i in range(1, 7):  # [1, 2, 3, 4, 5, 6]
+            last_6_timepoints.append(self.get_timepoint(month_gap=i-6))
+
+        fore_3_timepoints = list()
+        for i in range(3):
+            fore_3_timepoints.append(self.get_timepoint(month_gap=i+1))
+
+        chart_data = list()
+        date_time = list()
+        # 到历史房价结果集中找
+        for timepoint in last_6_timepoints:
+            try:
+                 entry = history_records.get(year=timepoint['year'], month=timepoint['month'])
+            except:
+                # 找不到当前时间点的记录，则跳过，查找下一个
+                continue
+            else:
+                chart_data.append(["{}-{}".format(timepoint["year"], timepoint["month"]), entry.average_price])
+        # 到预测结果集中找
+        for timepoint in fore_3_timepoints:
+            try:
+                entry = predict_records.get(year=timepoint['year'], month=timepoint['month'])
+            except:
+                continue
+            else:
+                chart_data.append(["{}-{}".format(timepoint["year"], timepoint["month"]), entry.predict_price])
+
+        return JsonResponse({"code": 0, "data": ret, "count": len(ret), 'chart_data': chart_data})

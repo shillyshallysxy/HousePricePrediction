@@ -85,7 +85,7 @@ export default new Router({
 			name: 'PricePredict',
 			component: PricePredict,
 			meta:{
-				requireLogin:false
+				requireLogin:true
 			}
 		},
 		{
@@ -93,7 +93,7 @@ export default new Router({
 			name: 'HouseChoosing',
 			component: HouseChoosing,
 			meta: {
-				requireLogin:false
+				requireLogin:true
 			}
 		},
 		{

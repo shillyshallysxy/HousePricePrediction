@@ -8,8 +8,10 @@ import hashlib
 
 
 def user_path_url(instance, filename):
+    # 将filename的除了后缀的其余部分根据用户名hash后的结果改名，保证一个用户只能上传一个头像
     filename = '{}.{}'.format(hashlib.md5("{}_{}".format(instance.id, "avatar").encode('utf-8')).hexdigest(), filename.rpartition('.')[2])
     path = "avatars/user_{0}/{1}".format(instance.id, filename)
+    # 将原有的头像删除，写入新头像
     if os.path.exists(os.path.join(settings.MEDIA_ROOT, path)):
         os.remove(os.path.join(settings.MEDIA_ROOT, path))
     return path

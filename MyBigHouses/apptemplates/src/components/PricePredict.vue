@@ -85,6 +85,7 @@
 	export default {
 		data() {
 			return {
+				// 默认无数据
 				predict_info: {
 					present: '无数据',
 					one_month_later: '无数据',
@@ -94,17 +95,19 @@
 				},
 				news_info: [],
 				html: '',
+				// 折线图当前选择的城市
 				city_selected: [],
+				// 存储折线图的数据
 				his_price_line: {},
+				// 存储x轴信息
 				x_axis_line: [],
 				id: 'history_price',
+				// 折线图charts的初始设置
 				options_chart_line: {
 					chart: {
 						zoomType: 'x',
 						type: 'spline',
 						backgroundColor: "#ffffff",
-						// 						height: "500px",
-						// 						width: "380px",
 						borderRadius: "2",
 						// shadow: true
 					},
@@ -113,9 +116,6 @@
 					},
 					subtitle: {},
 					xAxis: {
-						// 						labels:{
-						// 							enabled: false
-						// 						}
 					},
 					yAxis: {
 						title: {
@@ -135,8 +135,9 @@
 								lineWidth: 1
 							},
 							zoneAxis: 'x',
+							// 设置预测颜色
 							zones: [{
-								value: 6,
+								value: 5,
 								// color: '#000000',
 							}, {
 								value: 9,
@@ -153,13 +154,6 @@
 							enableMouseTracking: true
 						}
 					},
-					// 					legend:{
-					// 						layout: 'vertical',
-					// 						align: 'right',
-					// 						verticalAlign: 'middle',
-					// 						borderWidth: 0
-					// 					},
-					//去除水印
 					credits: {
 						enabled: false
 					},
@@ -178,13 +172,16 @@
 			this.get_price_info()
 			this.city_name_cn = store.state.area.city
 			this.city_name_en = store.state.area_eng.city
+			// 更新当前选择的城市
 			this.city_selected = [store.state.area_eng.province, store.state.area_eng.city]
+			// 更新折线图图表
 			this.getSelectedCityPrice()
 		},
 		components: {
 			VueHighcharts
 		},
 		methods: {
+			// 更改曲线图的城市,并同步更新曲线图
 			getSelectedCityPrice() {
 				var city_sel_len = this.city_selected.length
 				if (city_sel_len == 0) {
@@ -196,13 +193,17 @@
 					this.getHisPrice_line_data(city_now)
 				}
 			},
+			// 异步请求获取曲线图的数据
 			getHisPrice_line_data(choosed_city) {
+				// 默认获取获取数据长度为9
 				let last_n_month = 9
 				this.$ajax({
 					method: 'get',
 					url: global_.IpUrl + '/house/predict/' + choosed_city
 				}).then(function(response) {
+					// 成功返回数据则进入该方法, 否则弹出失败信息
 					if (response.data.code === 0) {
+						// 判断是否已经加载过该地区的折线图数据了，如果未加载过则加载
 						if (typeof(this.his_price_line[choosed_city]) == 'undefined') {
 							let hist_price = []
 							let x_axis = []
@@ -211,7 +212,6 @@
 								hist_price.push(parseFloat(s[1]))
 								x_axis.push(s[0])
 							}
-							// console.log(hist_price)
 							// 如果返回的数据较短，则扩充x轴长度并对列表中的原数据进行pad
 							if (parseInt(response.data.chart_data.length) < last_n_month) {
 								for (var i = 0; i < last_n_month - parseInt(response.data.chart_data.length); i++) {
@@ -220,27 +220,33 @@
 							} else {
 								this.x_axis_line = x_axis
 							}
+							// 将获取的数据更新
 							this.his_price_line[choosed_city] = hist_price
 						}
+						// 更新表格（chart）
 						this.showCart()
 					} else {
 						iView.Message.info(response.data.msg)
 					}
 				}.bind(this))
 			},
+			// 更新chart的方法
 			showCart() {
 				let last_n_month = 9
 				// 获得chart
 				let his_chart = this.$refs.HisPriceCharts_line
+				// 更新x轴
 				his_chart.getChart().xAxis[0].setCategories(this.x_axis_line.slice(-last_n_month))
 				for (var hist_price_key in this.his_price_line) {
 					var vali_series = his_chart.getChart().get(hist_price_key)
+					// 如果表格中不存在该数据则加入该数据
 					if (typeof(vali_series) == "undefined") {
 						his_chart.addSeries({
 							id: hist_price_key,
 							name: hist_price_key,
 							data: this.his_price_line[hist_price_key].slice(-last_n_month),
 						})
+					// 如果表格中存在该数据则更新该数据
 					} else {
 						vali_series.setData(this.his_price_line[hist_price_key].slice(-last_n_month))
 					}

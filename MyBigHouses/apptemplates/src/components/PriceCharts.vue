@@ -50,17 +50,28 @@
 						return time.getTime() > Date.now() || time.getTime() < limitMonths;;
 					}
 				},
+				// 是否正在加载曲线图
 				loading_flag: false,
+				// 是否正在加载柱状图
 				loading_flag_col: false,
+				// 选择的过去n个月的信息（默认12）
 				year_selected: '12',
 				id: 'history_price',
+				// 曲线图当前选择的城市
 				city_selected: [],
+				// 柱状图当前选择的城市
 				city_selected_col: [],
+				// 曲线图存储的series信息
 				his_price_line: {},
+				// 趋势图存储的series信息
 				his_price_tend: {},
+				// 曲线图的x轴信息
 				x_axis_line: [],
+				// 趋势图的x轴信息
 				x_axis_tend: [],
+				// 柱状图当前选择的月份信息
 				month_selected: "2019-3",
+				// 曲线图和趋势图的城市联动选择器的选项设置
 				options_choose_city: [{
 						value: 'beijing',
 						label: '北京',
@@ -25577,6 +25588,7 @@
 					},
 
 				],
+				// 柱状图的城市联动选择器的选项设置
 				options_choose_city_col: [{
 					value: 'beijing',
 					label: '北京',
@@ -35877,6 +35889,7 @@
 						}, ]
 					}, ]
 				}, ],
+				// 曲线图图表chart的初始设置
 				options_chart_line: {
 					chart: {
 						zoomType: 'x',
@@ -35925,6 +35938,7 @@
 					},
 					series: []
 				},
+				// 趋势图图表chart的初始设置
 				options_chart_line_tend: {
 					chart: {
 						zoomType: 'x',
@@ -35973,6 +35987,7 @@
 					},
 					series: []
 				},
+				// 柱状图的图表初始设置
 				options_chart_column: {
 					chart: {
 						type: 'column'
@@ -36015,6 +36030,7 @@
 					},
 					series: []
 				},
+				// 过去n年的选择器的option
 				options_select_year: [{
 					value: '12',
 					label: '过去一年'
@@ -36028,6 +36044,7 @@
 					value: '96',
 					label: '过去全部'
 				}],
+				// 是否改变了柱状图的城市
 				change_city_col_flag: false,
 			}
 		},
@@ -36038,25 +36055,26 @@
 				spinner: 'el-icon-loading',
 				background: 'rgba(255,255,255,0.8)'
 			});
+			// 初始化当前城市信息
 			this.city_selected = [store.state.area_eng.province, store.state.area_eng.city]
 			this.city_selected_col = [store.state.area_eng.province, store.state.area_eng.city]
-			// console.log(store.state.area_eng.city);
+			// 获取并显示曲线图
 			this.getSelectedCityPrice()
-			// this.showCart(12)
+			// 获取并显示柱状图
 			this.getSelectedCityCol()
 			loading.close();
 		},
 		methods: {
+			// 更改柱状图的城市
 			changeCity_col() {
 				var city_sel_len = this.city_selected_col.length
 				if (city_sel_len == 0) {
 					iView.Message.info('请选择城市')
 				} else {
 					var city_now = this.city_selected_col[city_sel_len - 1]
-					// console.log(city_now)
-					// this.showCart(12)
 				}
 			},
+			// 更改曲线图的城市,并同步更新曲线图
 			getSelectedCityPrice() {
 				var city_sel_len = this.city_selected.length
 				if (city_sel_len == 0) {
@@ -36066,9 +36084,9 @@
 				} else {
 					var city_now = this.city_selected[city_sel_len - 1]
 					this.getHisPrice_line_data(city_now)
-					// this.showCart(12)
 				}
 			},
+			// 更新柱状图的信息
 			getSelectedCityCol() {
 				var city_sel_len = this.city_selected_col.length
 				if (city_sel_len == 0) {
@@ -36076,18 +36094,23 @@
 				} else {
 					var city_now = this.city_selected_col[city_sel_len - 1]
 					this.getHisPrice_coloumn(city_now)
-					// this.showCart(12)
 				}
 			},
+			// 异步请求获取曲线图的数据
 			getHisPrice_line_data(choosed_city) {
+				// 将按钮设置为正在加载状态，并禁止点击
 				this.loading_flag = true
+				// 默认获取获取96个月的数据
 				let last_n_month = 96
 				this.$ajax({
 					method: 'get',
 					url: global_.IpUrl + '/house/price/' + choosed_city + '/history?last_n_month=' + last_n_month
 				}).then(function(response) {
+					// 请求返回则将按钮设置为加载成功
 					this.loading_flag = false
+					// 成功返回数据则进入该方法
 					if (response.data.code === 0) {
+						// 判断是否已经加载过该地区的折线图数据了，如果未加载过则加载
 						if (typeof(this.his_price_line[response.data.city]) == "undefined") {
 							let hist_price = []
 							let hist_tend = []
@@ -36098,7 +36121,6 @@
 								hist_price.push(parseFloat(s[1]))
 								x_axis.push(s[0])
 							}
-
 							// 如果返回的数据较短，则扩充x轴长度并对列表中的原数据进行pad
 							if (parseInt(response.data.count) < last_n_month) {
 								for (var i = 0; i < last_n_month - parseInt(response.data.count); i++) {
@@ -36108,19 +36130,24 @@
 							} else {
 								this.x_axis_line = x_axis
 							}
+							// 将获取的数据更新
 							this.his_price_line[response.data.city] = hist_price
 							this.his_price_tend[response.data.city] = hist_tend
 						}
+						// 更新表格（chart）
 						this.showBothCart()
+					// 失败则显示返回的失败信息
 					} else {
 						iView.Message.info(response.data.msg)
 					}
 				}.bind(this))
 			},
+			// 同时更新曲线图和趋势图的方法
 			showBothCart() {
 				this.showCart(this.year_selected)
 				this.showCart(this.year_selected, true)
 			},
+			// 更新chart的方法， tend_flag判断是折线图还是趋势图
 			showCart(last_n_month = this.year_selected, tend_flag = false) {
 				last_n_month = parseInt(last_n_month)
 				// 获得chart
@@ -36130,38 +36157,45 @@
 				} else {
 					his_chart = this.$refs.HisPriceCharts_line
 				}
+				// 更新x轴
 				his_chart.getChart().xAxis[0].setCategories(this.x_axis_line.slice(-last_n_month))
+				// 更新数据， 如果选择曲线图
 				if (tend_flag) {
 					for (var hist_price_key in this.his_price_tend) {
 						var vali_series = his_chart.getChart().get(hist_price_key)
+						// 如果表格中不存在该数据则加入该数据
 						if (typeof(vali_series) == "undefined") {
 							his_chart.addSeries({
 								id: hist_price_key,
 								name: hist_price_key,
 								data: this.his_price_tend[hist_price_key].slice(-last_n_month),
 							})
+						// 如果表格中存在该数据则更新该数据
 						} else {
 							vali_series.setData(this.his_price_tend[hist_price_key].slice(-last_n_month))
 						}
 					}
+				// 更新数据， 如果选择趋势图
 				} else {
 					for (var hist_price_key in this.his_price_line) {
 						var vali_series = his_chart.getChart().get(hist_price_key)
+						// 如果表格中不存在该数据则加入该数据
 						if (typeof(vali_series) == "undefined") {
 							his_chart.addSeries({
 								id: hist_price_key,
 								name: hist_price_key,
 								data: this.his_price_line[hist_price_key].slice(-last_n_month),
 							})
+						// 如果表格中存在该数据则更新该数据
 						} else {
 							vali_series.setData(this.his_price_line[hist_price_key].slice(-last_n_month))
 						}
 					}
 				}
 			},
+			// 获取并更新柱状图的方法
 			getHisPrice_coloumn(choosed_city) {
-
-				// let choosed_city = store.state.area_eng.city
+				// 获取当前选择的时间
 				let time_arr = this.month_selected.split('-')
 				let year = time_arr[0]
 				let month = time_arr[1]
@@ -36169,6 +36203,7 @@
 					month = '0' + month
 				}
 				let url_
+				// 时间数据的异常处理
 				if (typeof(month) == "undefined") {
 					url_ = ''
 				} else {
@@ -36177,12 +36212,15 @@
 				// 获得chart
 				let his_chart = this.$refs.HisPriceCharts_column
 				let series_ = his_chart.getChart().series[0]
+				// 如果选择的城市产生了变更， 则清空表格（不同地区的子区域不同，显示在同一个柱状图中没有意义）
 				if (typeof(series_) != "undefined") {
 					if (series_.options.id.split(':')[0] != choosed_city) {
 						his_chart.removeSeries()
 					}
 				}
+				// 获取柱状图中的选择年份，地区的series
 				var vali_series = his_chart.getChart().get(choosed_city + ':' + year + '-' + month)
+				// 如果柱状图中没有该年份该地区的数据，则进行插入操作， 否则提示请勿重复插入
 				if (typeof(vali_series) == "undefined") {
 					this.loading_flag_col = true
 					this.$ajax({
@@ -36191,24 +36229,22 @@
 					}).then(function(response) {
 						this.loading_flag_col = false
 						if (response.data.code === 0) {
+							// 如果数据库中没有该年份该地区的数据,则提示没有数据
 							if (response.data.time[0] == undefined) {
 								iView.Message.info('没有该日期的数据')
 							} else {
-								// 加载highchart自带的方法
-								// his_chart.delegateMethod('get', 'showLoading', 'Loading...')
 								// 接受get请求返回的数据
 								let hist_price_list = []
 								let x_axis = []
-								// console.log(response.data)
 								for (let i = 0; i >= 0; i--) {
 									let hist_price = []
 									for (let s of response.data.data[i]) {
-										// console.log(s)
 										hist_price.push(parseFloat(s[1]))
 										if (i == 0) {
 											x_axis.push(s[0])
 										}
 									}
+									// 更新柱状图
 									try{
 										his_chart.addSeries({
 											id: choosed_city + ':' + response.data.time[i],
@@ -36218,7 +36254,6 @@
 										his_chart.getChart().xAxis[0].setCategories(x_axis)
 									}catch(e){
 										//TODO handle the exception
-										
 									}
 								}
 							}
@@ -36229,15 +36264,14 @@
 						// this.loading_flag = false
 					}.bind(this))
 					// 添加数据
-
+				// 提示请勿重复添加
 				} else {
 					iView.Message.info('请勿重复添加!')
 				}
-				// 取消loading
 			}
 		},
-
 		components: {
+			// 导入highcharts的组件
 			VueHighcharts
 		}
 	}

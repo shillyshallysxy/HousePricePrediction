@@ -393,6 +393,7 @@
 							_this.total = response.data.total_item_num
 						}
 						else{
+							_this.isnull = false
 							var favor = response.data.data
 							_this.favor_info = []
 							for (var i = 0; i < favor.length; i++) {

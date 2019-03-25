@@ -352,7 +352,7 @@
 					lock: true,
 					text: 'Loading',
 					spinner: 'el-icon-loading',
-					background: 'rgba(0, 0, 0, 0.7)'
+					background: 'rgba(255,255,255,0.8)'
 				});
 				var data = {}
 				this.istrue = true

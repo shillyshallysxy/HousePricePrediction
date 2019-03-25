@@ -102,7 +102,7 @@
 					lock: true,
 					text: 'Loading',
 					spinner: 'el-icon-loading',
-					background: 'rgba(0, 0, 0, 0.7)'
+					background: 'rgba(255,255,255,0.8)'
 				});
 				_this.$ajax({
 					url:global_.IpUrl+"/house/search/?page="+this.current+"&text="+this.search_info,

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-	const IpUrl = 'http://42.159.124.173:8080';
+	const IpUrl = 'http://127.0.0.1:8000';
 	const city_mapping = {
 		"北京": "beijing",
 		"重庆": "chongqing",

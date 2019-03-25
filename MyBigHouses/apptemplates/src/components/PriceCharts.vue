@@ -36036,7 +36036,7 @@
 				lock: true,
 				text: 'Loading',
 				spinner: 'el-icon-loading',
-				background: 'rgba(0, 0, 0, 0.7)'
+				background: 'rgba(255,255,255,0.8)'
 			});
 			this.city_selected = [store.state.area_eng.province, store.state.area_eng.city]
 			this.city_selected_col = [store.state.area_eng.province, store.state.area_eng.city]

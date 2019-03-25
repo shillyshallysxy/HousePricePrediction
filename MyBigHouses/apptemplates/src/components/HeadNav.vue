@@ -154,6 +154,9 @@
 				delCookie("username")
 				delCookie("Flag")
 				iView.Message.info('退出成功')
+				this.$router.push({
+					name:'MainPage',
+					})
 			},
 			select_area() {
 				this.$router.push({

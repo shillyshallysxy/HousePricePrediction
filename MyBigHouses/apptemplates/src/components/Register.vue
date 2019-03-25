@@ -56,7 +56,7 @@
 			};
 
 			return {
-			register_loading_flag: false,
+				register_loading_flag: false,
 				ruleForm: {
 					email: '',
 					username: '',
@@ -90,7 +90,18 @@
 					password: [{
 						validator: validatePass,
 						trigger: 'blur'
-					}, ],
+					}, {
+							required: true,
+							message: '请输入密码',
+							trigger: 'blur'
+						},
+						{
+							min: 6,
+							max: 30,
+							message: '长度在 6 到 30 个字符',
+							trigger: 'blur'
+						}
+					],
 					confirm_password: [{
 						validator: validatePass2,
 						trigger: 'blur'

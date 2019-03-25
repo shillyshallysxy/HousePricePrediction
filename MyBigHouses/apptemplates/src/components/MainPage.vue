@@ -97,7 +97,7 @@
 									</div>
 									-->
 									<div style="width: 150px;float: left;">
-										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 2px;">{{o.price}}万</p>							
 										<el-button type="text" class="button" style="margin-top: 5px;padding: 0; float: left;margin-left: 10px;" data-index="o.id"
 										 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 									</div>
@@ -129,7 +129,7 @@
 									</div>
 									-->
 									<div style="width: 150px;float: left;">
-										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 10px;">{{o.price}}万</p>							
+										<p style="display: inline-block;font-size: 15px;font-weight: 500;float: left;color: red;margin-left: 2px;">{{o.price}}万</p>							
 										<el-button type="text" class="button" style="margin-top: 5px;padding: 0; float: left;margin-left: 10px;" data-index="o.id"
 										 @click.native="go_to_detail_page(o.id)">查看详情</el-button>
 									</div>
@@ -176,11 +176,16 @@
 				ShowHouse: [],
 				ShowHouse2: [],
 				search_info: '',
+				// 折线图当前选择的城市
 				city_selected: [],
+				// 存储折线图的数据
 				his_price_line: {},
+				// 存储x轴信息
 				x_axis_line: [],
 				id: 'history_price',
+				// 存储需要获取数据的长度
 				year_selected: '12',
+				// 折线图charts的初始设置
 				options_chart_line: {
 					chart: {
 						zoomType: 'x',
@@ -256,7 +261,9 @@
 		mounted() {
 			this.city_name_cn = store.state.area.city
 			this.city_name_en = store.state.area_eng.city
+			// 更新当前选择的城市
 			this.city_selected = [store.state.area_eng.province, store.state.area_eng.city]
+			// 更新折线图图表
 			this.getSelectedCityPrice()
 
 			this.get_mainpage_info()
@@ -311,6 +318,7 @@
 			VueHighcharts
 		},
 		methods: {
+			// 更改曲线图的城市,并同步更新曲线图
 			getSelectedCityPrice() {
 				var city_sel_len = this.city_selected.length
 				if (city_sel_len == 0) {
@@ -322,13 +330,17 @@
 					this.getHisPrice_line_data(city_now)
 				}
 			},
+			// 异步请求获取曲线图的数据
 			getHisPrice_line_data(choosed_city) {
+				// 获取月份信息（需要获取几个月）
 				let last_n_month = parseInt(this.year_selected)
 				this.$ajax({
 					method: 'get',
 					url: global_.IpUrl + '/house/price/' + choosed_city + '/history?last_n_month=' + last_n_month
 				}).then(function(response) {
+					// 成功返回数据则进入该方法, 否则弹出失败信息
 					if (response.data.code === 0) {
+						// 判断是否已经加载过该地区的折线图数据了，如果未加载过则加载
 						if (typeof(this.his_price_line[response.data.city]) == 'undefined') {
 							let hist_price = []
 							let x_axis = []
@@ -337,7 +349,6 @@
 								hist_price.push(parseFloat(s[1]))
 								x_axis.push(s[0])
 							}
-			
 							// 如果返回的数据较短，则扩充x轴长度并对列表中的原数据进行pad
 							if (parseInt(response.data.count) < last_n_month) {
 								for (var i = 0; i < last_n_month - parseInt(response.data.count); i++) {
@@ -346,27 +357,33 @@
 							} else {
 								this.x_axis_line = x_axis
 							}
+							// 将获取的数据更新
 							this.his_price_line[response.data.city] = hist_price
 						}
+						// 更新表格（chart）
 						this.showCart()
 					} else {
 						iView.Message.info(response.data.msg)
 					}
 				}.bind(this))
 			},
+			// 更新chart的方法
 			showCart(last_n_month = this.year_selected) {
 				last_n_month = parseInt(last_n_month)
 				// 获得chart
 				let his_chart = this.$refs.HisPriceCharts_line
+				// 更新x轴
 				his_chart.getChart().xAxis[0].setCategories(this.x_axis_line.slice(-last_n_month))
 				for (var hist_price_key in this.his_price_line) {
 					var vali_series = his_chart.getChart().get(hist_price_key)
+					// 如果表格中不存在该数据则加入该数据
 					if (typeof(vali_series) == "undefined") {
 						his_chart.addSeries({
 							id: hist_price_key,
 							name: hist_price_key,
 							data: this.his_price_line[hist_price_key].slice(-last_n_month),
 						})
+					// 如果表格中存在该数据则更新该数据
 					} else {
 						vali_series.setData(this.his_price_line[hist_price_key].slice(-last_n_month))
 					}

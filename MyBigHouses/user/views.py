@@ -19,7 +19,10 @@ import pickle
 
 # url: /user/login/
 class LoginView(View):
-    '''登录类视图'''
+    '''
+    登录类视图
+    url: /user/login/
+    '''
 
     def get(self, request):
         # method == 'GET'
@@ -37,8 +40,10 @@ class LoginView(View):
             return JsonResponse({'code': 5, 'msg': u'该用户名不存在！'})
         if user:
             pwd_correct = user.password
+            # 对密码hash之后与数据库中的进行对比
             if md5(pwd.encode('utf-8')).hexdigest() == pwd_correct:
                 if user.is_active:
+                    # 序列化user类并存储到session中
                     request.session['user'] = object_to_json(user)
                     return JsonResponse({'code': 0, 'msg': u'登录成功！','username': username})
                 else:
@@ -52,6 +57,7 @@ class LoginView(View):
             return JsonResponse({'code': 5, 'msg': u'该用户名不存在！'})
 
 
+# 将类转化为json
 def object_to_json(self):
     fields = []
     for field in self._meta.fields:
@@ -69,31 +75,36 @@ def object_to_json(self):
 
 # url: /user/active/<id>
 class ActiveView(View):
-    '''激活类视图'''
+    '''
+    激活类视图
+    url: /user/active/<id>
+    '''
 
     def get(self, request, token):
+        # 使用secret_key生成序列化器
         serializer = Serializer(settings.SECRET_KEY, 3600)
-
+        # 使用该序列化器加载token
         try:
             info = serializer.loads(token)
         except SignatureExpired as e:
-
             return HttpResponse('该链接已过期')
         except BadSignature as e:
             return HttpResponse('不合法的激活链接')
-
+        # 激活成功
         user_id = info['confirm']
         user = User.objects.get(id=user_id)
-        user.is_active = 1  # 激活成功
+        user.is_active = 1
         user.save()
         # 激活成功，重定向到登录页面
-        # return redirect(reverse('login'))
         return HttpResponse("您已激活成功")
 
 
 # url: /user/register/
 class RegisterView(View):
-    '''注册类视图'''
+    '''
+    注册类视图
+    url: /user/register/
+    '''
 
     def get(self, request):
         get_token(request)
@@ -145,11 +156,17 @@ class RegisterView(View):
 
 # url: /user/modify_avatar/
 class UploadAvatarView(View):
+    '''
+    上传（修改）头像类视图
+    url: /user/modify_avatar/
+    '''
 
     def post(self, request):
+        # 获取用户id
         session_user = json.loads(request.session['user'])
         user_id = session_user.get('id')
 
+        # 获取头像文件
         avatar = request.FILES.get("file", None)
         if avatar is None:
             return JsonResponse({"code": 0, "msg": "No avatar selected"})
@@ -159,6 +176,7 @@ class UploadAvatarView(View):
         except:
             return JsonResponse({"code": 1, "msg": "无此用户"})
 
+        # 更新数据库头像部分数据
         user.avatar = avatar
         user.save()
         return JsonResponse({"code": 0, "msg": "修改成功", "img_url": user.avatar.url})
@@ -166,8 +184,15 @@ class UploadAvatarView(View):
 
 # url: /user/info/?pag_num=xx
 class GetInfoView(View):
+    '''
+    获取用户信息（收藏列表）类视图
+    url: /user/info/?pag_num=xx
+    '''
+
+
     def get(self, request):
         item_num_one_page = 5
+        # 接收get请求的页码
         page_num = request.GET.get('pag_num', None)
         if page_num is None:
             page_num = 1
@@ -177,22 +202,30 @@ class GetInfoView(View):
             except TypeError:
                 return JsonResponse({"code": 1, "msg": "页码格式不合法！"})
 
+        # 建立redis链接获取用户收藏信息
         conn = get_redis_connection("User&House")
         session_user = json.loads(request.session['user'])
         user_id = session_user.get('id')
 
+        # 建立mysql链接获取用户头像信息
         try:
             user = User.objects.get(id=user_id)
         except:
             return JsonResponse({"code": 1, "msg": "无此用户"})
 
         user_key = "user_{}".format(user_id)
+        # 用户收藏房源信息列表
         collection_infos = list()
+        # 从redis中获取用户收藏房源id
         collection_list = conn.lrange(user_key, 0, -1)[::-1]
+        # 获取收藏列表长度以便前端分页
         total_item_num = len(collection_list)
+        # 获取收藏页数
         total_page_num = floor(total_item_num/item_num_one_page)
+        # 手动分页
         collection_list = collection_list[(page_num-1)*item_num_one_page:
                                           page_num*item_num_one_page]
+        # 获取分页后该页中的房源
         collection_list = [item.decode() for item in collection_list]
         for collection in collection_list:
             house_info = dict()
@@ -218,6 +251,7 @@ class GetInfoView(View):
             house_info["star_count"] = star_count
             collection_infos.append(house_info)
 
+        # 获取用户头像
         img_url = user.avatar.url
         return JsonResponse({"code": 0, "img_url": img_url, "data": collection_infos,
                              'page_num': page_num, 'total_page_num': total_page_num,
@@ -226,14 +260,18 @@ class GetInfoView(View):
 
 # url: /user/star?house_id=xxxx
 class StarCountView(View):
-    '''收藏接口'''
+    '''
+    收藏（取消收藏）操作接口
+    url: /user/star?house_id=xxxx
+    '''
+
     def __init__(self):
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
 
     def get(self, request):
+        # 建立redis链接
         conn = get_redis_connection("User&House")
-
         try:
             # 检查是否登录
             session_user = json.loads(request.session['user'])
@@ -266,8 +304,9 @@ class StarCountView(View):
             conn.lrem(user_key, 0, house_id)
             conn.hincrby(house_key, "star_count", -1)
             star_flag = False
+
+        # 没有这个收藏，说明要做加入收藏的动作
         else:
-            # 没有这个收藏，说明要做加入收藏的动作
             conn.lpush(user_key, house_id)
             conn.hincrby(house_key, "star_count", 1)
             star_flag = True

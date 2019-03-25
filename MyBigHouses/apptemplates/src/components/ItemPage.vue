@@ -1,37 +1,37 @@
 <template>
 	<div style="background-color: white;min-height: 700px;width: 100%;background: white;padding-top: 1px;"
 	 v-loading.fullscreen.lock="fullscreenLoading">
-		<div style="margin: 0;padding: 0;background-color: rgb(237,237,237);min-width: 1200px;max-width: 100%;height: 200px;padding-top: 1px;">
-			<div style="min-width: 500px;max-width: 500px;max-height: 60%;min-height: 60%;margin-top: 60px;margin-left: 10%;display: inline-block;float: left;">
+		<div style="background-color: rgb(237,237,237);width: 100%;height: 200px;padding-top: 1px;overflow-y: hidden;overflow-x: auto;white-space: nowrap;">
+			<div style="width: 30%;height: 60%;margin-top: 60px;margin-left: 10%;display: inline-block;float: left;white-space: normal;">
 				<p style="font-size: 28px;text-align: left;">
 					{{Detail_info.description}}
 				</p>
 			</div>
-			<div style="min-width: 80px;max-width: 80px;min-height: 40px;max-height: 40px;display: inline-block;float: left;margin-top: 80px;margin-left: 80px;">
+			<div style="width: 10%;min-height: 40px;max-height: 40px;display: inline-block;float: left;margin-top: 80px;margin-left: 10%;">
 				<p style="font-size: 24px;color: gray;">
 					发售中
 				</p>
 			</div>
-			<div style="background-color: white;min-width: 120px;max-width: 120px;min-height: 40px;max-height: 40px;display: inline-block;float: left;margin-top: 50px;margin-left: 160px;border: 1px solid black;">
-				<div style="min-width: 38px;max-width: 38px;min-height: 38px;max-height: 38px;display: inline-block;float: left;border-right: 1px solid black;">
+			<div style="background-color: white;width: 120px;min-height: 40px;max-height: 40px;display: inline-block;float: left;margin-top: 50px;margin-left: 10%;border: 1px solid black;">
+				<div style="width: 38px;min-height: 38px;max-height: 38px;display: inline-block;float: left;border-right: 1px solid black;">
 					<i class="el-icon-view" style="font-size: 20px;margin-top: 10px;"></i>
 				</div>
-				<div style="min-width: 78px;max-width: 78px;min-height: 38px;max-height: 38px;display: inline-block;float: left;">
+				<div style="width: 78px;min-height: 38px;max-height: 38px;display: inline-block;float: left;">
 					<p style="font-size: 16px;margin-top: 8px;font-family: arial;">
 						{{Detail_info.view_count}}
 					</p>
 				</div>
 			</div>
-			<div style="background-color: white;min-width: 120px;max-width: 120px;min-height: 40px;max-height: 40px;display: inline-block;float: left;margin-top: 50px;margin-left: 20px;border: 1px solid black;">
-				<div style="min-width: 38px;max-width: 38px;min-height: 38px;max-height: 38px;display: inline-block;float: left;border-right: 1px solid black;"
+			<div style="background-color: white;width: 120px;min-height: 40px;max-height: 40px;display: inline-block;float: left;margin-top: 50px;margin-left: 20px;border: 1px solid black;">
+				<div style="width: 38px;min-height: 38px;max-height: 38px;display: inline-block;float: left;border-right: 1px solid black;"
 				 v-if="!Detail_info.star_flag">
 					<i class="el-icon-star-off" style="font-size: 20px;margin-top: 10px;" @click="star()"></i>
 				</div>
-				<div style="min-width: 38px;max-width: 38px;min-height: 38px;max-height: 38px;display: inline-block;float: left;border-right: 1px solid black;"
+				<div style="width: 38px;min-height: 38px;max-height: 38px;display: inline-block;float: left;border-right: 1px solid black;"
 				 v-else>
 					<i class="el-icon-star-on" style="font-size: 20px;margin-top: 10px;" @click="unstar()"></i>
 				</div>
-				<div style="min-width: 78px;max-width: 78px;min-height: 38px;max-height: 38px;display: inline-block;float: left;">
+				<div style="width: 78px;min-height: 38px;max-height: 38px;display: inline-block;float: left;">
 					<p style="font-size: 16px;margin-top: 8px;font-family: arial;">
 						{{Detail_info.star_count}}
 					</p>
@@ -39,18 +39,18 @@
 			</div>
 		</div>
 
-		<div style="max-width: 100%;min-width: 1200px;height: 500px;padding-top: 1px;">
-			<div style="background-color: white;max-width: 70%;min-width: 950px;height: 80%;margin-left: 15%;margin-top: 30px;">
+		<div style="max-width: 100%;min-width: 1050px;height: 500px;padding-top: 1px;padding-left: 50%;">
+			<div style="background-color: white;width: 950px;height: 80%;margin-left: -475px;margin-top: 30px;">
 				<div style="min-width: 400px;max-width: 400px;min-height: 400px;max-height: 400px;display: inline-block;float: left;">
-					<img src="../assets/2.jpg" style="min-width: 400px;max-width: 400px;min-height: 300px;max-height: 300px;background-size: 100% 100%;" />
+					<img :src="Detail_info.pic_url" style="min-width: 400px;max-width: 400px;min-height: 300px;max-height: 300px;background-size: 100% 100%;" />
 					<div style="display: block;position: relative;margin-top: 8px;width: 400px;height: 82px;">
 						<div v-bind:class="{pre: true}">
 							< </div> <ul v-bind:class="{img_ul: true}">
 								<li v-bind:class="{img_li: true}">
-									<img src="../assets/2.jpg" style="min-width: 144px;max-width: 144px;min-height: 82px;max-height: 82px;background-size: 100% 100%;" />
+									<img :src="Detail_info.pic_url" style="min-width: 144px;max-width: 144px;min-height: 82px;max-height: 82px;background-size: 100% 100%;" />
 								</li>
 								<li v-bind:class="{img_li: true}">
-									<img src="../assets/2.jpg" style="min-width: 144px;max-width: 144px;min-height: 82px;max-height: 82px;background-size: 100% 100%;" />
+									<img :src="Detail_info.pic_url" style="min-width: 144px;max-width: 144px;min-height: 82px;max-height: 82px;background-size: 100% 100%;" />
 								</li>
 								</ul>
 								<div v-bind:class="{next: true}"> > </div>
@@ -132,7 +132,8 @@
 					developer: '',
 					property_company: '',
 					contact: '',
-					star_flag: ''
+					star_flag: '',
+					pic_url: ''
 				},
 				fullscreenLoading: false
 			}
@@ -168,6 +169,7 @@
 					_this.Detail_info.developer = house['developer']
 					_this.Detail_info.property_company = house['property_company']
 					_this.Detail_info.contact = house['contact']
+					_this.Detail_info.pic_url = house['pic_url']
 					_this.Detail_info.star_flag = response.data.star_flag
 					loading.close();
 				} else {
@@ -283,3 +285,4 @@
 		padding-top: 1px;
 	}
 </style>
+

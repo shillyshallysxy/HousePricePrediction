@@ -247,6 +247,7 @@ TINYMCE_DEFAULT_CONFIG = {
 MONGODB_IP = "42.159.122.43"
 MONGODB_PORT = 27018
 
+# 返回收藏量最多的前几
 STAR_COUNT_TOP_N = 8
 
 # 默认的房屋图片，可以是相对路径或网络URL

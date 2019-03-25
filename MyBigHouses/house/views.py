@@ -20,10 +20,20 @@ class History(View):
     '''历史房价接口'''
 
     def __init__(self, **kwargs):
+        '''
+        获得城市英文到中文的映射表
+        :param kwargs:
+        '''
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
 
     def get(self, request, city):
+        '''
+
+        :param request: 请求对象
+        :param city: 要获取哪个城市的历史房价信息，英文
+        :return: 返回 last_n_month 个月的历史价格
+        '''
         # 检查是否有该城市
         location = self.city_mapping.get(city, None)
         if location is None:
@@ -59,7 +69,7 @@ class CityInfoView(View):
     def __init__(self):
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
-            # 建立到 MongoDB 的连接
+        # 建立到 MongoDB 的连接， Mongodb存放城市及下级地区的映射关系
         client = MongoClient(host="42.159.122.43", port=27018)
         db = client.MBH
         self.city_relations = db.city_relations
@@ -67,6 +77,11 @@ class CityInfoView(View):
         self.cursor = list(self.city_relations.find())[0]
 
     def get(self, request, location):
+        '''
+        :param request:
+        :param location: 要查哪个城市的下级
+        :return: 返回对应城市的所有下级(区和街道)
+        '''
         # 英文转中文
         location_cn = self.city_mapping.get(location, None)
         if location_cn is None:
@@ -80,49 +95,9 @@ class CityInfoView(View):
             return JsonResponse({"code": 0, "data": sub_location}, safe=False)
 
 
-# url:house/price/<city>/sub_location?last_n_month=n
-# class SubLocationPriceView(View):
-#     '''获取下级最新房价'''
-#
-#     def __init__(self):
-#         with open("./house/city_mapping_e2c.pkl", "rb") as f:
-#             self.city_mapping = pickle.load(f)
-#             # 建立到 MongoDB 的连接
-#         client = MongoClient(host="42.159.122.43", port=27018)
-#         db = client.MBH
-#         self.city_relations = db.city_relations
-#         # 查询一次，存储在 cursor 中
-#         self.cursor = list(self.city_relations.find())[0]
-#
-#     def get(self, request, city_name):
-#         location_cn = self.city_mapping.get(city_name, None)
-#         last_month = int(request.GET.get('last_n_month', 1))
-#         if location_cn is None:
-#             return JsonResponse({"code": 1, "msg": "没有这个城市"})
-#
-#         subs = self.cursor.get(location_cn, None)
-#         if subs is None:
-#             return JsonResponse({"code": 2, "msg": "已经到最后一级了"})
-#         ret = [list() for i in range(last_month)]
-#         date_time = list()
-#         print(datetime.datetime.now())
-#         for i, sub in enumerate(subs):
-#             sub_info = HistoryPrice.objects.filter(location=sub).order_by("-year", "-month")[:last_month] # 只要最近 last_month 个月
-#             if len(list(sub_info)) == 0:
-#                 continue
-#             else:
-#                 for index in range(last_month):
-#                     ret[index].append([sub_info[index].location, sub_info[index].average_price])
-#                     if i == 0:
-#                         date_time.append('{}-{}'.format(sub_info[index].year, sub_info[index].month))
-#         print(datetime.datetime.now())
-#         return JsonResponse({"code": 0, "data": ret, "location_cn": location_cn, "time": date_time})
-
-
 # url:house/price/<city>/sub_location?year=xxxx&month=yy
 class SubLocationPriceView(View):
     '''获取下级最新房价'''
-
     def __init__(self):
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
@@ -134,6 +109,11 @@ class SubLocationPriceView(View):
         self.cursor = list(self.city_relations.find())[0]
 
     def get(self, request, city_name):
+        '''
+        :param request:
+        :param city_name: 要获取哪个城市的下级一层房价
+        :return: 房价列表 + 对应的日期列表
+        '''
         location_cn = self.city_mapping.get(city_name, None)
         year = request.GET.get("year", None)
         month = request.GET.get("month", None)
@@ -170,14 +150,22 @@ class SubLocationPriceView(View):
                     date_time.append('{}-{}'.format(sub_info[0].year, sub_info[0].month))
         return JsonResponse({"code": 0, "data": ret, "location_cn": location_cn, "time": date_time})
 
-
 # url:house/price/<city>/overview?number=x
 class HouseOverView(View):
+    '''
+    主页收藏量数据接口
+    '''
     def __init__(self):
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
 
     def get(self, request, city_name):
+        '''
+        :param request:
+        :param city_name: 要获取哪个城市的收藏量
+        :return: 返回前N个收藏量最多的房源，N在settings中指定
+        '''
+        # 连接 redis 数据库
         conn = get_redis_connection('User&House')
         city_top_key = "{}_topN".format(city_name)
         top_list = conn.zrevrangebyscore(city_top_key, sys.maxsize, 0, withscores=True, \
@@ -187,6 +175,7 @@ class HouseOverView(View):
         records = House.objects.filter(id__in=top_list)
         diff_num = settings.STAR_COUNT_TOP_N - len(top_list)
         topN_infos = list()
+        # 构造返回值
         for info in records:
             item = dict()
             item["id"] = info.id
@@ -198,6 +187,7 @@ class HouseOverView(View):
             item['orientation'] = info.orientation
             item['layout'] = info.layout
             topN_infos.append(item)
+        # 收藏量不够时，随机选，补齐
         if diff_num > 0:
             try:
                 location_cn = self.city_mapping[city_name]
@@ -223,11 +213,19 @@ class HouseOverView(View):
 
 # url:house/price/<city>/mainpage_overview
 class HouseMainPageView(View):
+    '''
+    首页的房价数据接口
+    '''
     def __init__(self):
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
 
     def get(self, request, city_name):
+        '''
+        :param request:
+        :param city_name: 要获取房价的城市(当前定位城市)
+        :return: 返回当前城市的当前月份
+        '''
         location_cn = self.city_mapping.get(city_name, None)
 
         year = datetime.datetime.now().year
@@ -254,6 +252,11 @@ class HouseListFilterView(View):
             self.city_mapping = pickle.load(f)
 
     def get(self, request, city_name):
+        '''
+        :param request:
+        :param city_name:  要筛选的城市名，英文
+        :return: 按给定条件筛选后的房源集
+        '''
         location_cn = self.city_mapping.get(city_name, None)
         if location_cn is None:
             return JsonResponse({"code": 1, "msg": "查无此城市的次级信息"})
@@ -275,6 +278,11 @@ class HouseDetailView(View):
     '''房子详情信息接口'''
 
     def get(self, request, house_id):
+        '''
+        :param request:
+        :param house_id: 要获取房源详情的 house_id
+        :return: 返回指定房子的详情、浏览量、收藏量
+        '''
         conn = get_redis_connection("User&House")
         try:
             session_user = json.loads(request.session['user'])
@@ -338,14 +346,21 @@ class HouseListView(View):
             self.city_mapping = pickle.load(f)
 
     def get(self, request, city_name):
+        '''
+        :param request:
+        :param city_name: 要获取哪个城市(中文名)的房子列表
+        :return: 第 page_num 页的房源列表，以及符合条件的总个数
+        '''
+        # 转成中文城市名
         decoded_location = self.city_mapping.get(city_name, None)
-        # decoded_location = base64.b64decode(city_name).decode()
         try:
+            # 先查询该城市且有价格的记录
             house_list = House.objects.filter(Q(city=decoded_location) & ~Q(price=0))
         except:
             return JsonResponse({"code": 1, "msg": "城市信息有误"})
-        page_num = request.GET.get('page_num', None)
 
+        # 检查页码参数
+        page_num = request.GET.get('page_num', None)
         if page_num is None:
             page_num = 1
         else:
@@ -353,13 +368,15 @@ class HouseListView(View):
                 page_num = int(float(page_num))
             except TypeError:
                 return JsonResponse({"code": 1, "msg": "页码格式不合法！"})
+
         # 链接redis数据库
         conn = get_redis_connection("User&House")
         collection_infos = list()
+
+        # 对结果分页
         pageinator = Paginator(house_list, settings.LIST_PAGE_ITEMS)
-
         total_item_num = pageinator.count
-
+        # 检索指定页数据, 构造返回值
         for house_obj in pageinator.page(page_num).object_list:
             house_info = dict()
             house_key = "house_{}".format(house_obj.id)
@@ -383,57 +400,22 @@ class HouseListView(View):
             house_info["img_url"] = house_obj.pic_url
             house_info["star_count"] = star_count
             collection_infos.append(house_info)
+
         return JsonResponse({"code": 0, "data": collection_infos, 'total_item_num': total_item_num})
 
 
 # url: house/filter?
 class FilterView(View):
-    '''过滤条件'''
+    '''条件查询接口'''
     def __init__(self):
         self.conn=get_redis_connection("User&House")
 
-    # def get(self, request):
-    #     page_num = request.GET.get('page', None)
-    #
-    #     if page_num is None:
-    #         page_num = 1
-    #     else:
-    #         page_num = int(page_num)
-    #     # 检查页码合法性
-    #     if page_num not in self.page.page_range:
-    #         return JsonResponse({"code": 1, "msg": "页码不合法"})
-    #
-    #     collections = list()
-    #
-    #     for house_obj in self.page.page(page_num):
-    #         house_info = dict()
-    #
-    #         house_key = "house_{}".format(house_obj.id)
-    #         star_count = self.conn.hget(house_key, "star_count")
-    #         if star_count is None:
-    #             star_count = 0
-    #         else:
-    #             star_count = star_count.decode()
-    #
-    #         house_info["description"] = house_obj.description
-    #         house_info["layout"] = house_obj.layout
-    #         house_info["layer"] = house_obj.layer
-    #         house_info["built_year"] = house_obj.built_year
-    #         house_info["area"] = house_obj.area
-    #         house_info["price"] = house_obj.price
-    #         house_info["total_price"] = house_obj.total_price
-    #         house_info["orientation"] = house_obj.orientation
-    #         house_info["garden"] = house_obj.garden
-    #         house_info["developer"] = house_obj.developer
-    #         house_info["architecture"] = house_obj.architecture
-    #         house_info["id"] = house_obj.id
-    #         house_info["img_url"] = "static/images/2.jpg"
-    #         house_info["star_count"] = star_count
-    #         collections.append(house_info)
-    #     return JsonResponse({"code": 0, "data": collections, \
-    #                          'total_item_num': self.page.num_pages*settings.LIST_PAGE_ITEMS})
-
     def post(self, request):
+        '''
+        :param request:
+        :return: 符合条件的结果集
+        '''
+        # 获取过滤条件和页码
         data = json.loads(request.body)
         city = data.get('city', None)
         area = data.get('area', None)
@@ -447,7 +429,7 @@ class FilterView(View):
             records = House.objects.filter(city=city)
         except House.DoesNotExist:
             return JsonResponse({"code": 2, "msg": "没有符合条件的数据"})
-
+        # 如果选择了区， 先对区筛选
         if district != '':
             records = records.filter(district=district)
         # 对面积筛选
@@ -505,7 +487,7 @@ class FilterView(View):
         # 分页
         page = Paginator(records, settings.LIST_PAGE_ITEMS)
         collections = list()
-
+        # 构造返回值
         for house_obj in page.page(page_num):
             # 返回第 page_num 页内容
             house_info = dict()
@@ -535,11 +517,11 @@ class FilterView(View):
         return JsonResponse({"code": 0, "data": collections, \
                              'total_item_num': page.count})
 
-
+# 搜索接口的相关包
 from drf_haystack.viewsets import HaystackViewSet
 from .serializers import HouseIndexSerializer, StandardResultSetPagination
 
-
+# 搜索结果的视图
 class HouseSearchViewSet(HaystackViewSet):
     index_models = [House]
     serializer_class = HouseIndexSerializer
@@ -550,8 +532,12 @@ class GetNewsInfo(View):
     '''
     获取新闻信息接口
     '''
-
     def get(self, request, city_name):
+        '''
+        :param request:
+        :param city_name: 要查询哪个城市的新闻，中文
+        :return: 返回前4条新闻
+        '''
         news_items = News.objects.filter(city=city_name).order_by("-pub_date")[:4]
         news_collection = list()
 
@@ -571,23 +557,30 @@ class PredictPriceView(View):
     '''
     获取预测价格
     '''
-
     def __init__(self):
         with open("./house/city_mapping_e2c.pkl", "rb") as f:
             self.city_mapping = pickle.load(f)
 
     def get_timepoint(self, month_gap=0):
         '''
+        以当前月为准，按月份相加减
         :param month_gap: 找几个月
         :return: 符合条件的 {'year': year, 'month': month}
         '''
         cur_datetime = datetime.datetime.now()
         offset_datetime = cur_datetime + relativedelta(months=month_gap)
         month = offset_datetime.month
+
+        # 把月份调整成符合数据库中的数据格式
         month = str(month) if month > 9 else '0' + str(month)
         return {'year': offset_datetime.year, 'month': month}
 
     def get(self, request, city_name):
+        '''
+        :param request:
+        :param city_name: 哪个城市的预测房价
+        :return:
+        '''
         city_cn = self.city_mapping.get(city_name, None)
         if city_cn is None:
             return JsonResponse({"code": 1, "msg": "城市有误"})
@@ -595,16 +588,16 @@ class PredictPriceView(View):
         # 先过滤掉无关城市记录
         predict_records = PredictPrice.objects.filter(location=city_cn)
         history_records = HistoryPrice.objects.filter(location=city_cn)
-        # 获取指定的时间点，表格里的数字
+        # 获取指定的时间点，来自表格里的日期
         current = self.get_timepoint()
         one_month_before = self.get_timepoint(month_gap=-1)
         half_year_before = self.get_timepoint(month_gap=-6)
         one_month_after = self.get_timepoint(month_gap=1)
         three_month_after = self.get_timepoint(month_gap=3)
-
+        # 历史和未来
         history_timepoints = [half_year_before, one_month_before, current]
         predict_timepoints = [one_month_after, three_month_after]
-
+        # 分表查询
         ret = list()
         for timepoint in history_timepoints:
             try:
@@ -632,7 +625,6 @@ class PredictPriceView(View):
             fore_3_timepoints.append(self.get_timepoint(month_gap=i+1))
 
         chart_data = list()
-        date_time = list()
         # 到历史房价结果集中找
         for timepoint in last_6_timepoints:
             try:

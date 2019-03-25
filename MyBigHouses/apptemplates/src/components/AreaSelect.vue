@@ -19,6 +19,7 @@
 			};
 		},
 		methods: {
+			//选择城市触发事件
 			handleChange() {
 				var value = this.getCascaderObj(this.optionSelect, this.options)
 				var area = {}
@@ -30,10 +31,11 @@
 				area["city_eng"] = value[1].value
 				area["area_eng"] = ''
 				area["street_eng"] = ''
-
+				//修改城市，并返回上一个页面
 				store.commit('change_AreaInfo', area)
 				this.$router.go(-1)
 			},
+			//获取当前选中的省份和城市
 			getCascaderObj(val, opt) {
 				return val.map(function(value, index, array) {
 					for (var itm of opt) {

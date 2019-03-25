@@ -173,8 +173,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-    '127.0.0.1:8000',
-    '127.0.0.1:8080'
+    '*'
 )
 
 CORS_ALLOW_METHODS = ('*')
@@ -207,6 +206,9 @@ CACHES = {
     "User&House": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://42.159.122.43:6380/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 

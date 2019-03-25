@@ -6,7 +6,6 @@ import Register from '@/components/Register'
 import PriceCharts from '@/components/PriceCharts'
 import AreaSelect from '@/components/AreaSelect'
 import UserInfo from '@/components/UserInfo'
-import SelectHouse from '@/components/SelectHouse'
 import ItemPage from '@/components/ItemPage'
 import PricePredict from '@/components/PricePredict'
 import HouseChoosing from '@/components/HouseChoosing'
@@ -26,7 +25,7 @@ export default new Router({
     },
     {
       path: '/login',
-      name: 'HelloWorld',
+      name: 'login',
       component: Login,
       meta:{
         requireLogin: false
@@ -62,14 +61,6 @@ export default new Router({
 			component: UserInfo,
 			meta:{
 				requireLogin: true
-			}
-		},
-		{
-			path: '/SelectHouse',
-			name: 'SelectHouse',
-			component: SelectHouse,
-			meta:{
-				requireLogin: false
 			}
 		},
 		{

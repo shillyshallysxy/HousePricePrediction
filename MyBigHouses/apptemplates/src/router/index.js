@@ -15,6 +15,7 @@ Vue.use(Router)
 export default new Router({
   mode:'history',
   routes: [
+	  //主页
     {
       path: '/',
       name: 'MainPage',
@@ -23,6 +24,7 @@ export default new Router({
         requireLogin: false
       }
     },
+	//登陆页面
     {
       path: '/login',
       name: 'login',
@@ -31,6 +33,7 @@ export default new Router({
         requireLogin: false
       }
     },
+	//注册页面
     {
       path: '/register',
       name: 'register',
@@ -39,6 +42,7 @@ export default new Router({
         requireLogin: false
       }
     },
+	//房价走势页面
 		{
 			path: '/price_condition',
 			name: 'PriceCharts',
@@ -47,6 +51,7 @@ export default new Router({
         requireLogin: true
       }
 		},
+		//地区选择页面
 		{
 			path: '/AreaSelect',
 			name: 'AreaSelect',
@@ -55,6 +60,7 @@ export default new Router({
 		    requireLogin: false
 		  }
 		},
+		//用户信息页面
 		{
 			path: '/UserInfo',
 			name: 'UserInfo',
@@ -63,6 +69,7 @@ export default new Router({
 				requireLogin: true
 			}
 		},
+		//房源详情页面
 		{
 			path: '/ItemPage',
 			name: 'ItemPage',
@@ -71,6 +78,7 @@ export default new Router({
 				requireLogin: false
 			}
 		},
+		//房价预测页面
 		{
 			path: '/PricePredict',
 			name: 'PricePredict',
@@ -79,6 +87,7 @@ export default new Router({
 				requireLogin:true
 			}
 		},
+		//选房页面
 		{
 			path: '/HouseChoosing',
 			name: 'HouseChoosing',
@@ -87,6 +96,7 @@ export default new Router({
 				requireLogin:true
 			}
 		},
+		//搜索页面
 		{
 			path: '/Search',
 			name: 'Search',

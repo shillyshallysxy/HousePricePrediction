@@ -79,10 +79,12 @@
 			};
 		},
 		mounted() {
+			//获取上个页面传递的参数
 			this.search_info = this.$route.query.search_info
 			this.get_List()
 		},
 		methods: {
+			//点击搜索按钮出发事件
 			search(){
 				if(this.search_info!=''){
 					this.current=1
@@ -96,14 +98,17 @@
 				}
 				
 			},
+			//像后台请求搜索内容
 			get_List(){
 				var _this = this
+				//页面加载等待
 				const loading = this.$loading({
 					lock: true,
 					text: 'Loading',
 					spinner: 'el-icon-loading',
 					background: 'rgba(255,255,255,0.8)'
 				});
+				//根据页码和搜索内容请求数据
 				_this.$ajax({
 					url:global_.IpUrl+"/house/search/?page="+this.current+"&text="+this.search_info,
 					method:'get',
@@ -116,6 +121,7 @@
 						if(favor[i].object == null){
 							continue
 						}
+						//将数据显示到页面
 						temp["description"] = favor[i].object.description
 						temp["layout"] = favor[i].object.layout
 						temp["layer"] = favor[i].object.layer
@@ -135,11 +141,13 @@
 					
 				})
 			},
+			//页码改变触发请求
 			pagechange(page) {
 				this.current = page
 				this.get_List()
 				document.documentElement.scrollTop=0
 			},
+			//至房源详情页
 			go_to_detail(id) {
 				this.$router.push({
 					path: 'ItemPage',

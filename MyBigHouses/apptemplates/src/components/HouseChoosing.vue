@@ -182,23 +182,25 @@
 	} from '@/utils/utils'
 	import pagination from '@/components/MyPagenation'
 	export default {
+		//引入分页模块
 		components: {
 			'v-pagination': pagination,
 		},
 		data() {
 			return {
-				isnull: false,
-				hackReset : true,
-				sort_index : 0,
-				favor_info: [],
+				isnull: false,  //表示搜索结果是否为空
+				hackReset : true, //刷新分页
+				sort_index : 0, //排序的种类参数
+				favor_info: [], //搜索信息的list
 				//分页实现内容
 				total: 0, // 记录总条数
 				display: 14, // 每页显示条数
 				current: 1, // 当前的页数
-				istrue: false,
-				area_value: false,
-				area: '选择面积',
-				area_paras : '0~0',
+				istrue: false, 
+				area_value: false,//面积是否选择
+				area: '选择面积',//面积选项框中的内容
+				area_paras : '0~0',//面积向后台传参格式
+				// 面积选项下拉框内容
 				area_data: [{
 						area: '不限',
 						area_para: '0~0',
@@ -226,9 +228,10 @@
 						area_para: '200~200',
 					}
 				],
-				price_value: false,
-				price: '选择价格',
-				price_paras:'0~0',
+				price_value: false,//价格是否选择
+				price: '选择价格',//价格选项框中内容
+				price_paras:'0~0',//价格向后台传参格式
+				// 价格下拉框内容
 				price_data: [{
 					price: '不限',
 					price_para:'0~0',
@@ -254,9 +257,10 @@
 					price: '500w以上',
 					price_para:'500~500',
 				}],
-				house_value: false,
-				house: "选择户型",
-				house_paras:'0',
+				house_value: false, //户型是否选择
+				house: "选择户型", //户型选项框中的内容
+				house_paras:'0', //户型像后台传参格式
+				//户型下拉框内容
 				house_data: [{
 					house: '居室不限',
 					house_para: '0'
@@ -279,19 +283,20 @@
 					house: '五室以上',
 					house_para: '6'
 				}],
-				region_value: false,
-				region: "选择地区",
-				region_data: [],
+				region_value: false, // 区域是否选择
+				region: "选择地区", //区域选项框中的内容
+				region_data: [],//区域下拉框内容
 				
-				underground: false,
-				five_year:false,
-				decoration:false,
-				price_low:false,
-				watch:false,
-				south_north:false,
+				underground: false,  //地铁是否勾选
+				five_year:false,//满五年是否勾选
+				decoration:false, //精装修是否勾选
+				price_low:false, //价格低是否勾选
+				watch:false,	// 随时看是否勾选
+				south_north:false, //南北向收否勾选
 				
-				single_price_value: false,
-				single_price:'单价',
+				single_price_value: false, //单价排序是否勾选
+				single_price:'单价',  //单价选项卡中的显示内容
+				// 单价排序的可选内容
 				single_price_data:[
 					{
 						single_price:'从高到低',
@@ -301,8 +306,9 @@
 						single_price_index :2,
 					}
 				],
-				total_price_value: false,
-				total_price:'总价',
+				total_price_value: false,//总价排序是否勾选
+				total_price:'总价', //总价选项卡中的显示内容
+				//总价排序的可选内容
 				total_price_data:[
 					{
 						total_price:'从高到低',
@@ -312,8 +318,9 @@
 						total_price_index:4,
 					}
 				],
-				total_area_value: false,
-				total_area:'面积',
+				total_area_value: false,//面积排序是否勾选
+				total_area:'面积',// 面积选项卡中的显示内容
+				//面积排序的可选内容
 				total_area_data:[
 					{
 						total_area:'从高到低',
@@ -325,12 +332,16 @@
 				],
 			};
 		},
+		//mounted 钩子
 		mounted() {
+			// 获取城市区域信息
 			this.set_region()
+			// 获取初始话页面信息
 			this.get_select_List()
 			
 		},
 		methods: {
+			//进入房价信息详情页
 			go_to_detail(id) {
 				this.$router.push({
 					path: 'ItemPage',
@@ -339,15 +350,18 @@
 					}
 				})
 			},
+			// 获取搜索信息的第一页
 			get_select_List_first(){
-				this.current=1
+				this.current=1 //当前页码重置为1
 				this.hackReset = false
 				this.$nextTick(()=>{
 					this.hackReset=true
 				})
+				
 				this.get_select_List()
 			},
 			get_select_List(){
+				//加载动画
 				const loading = this.$loading({
 					lock: true,
 					text: 'Loading',
@@ -356,20 +370,20 @@
 				});
 				var data = {}
 				this.istrue = true
-				data["area"] = this.area_paras,
-				data["price"] = this.price_paras
-				data["house"] = this.house_paras,
-				data["region"] = this.region=="选择地区"?"":this.region,
-				data["underground"] = this.underground?1:0
-				data["five_year"] = this.five_year?1:0
-				data["decoration"] = this.decoration?1:0
-				data["price_low"] = this.price_low?1:0
-				data["watch"] = this.watch?1:0
-				data["south_north"] = this.south_north?1:0
-				data["city"] = this.get_city
-				data["page"] = this.current
-				data["sort"] = this.sort_index
-				var arr = getCookie('csrftoken')
+				data["area"] = this.area_paras,//获取面积
+				data["price"] = this.price_paras//获取价格
+				data["house"] = this.house_paras,//获取居室
+				data["region"] = this.region=="选择地区"?"":this.region,//获取地区
+				data["underground"] = this.underground?1:0//获取地铁
+				data["five_year"] = this.five_year?1:0//获取是否满五年
+				data["decoration"] = this.decoration?1:0//获取是否精装修
+				data["price_low"] = this.price_low?1:0//获取是否低价格
+				data["watch"] = this.watch?1:0//获取是否随时能看
+				data["south_north"] = this.south_north?1:0//获取是否南北向
+				data["city"] = this.get_city//获取城市
+				data["page"] = this.current//获取当前页码
+				data["sort"] = this.sort_index//获取排序方式
+				var arr = getCookie('csrftoken')//获取csrktoken
 				var _this = this
 				_this.$ajax({
 					url:global_.IpUrl+ "/house/filter",
@@ -388,6 +402,7 @@
 					{
 						if(response.data.total_item_num == 0)
 						{
+							//如果返回个数为0，则显示无数据
 							_this.isnull = true
 							_this.favor_info = []
 							_this.total = response.data.total_item_num
@@ -396,6 +411,7 @@
 							_this.isnull = false
 							var favor = response.data.data
 							_this.favor_info = []
+							//获取返回的数据，并加载到页面
 							for (var i = 0; i < favor.length; i++) {
 								var temp = {}
 								temp["description"] = favor[i].description
@@ -461,6 +477,7 @@
 // 					}
 // 				})
 // 			},
+			//分页改变事件，向后台请求具体页码的信息
 			pagechange(page) {
 				this.current = page
 				this.get_select_List()
@@ -514,8 +531,9 @@
 // 				}.bind(this))
 // 			
 // 			},
-			
+			//获取当前城市的区信息，并显示在区域选择框中
 			set_region() {
+				
 				let temp_region = this.get_region
 				for (var i = 0; i < temp_region.length; i++) {
 					var temp = {}
@@ -525,36 +543,42 @@
 
 			},
 			show_area_select(row) {
-				this.area = row.area
-				this.area_paras = row.area_para
-				this.area_value = false
+				this.area = row.area //获取选项信息
+				this.area_paras = row.area_para //修改向后台的传参
+				this.area_value = false //隐藏选项框
 			},
+			//同上
 			show_price_select(row) {
 				this.price = row.price
 				this.price_paras = row.price_para
 				this.price_value = false
 				
 			},
+			//同上
 			show_house_select(row) {
 				this.house = row.house
 				this.house_paras = row.house_para
 				this.house_value = false
 			},
+			
 			show_region_select(row) {
 				this.region = row.region
 				this.region_value = false
-				this.get_select_List_first()
+				this.get_select_List_first() //请求第一页信息
 			},
+			//同上
 			show_single_price_select(row){
 				this.sort_index = row.single_price_index
 				this.single_price_value =false
 				this.get_select_List_first()
 			},
+			//同上
 			show_total_price_select(row){
 				this.sort_index = row.total_price_index
 				this.total_price_value =false
 				this.get_select_List_first()
 			},
+			//同上
 			show_total_area_select(row){
 				this.sort_index = row.total_area_index
 				this.total_area_value =false
@@ -563,29 +587,30 @@
 			default_click(){
 				
 			},
-			get_data(){
-				var self = this
-				self.$ajax({
-					url:global_.IpUrl,
-					methods:'post',
-					data:{
-						price_selcet: self.price,
-						area_select: self.area,
-						house_select:self.house,
-						region_select: self.region,
-						underground: self.underground,
-						five_year:self.five_year,
-						decoration:self.decoration,
-						price_low:self.price_low,
-						watch:self.watch,
-						south_north:self.south_north,
-					}
-				})
-			}
+// 			get_data(){
+// 				var self = this
+// 				self.$ajax({
+// 					url:global_.IpUrl,
+// 					methods:'post',
+// 					data:{
+// 						price_selcet: self.price,
+// 						area_select: self.area,
+// 						house_select:self.house,
+// 						region_select: self.region,
+// 						underground: self.underground,
+// 						five_year:self.five_year,
+// 						decoration:self.decoration,
+// 						price_low:self.price_low,
+// 						watch:self.watch,
+// 						south_north:self.south_north,
+// 					}
+// 				})
+// 			}
 			
 			
 		},
 		computed: {
+			//获取区域信息
 			get_region() {
 				var temp_region = this.get_city
 				var arr = this.get_city.split('')
@@ -595,9 +620,11 @@
 				}
 				return global_.city_region_mapping[temp_region]
 			},
+			//获取城市信息
 			get_city() {
 				return store.state.area.city
 			},
+			//获取城市拼音
 			get_city_eng(){
 				return store.state.area_eng.city
 			}

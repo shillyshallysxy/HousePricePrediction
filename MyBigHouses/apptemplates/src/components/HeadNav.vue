@@ -51,11 +51,14 @@
 
 			};
 		},
-
+		// create钩子，挂载前调用
 		created() {
+			//localstorage中的省份信息，如过为空，说明第一次登陆
 			var local_province = localStorage.getItem("province")
 			var self = this
+			//省份为空，获取当前定位
 			if (local_province == null) {
+				//调用百度定位接口
 				const geolocation = new BMap.Geolocation();
 				let self = this
 				let city
@@ -71,12 +74,14 @@
 					}).then(() => {
 						//点击确认
 						var arr = city.split('')
-						
+						//去除“市”字
 						if(arr[arr.length-1]=="市"){
 							arr.splice(arr.length-1,1)
 							var new_city = arr.join('')
 						}
+						
 						arr = province.split('')
+						//去除“省”字
 						if(arr[arr.length-1]=="省"){
 							arr.splice(arr.length-1,1)
 							var new_province = arr.join('')
@@ -90,7 +95,9 @@
 						area["city_eng"] = global_.city_mapping[new_city]
 						area["area_eng"] = ''
 						area["street_eng"] = ''
+						//修改全局参数
 						store.commit('change_AreaInfo', area)
+						//刷新页面
 						self.$router.go(0)
 					}).catch(() => {
 						//点击取消
@@ -109,55 +116,60 @@
 		},
 
 		computed: {
+			// 获取是否登陆信息
 			isLogin() {
 				return store.state.isLogin
 			},
-
+			//获取用户名
 			getusername() {
 				return store.state.UserInfo.username
 			},
+			//获取城市信息
 			getCity() {
 				return store.state.area.city
 			}
 		},
 		methods: {
-			show() {
-				alert(this.isLogin)
-			},
-			get_ip_city() {
-				this.$ajax({
-					methods: 'get',
-					dataType: 'JSONP',
-					url: "http://api.map.baidu.com/location/ip?ak=zDGd0AGNoHiQRg40IEED6bIGlQEgXd8K&coor=bd09ll&callback=showLocation",
-					jsonp: 'callback',
-					jsonpCallback: "callback",
-
-				}).then(function(response) {
-					if (response.data.status == 0) {
-						var area = {}
-						area["province"] = response.data.content.address_detail.province
-						area["city"] = response.data.content.address_detail.city
-						area["area"] = ''
-						area["street"] = ''
-						area["province_eng"] = "jiangsu"
-						area["city_eng"] = "suzhou"
-						area["area_eng"] = ''
-						area["street_eng"] = ''
-						store.commit('change_AreaInfo', area)
-					} else {
-						iView.message.info("error code:" + response.data.status)
-					}
-				}.bind(this))
-			},
+// 			show() {
+// 				alert(this.isLogin)
+// 			},
+// 			get_ip_city() {
+// 				this.$ajax({
+// 					methods: 'get',
+// 					dataType: 'JSONP',
+// 					url: "http://api.map.baidu.com/location/ip?ak=zDGd0AGNoHiQRg40IEED6bIGlQEgXd8K&coor=bd09ll&callback=showLocation",
+// 					jsonp: 'callback',
+// 					jsonpCallback: "callback",
+// 
+// 				}).then(function(response) {
+// 					if (response.data.status == 0) {
+// 						var area = {}
+// 						area["province"] = response.data.content.address_detail.province
+// 						area["city"] = response.data.content.address_detail.city
+// 						area["area"] = ''
+// 						area["street"] = ''
+// 						area["province_eng"] = "jiangsu"
+// 						area["city_eng"] = "suzhou"
+// 						area["area_eng"] = ''
+// 						area["street_eng"] = ''
+// 						store.commit('change_AreaInfo', area)
+// 					} else {
+// 						iView.message.info("error code:" + response.data.status)
+// 					}
+// 				}.bind(this))
+// 			},
+			//注销按键
 			loginout() {
 				store.commit('change_LoginOut')
 				delCookie("username")
 				delCookie("Flag")
 				iView.Message.info('退出成功')
+				//返回到登陆页面
 				this.$router.push({
 					name:'MainPage',
 					})
 			},
+			//跳转到选择区域界面
 			select_area() {
 				this.$router.push({
 					path: '/AreaSelect'

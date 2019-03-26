@@ -77,19 +77,21 @@
 		delCookie
 	} from '@/utils/utils'
 	export default {
+		//引入分页组件
 		components: {
 			'v-pagination': pagination,
 		},
 		data() {
 			return {
+				//请求地址ip
 				post_img_url: global_.IpUrl + '/user/modify_avatar',
-				imageUrl: '',
-				user_name: store.state.UserInfo.username,
+				imageUrl: '',//头像url
+				user_name: store.state.UserInfo.username,//用户名
 				import_headers: {
 					// 'Content-Type': 'multipart/form-data',
 					'X-CSRFToken': getCookie('csrftoken')
 				},
-				favor_info: [],
+				favor_info: [],//信息了列表
 				//分页实现内容
 				total: 0, // 记录总条数
 				display: 5, // 每页显示条数
@@ -98,19 +100,24 @@
 
 		},
 		created() {
+			//获取用户头像
 			this.getAvatar()
 		},
 		mounted() {
+			//获取收藏信息
 			this.getList()
 		},
 		methods: {
+			
 			getList() {
+				//加载等待
 				const loading = this.$loading({
 					lock: true,
 					text: 'Loading',
 					spinner: 'el-icon-loading',
 					background: 'rgba(255,255,255,0.8)'
 				});
+				//将收藏信息置空
 				this.favor_info = []
 				let url = global_.IpUrl + '/user/get_info/?pag_num=' + this.current
 				this.$ajax({
@@ -121,6 +128,7 @@
 						var favor = response.data.data
 						for (var i = 0; i < favor.length; i++) {
 							var temp = {}
+							//展示收藏信息
 							temp["description"] = favor[i].description
 							temp["layout"] = favor[i].layout
 							temp["layer"] = favor[i].layer
@@ -146,10 +154,12 @@
 				}.bind(this))
 
 			},
+			//页码改变触发事件
 			pagechange(page) {
 				this.current = page
 				this.getList()
 			},
+			//获取用户头像url
 			getAvatar() {
 				this.$ajax({
 					method: 'get',
@@ -163,6 +173,7 @@
 					}
 				}.bind(this))
 			},
+			//上传头像
 			handleAvatarSuccess(response, file) {
 				if (response.code == 0) {
 					// this.imageUrl = URL.createObjectURL(file.raw);
@@ -171,6 +182,7 @@
 					iView.Message.info(response.msg)
 				}
 			},
+			//检查上传头像是否合法
 			beforeAvatarUpload(file) {
 				const isJPG = file.type === 'image/jpeg';
 				const isLt2M = file.size / 1024 / 1024 < 2;
@@ -183,6 +195,7 @@
 				}
 				return isJPG && isLt2M;
 			},
+			//取消收藏
 			cancel_favour(id, index) {
 				var _this = this
 				_this.$ajax({
@@ -199,6 +212,7 @@
 					}
 				})
 			},
+			//进入收藏房源详情页
 			go_to_detail(id) {
 				this.$router.push({
 					path: 'ItemPage',

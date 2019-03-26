@@ -35,6 +35,7 @@
 	import iView from 'iview';
 	export default {
 		data() {
+			//第一次输入密码验证
 			var validatePass = (rule, value, callback) => {
 				if (value === '') {
 					callback(new Error('请输入密码'));
@@ -45,6 +46,7 @@
 					callback();
 				}
 			};
+			//第二次输入密码验证
 			var validatePass2 = (rule, value, callback) => {
 				if (value === '') {
 					callback(new Error('请再次输入密码'));
@@ -56,37 +58,43 @@
 			};
 
 			return {
-				register_loading_flag: false,
+				
+				register_loading_flag: false,//提交注册加载
 				ruleForm: {
+					//邮箱，用户名，密码，确认密码双向绑定
 					email: '',
 					username: '',
 					password: '',
 					confirm_password: ''
 				},
 				rules: {
+					//邮箱验证
 					email: [{
-							required: true,
+							required: true,//必须输入
 							message: '请输入邮箱地址',
 							trigger: 'blur'
 						},
 						{
-							type: 'email',
+							type: 'email',//邮箱类型
 							message: '请输入正确的邮箱地址',
 							trigger: ['blur', 'change']
 						}
 					],
+					//用户名验证
 					username: [{
-							required: true,
+							
+							required: true,//必须输入
 							message: '请输入用户名',
 							trigger: 'blur'
 						},
 						{
-							min: 1,
-							max: 20,
+							min: 1,//最小长度1
+							max: 20,//最大长度20
 							message: '长度在 1 到 20 个字符',
 							trigger: 'blur'
 						}
 					],
+					//密码验证
 					password: [{
 						validator: validatePass,
 						trigger: 'blur'
@@ -114,7 +122,9 @@
 				this.register_loading_flag = true,
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
+						//获取csrftoken
 						var arr = this.getCookie('csrftoken')
+						//通过post请求提交表单
 						this.$ajax({
 							method: 'post',
 							url: global_.IpUrl + '/user/register/',
@@ -132,6 +142,7 @@
 						}).then(function(response) {
 							this.register_loading_flag = false
 							if (response.data.code === 0) {
+								//成功，提示激活邮箱
 								iView.Message.info('注册成功,请至邮箱激活您的账号')
 							} else {
 								iView.Message.info(response.data.msg)

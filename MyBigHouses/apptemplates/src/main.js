@@ -19,9 +19,9 @@ import {
 		delCookie
 	} from '@/utils/utils'
 //import {Message} from 'iview'
-
-/* 使用element-ui插件 */
+//使用iView插件
 Vue.use(iView) 
+/* 使用element-ui插件 */
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 Vue.prototype.$ajax = axios
@@ -39,9 +39,12 @@ main.js的文件调用顺序：
     3. router文件夹下此时只有index.js文件，其中routes[]规定了文件地址及其url地址映射
     4. 根据文件地址，载入组件，组件被渲染在<router-view>中，被显示在index.html中
 */
+//进入每个页面前的钩子函数
 router.beforeEach((to, from ,next) =>{
+	//获取是否登陆、用户名信息
   let flag = getCookie("Flag")
   let username = getCookie("username")
+  //获取省份，城市，地区的中文和拼音
 	let province = localStorage.getItem("province")
 	let city = localStorage.getItem("city")
 	let area = localStorage.getItem("area")
@@ -50,7 +53,7 @@ router.beforeEach((to, from ,next) =>{
 	let city_eng = localStorage.getItem("city_eng")
 	let area_eng = localStorage.getItem("area_eng")
 	let street_eng = localStorage.getItem("street_eng")
-
+	//如果省份不为空，则将省份城市区信息存储到store
 	if(province!=null){
 		store.state.area.province = province
 		store.state.area.city = city
@@ -70,15 +73,19 @@ router.beforeEach((to, from ,next) =>{
 // 		localStorage.setItem("province", location[0])
 // 		localStorage.setItem("city", location[1])
 // 	}
+
   if(flag==='isLogin'){
+	  //如果已经登陆，且去的市登陆界面，则跳转到主页
 		if(to.path == '/register'){
 			next('/')
 		}else{
+			//设置store中的登陆为true
 			store.state.isLogin = true
 			store.state.UserInfo.username = username
 			next()
 		}   
   }else{
+	  //如果未登陆，且去的页面需要登陆，则跳转到登陆页面
     store.state.isLogin =false
     if(to.meta.requireLogin){
       next({path: '/login'})

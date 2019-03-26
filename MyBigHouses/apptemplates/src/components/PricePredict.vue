@@ -138,7 +138,7 @@
 							// 设置预测颜色
 							zones: [{
 								value: 5,
-								// color: '#000000',
+								color: '#7cb5ec',
 							}, {
 								value: 9,
 								dashStyle: 'ShortDashDotDot',
@@ -209,9 +209,14 @@
 							let x_axis = []
 							// 接受get请求返回的数据
 							for (let s of response.data.chart_data) {
-								hist_price.push(parseFloat(s[1]))
+								if(hist_price.length == 5){
+									hist_price.push({'y':parseFloat(s[1]), 'color':'#7cb5ec'})
+								}else{
+									hist_price.push(parseFloat(s[1]))
+								}
 								x_axis.push(s[0])
 							}
+							console.log(hist_price)
 							// 如果返回的数据较短，则扩充x轴长度并对列表中的原数据进行pad
 							if (parseInt(response.data.chart_data.length) < last_n_month) {
 								for (var i = 0; i < last_n_month - parseInt(response.data.chart_data.length); i++) {

@@ -47,7 +47,7 @@
 								{{o.total_price}}万
 							</p>
 							<p style="font-size: 12px;font-weight: 300;">
-								单价：{{o.price}}万
+								单价：{{o.price}}元/平方米
 							</p>
 							<p style="font-size: 12px;font-weight: 300;margin-top: 20px;">
 								{{o.star_count}}人已收藏
@@ -96,12 +96,12 @@
 				total: 0, // 记录总条数
 				display: 5, // 每页显示条数
 				current: 1, // 当前的页数
+				first_load_flag: true,// 判断是否第一次加载
 			};
 
 		},
 		created() {
 			//获取用户头像
-			this.getAvatar()
 		},
 		mounted() {
 			//获取收藏信息
@@ -125,6 +125,11 @@
 					method: 'get',
 				}).then(function(response) {
 					if (response.data.code === 0) {
+						// 如果使第一次加载则改变头像，减少头像加载频率
+						if(this.first_load_flag){
+							this.imageUrl = global_.IpUrl + '/' + response.data.img_url
+							this.first_load_flag = false
+						}
 						var favor = response.data.data
 						for (var i = 0; i < favor.length; i++) {
 							var temp = {}
@@ -158,20 +163,6 @@
 			pagechange(page) {
 				this.current = page
 				this.getList()
-			},
-			//获取用户头像url
-			getAvatar() {
-				this.$ajax({
-					method: 'get',
-					async: false,
-					url: global_.IpUrl + '/user/get_info',
-				}).then(function(response) {
-					if (response.data.code == 0) {
-						this.imageUrl = global_.IpUrl + '/' + response.data.img_url
-					} else {
-						iView.Message.info(response.data.msg)
-					}
-				}.bind(this))
 			},
 			//上传头像
 			handleAvatarSuccess(response, file) {

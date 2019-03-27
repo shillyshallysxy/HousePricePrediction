@@ -643,4 +643,11 @@ class PredictPriceView(View):
             else:
                 chart_data.append(["{}-{}".format(timepoint["year"], timepoint["month"]), entry.predict_price])
 
-        return JsonResponse({"code": 0, "data": ret, "count": len(ret), 'chart_data': chart_data})
+        # 计算当前月的实际房价和预测房价的误差
+        cur_year, cur_month = last_6_timepoints[5]['year'], last_6_timepoints[5]['month']
+        cur_predict_price = predict_records.get(year=cur_year, month=cur_month).predict_price
+        cur_real_price = history_records.get(year=cur_year, month=cur_month).average_price
+        print(cur_real_price, cur_predict_price)
+        error = int(cur_real_price) - int(cur_predict_price)
+
+        return JsonResponse({"code": 0, "data": ret, "count": len(ret), 'chart_data': chart_data, 'error': error})

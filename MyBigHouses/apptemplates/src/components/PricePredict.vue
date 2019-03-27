@@ -216,7 +216,6 @@
 								}
 								x_axis.push(s[0])
 							}
-							//console.log(hist_price)
 							// 如果返回的数据较短，则扩充x轴长度并对列表中的原数据进行pad
 							if (parseInt(response.data.chart_data.length) < last_n_month) {
 								for (var i = 0; i < last_n_month - parseInt(response.data.chart_data.length); i++) {

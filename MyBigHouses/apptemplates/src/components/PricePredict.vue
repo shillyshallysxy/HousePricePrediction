@@ -60,7 +60,7 @@
 							误差
 						</div>
 						<div class="right_1" style="font-size: 32px;">
-							123 元
+							{{predict_info.error}} 元
 						</div>
 					</div>
 					<div class="main_right_1" style="padding-top: 40px;">
@@ -100,7 +100,8 @@
 					one_month_later: '无数据',
 					one_month_earlier: '无数据',
 					half_year_earlier: '无数据',
-					three_month_later: '无数据'
+					three_month_later: '无数据',
+					error:'无数据'
 				},
 				news_info: [],
 				html: '',
@@ -319,6 +320,7 @@
 						_this.predict_info.one_month_earlier = temp_predict_info[1]
 						_this.predict_info.half_year_earlier = temp_predict_info[0]
 						_this.predict_info.three_month_later = temp_predict_info[4]
+						_this.predict_info.error = response.data.error
 					} else {
 						iView.$Message.info(response.data.msg)
 					}

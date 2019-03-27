@@ -48,40 +48,42 @@
 		store,
 		data() {
 			return {
+				//双向绑定用户名、密码以及是否七天免登陆
 				ruleForm: {
 					username: '',
 					password: '',
 					checked: false
 				},
+				//输入框的规则校验
 				rules: {
 					username: [{
-							required: true,
+							required: true,//用户名必须输入
 							message: '请输入用户名',
 							trigger: 'blur'
 						},
 						{
-							min: 1,
+							min: 1,//最小长度1，最大长度20
 							max: 20,
 							message: '长度在 1 到 20 个字符',
 							trigger: 'blur'
 						}
 					],
 					userpassword: [{
-							required: true,
+							required: true,//密码必须输入
 							message: '请输入密码',
 							trigger: 'blur'
 						},
 						{
-							min: 6,
-							max: 30,
+							min: 6,//最小长度6
+							max: 30,//最大长度30
 							message: '长度在 6 到 30 个字符',
 							trigger: 'blur'
 						}
 
 					],
 				},
-				checked: false,
-				login_loading_flag: false,
+				checked: false, //是否选择七天免登陆
+				login_loading_flag: false,//提交加载
 			};
 		},
 		mounted() {
@@ -91,11 +93,14 @@
 			})
 		},
 		methods: {
+			//提交登录信息
 			submitForm(formName) {
 				this.login_loading_flag = true
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
+						//获取csrftoken
 						var arr = getCookie('csrftoken')
+						//post方法提交表单
 						this.$ajax({
 							method: 'post',
 							url: global_.IpUrl+'/user/login/',
@@ -109,12 +114,15 @@
 								'X-CSRFToken': arr
 							}
 						}).then(function(response) {
-							this.login_loading_flag = false
+							this.login_loading_flag = false //取消加载
 							if (response.data.code === 0) {
 								iView.Message.info('登录成功')
+								//保存用户名到store
 								store.commit('change_isLogin', response.data.username)
 								if(this.ruleForm.checked){
+									//将用户名存入cookie，并设定过期时间
 									setCookie("username", response.data.username, 7*24*60*60*1000)
+									//设置是否登陆的标志
 									setCookie("Flag", "isLogin", 7*24*60*60*1000)
 								}else{
 									setCookie("username", response.data.username)
@@ -122,6 +130,7 @@
 								}
 								//window.localStorage.setItem("username", response.data.username)
 								//window.localStorage.setItem("Flag", "isLogin")
+								//返回上一个页面
 								setTimeout(this.go, 1000);
 							} else {
 								iView.Message.info(response.data.msg)
@@ -139,6 +148,7 @@
 			},
 
 			register_route() {
+				//到注册页面
 				this.$router.push({
 					path: "/register"
 				})

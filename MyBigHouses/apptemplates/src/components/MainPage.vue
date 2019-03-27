@@ -170,11 +170,15 @@
 	export default {
 		data() {
 			return {
+				//所在城市，默认为苏州
 				city_name_cn: '苏州',
 				city_name_en: 'SuZhou',
+				//所在城市的平均房价
 				average_price: '1.64',
+				//推荐房源栏
 				ShowHouse: [],
 				ShowHouse2: [],
+				//搜索信息
 				search_info: '',
 				// 折线图当前选择的城市
 				city_selected: [],
@@ -259,6 +263,7 @@
 			}
 		},
 		mounted() {
+			//获取store中的城市
 			this.city_name_cn = store.state.area.city
 			this.city_name_en = store.state.area_eng.city
 			// 更新当前选择的城市
@@ -268,6 +273,7 @@
 
 			this.get_mainpage_info()
 			var _this = this
+			//获取当前城市的推荐房源列表
 			_this.$ajax({
 				method: 'get',
 				url: global_.IpUrl + '/house/price/' + this.get_city() + '/overview',
@@ -297,7 +303,7 @@
 				}
 				
 			})
-			
+			//轮播图
 			var mySwiper = new Swiper ('.swiper-container', {
 			    loop: true, 
 			    pagination: {
@@ -389,6 +395,7 @@
 					}
 				}
 			},
+			//进入房源详情页
 			go_to_detail_page(id) {
 				this.$router.push({
 					path: 'ItemPage',
@@ -397,9 +404,11 @@
 					}
 				})
 			},
+			//获取当前城市的拼音
 			get_city() {
 				return store.state.area_eng.city
 			},
+			//获取当前城市的平均房价
 			get_mainpage_info() {
 				this.$ajax({
 					method: 'get',
@@ -414,7 +423,10 @@
 					}
 				}.bind(this))
 			},
+			//点击搜索按钮跳转页面
 			search(){
+				
+				//如果输入为空，则发出提示
 				if(this.search_info==''){
 					iView.Message.info("请输入搜索信息")
 				}else{

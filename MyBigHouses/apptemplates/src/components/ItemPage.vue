@@ -115,6 +115,7 @@
 	export default {
 		data() {
 			return {
+				//房价详情页面信息
 				Detail_info: {
 					description: '',
 					view_count: '',
@@ -138,8 +139,11 @@
 				fullscreenLoading: false
 			}
 		},
+		//create钩子，挂载前调用
 		created() {
+			//获取需要展示的房子id
 			var House_id = this.$route.query.HouseId
+			//加载等待
 			const loading = this.$loading({
 				lock: true,
 				text: 'Loading',
@@ -147,12 +151,14 @@
 				background: 'rgba(255,255,255,0.8)'
 			});
 			var _this = this
+			//根据id获取房源信息
 			_this.$ajax({
 				method: 'get',
 				url: global_.IpUrl + '/house/detail/' + House_id,
 			}).then(function(response) {
 				if (response.data.code === 0) {
 					var house = response.data.data
+					//将房源信息加载到页面
 					_this.Detail_info.description = house['description']
 					_this.Detail_info.view_count = response.data.view_count
 					_this.Detail_info.star_count = response.data.star_count
@@ -181,6 +187,7 @@
 
 		},
 		methods: {
+			//收藏功能
 			star() {
 				var _this = this
 				_this.$ajax({
@@ -198,6 +205,7 @@
 					}
 				})
 			},
+			//取消收藏功能
 			unstar() {
 				var _this = this
 				_this.$ajax({

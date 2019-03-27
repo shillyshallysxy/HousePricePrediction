@@ -8,16 +8,18 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
 	state: {
-		isLogin: false,
+		isLogin: false,//是否登陆
 		UserInfo: {
-			username: '',
+			username: '',//用户名
 		},
+		//省份、城市、区、街道的中文
 		area: {
 			province: "江苏省",
 			city: "无锡",
 			area: "",
 			street: ""
 		},
+		//省份、城市、区、街道的英文
 		area_eng: {
 			province: "jiangsu",
 			city: "wuxi",
@@ -27,16 +29,18 @@ export default new Vuex.Store({
 		}
 	},
 	mutations: {
+		//修改登陆状态
 		change_isLogin(state, username) {
 
 			state.isLogin = true,
 				state.UserInfo.username = username
 		},
-
+		//退出登陆
 		change_LoginOut(state) {
 			state.isLogin = false,
 				state.UserInfo.username = ''
 		},
+		//修改所在地信息
 		change_AreaInfo(state, area) {
 			// console.log("更改了城市")
 			state.area.province = area['province'],
@@ -63,6 +67,7 @@ export default new Vuex.Store({
 
 	},
 	getters: {
+		//获取信息的方法
 		getIsLogin: function(state) {
 			return state.isLogin
 		},

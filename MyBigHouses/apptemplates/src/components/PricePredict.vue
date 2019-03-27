@@ -216,6 +216,7 @@
 								}
 								x_axis.push(s[0])
 							}
+							//console.log(hist_price)
 							// 如果返回的数据较短，则扩充x轴长度并对列表中的原数据进行pad
 							if (parseInt(response.data.chart_data.length) < last_n_month) {
 								for (var i = 0; i < last_n_month - parseInt(response.data.chart_data.length); i++) {
@@ -256,9 +257,11 @@
 					}
 				}
 			},
+			//点击信息跳转详情
 			change_news(index) {
 				this.html = this.news_info[index].body
 			},
+			//获取当前城市的新闻信息
 			get_news_info() {
 				var _this = this
 				const loading = this.$loading({
@@ -291,6 +294,7 @@
 				})
 
 			},
+			//获取当前城市的过去以及将来的预测房价
 			get_price_info() {
 				var _this = this
 				_this.$ajax({
@@ -311,9 +315,11 @@
 			}
 		},
 		computed: {
+			//获取城市中文
 			get_city() {
 				return store.state.area.city
 			},
+			//获取城市拼音
 			get_city_eng() {
 				return store.state.area_eng.city
 			}

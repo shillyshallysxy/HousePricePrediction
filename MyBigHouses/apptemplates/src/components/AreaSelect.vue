@@ -1,5 +1,5 @@
 <template>
-	<div style="width: 100%; height:800px; min-width:1320px; margin-top: 60px;">
+	<div class="city_choose">
 		<span class="demonstration" style="font-size: 18px;">请选择你所在的城市</span>
 		<el-cascader placeholder="试试搜索：城市" @change="handleChange" v-model="optionSelect" :options="options" filterable style="margin-left: 60px;"></el-cascader>
 	</div>
@@ -52,5 +52,12 @@
 </script>
 
 <style>
-
+.city_choose{
+	width: 100%;
+	height:800px;
+	min-width:1320px;
+	padding-top: 60px;
+	background-image:url(../assets/1.jpg);
+	background-size: 100% 100%;
+}
 </style>

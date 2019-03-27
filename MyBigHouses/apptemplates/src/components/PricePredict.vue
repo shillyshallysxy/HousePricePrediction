@@ -128,11 +128,11 @@
 					xAxis: {},
 					yAxis: {
 						title: {
-							text: '价格 (万元/平方米)'
+							text: '价格 (元/平方米)'
 						},
 						labels: {
 							formatter: function() {
-								return this.value / 10000;
+								return this.value;
 							}
 						}
 					},
@@ -349,7 +349,7 @@
 
 	.bar {
 		min-width: 100%;
-		height: 15px;
+		height: 10px;
 		background-color: rgb(237, 237, 237);
 	}
 
@@ -442,9 +442,8 @@
 	}
 
 	.main_right_1 {
-		width: 500px;
+		width: 520px;
 		height: 440px;
-		margin-left: 20px;
 		float: left;
 	}
 

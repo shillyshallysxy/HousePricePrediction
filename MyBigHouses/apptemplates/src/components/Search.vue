@@ -3,7 +3,7 @@
 		<div class="header_bar">
 			<div class="search_line">
 				<div class="search_block">
-					<el-input v-model="search_info" clearable></el-input>
+					<el-input v-model="search_info" @keyup.enter.native="search()" clearable></el-input>
 				</div>
 				<button class="search_button" @click="search()">搜索</button>
 			</div>

@@ -11,7 +11,7 @@
 
 			           <el-form-item prop="userpassword">
 
-				           <el-input v-model="ruleForm.userpassword" v-bind:class="{text_input: true}" type="password" placeholder="请输入密码"></el-input>
+				           <el-input v-model="ruleForm.userpassword" v-bind:class="{text_input: true}" type="password" @keyup.enter.native="submitForm('ruleForm')" placeholder="请输入密码"></el-input>
 
 			           </el-form-item>
 

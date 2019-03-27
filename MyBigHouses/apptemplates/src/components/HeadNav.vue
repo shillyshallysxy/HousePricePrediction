@@ -1,11 +1,12 @@
 <template>
 	<div style="width: 100%;height: 50px;background-color: white;color: black;min-width: 1050px;">
 		<el-menu router :default-active="$route.path" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-			<img src="../assets/logo1.png" style="max-height: 40px;float: left;margin-left: 80px;margin-top: 5px;" />
-			<p style="float:left;font-size: 20px;color: black;font-weight: 700;margin-left: 10px;margin-top: 15px;">
+			<div style=" cursor: pointer;" @click="go_to_main_page()">
+			<img src="../assets/logo1.png" style="max-height: 40px;float: left;margin-left: 80px;margin-top: 5px;outline:none;"/>
+			<p style="float:left;font-size: 20px;color: black;font-weight: 700;margin-left: 10px;margin-top: 15px;outline:none;">
 				My Big Houses
 			</p>
-
+			</div>
 			<i class="el-icon-location" style="max-height: 20px;float: left;margin-left: 50px;margin-top: 25px;"></i>
 			<p style="float:left;font-size: 12px;color: black;font-weight: 300;margin-left: 10px;margin-top: 25px;cursor: pointer;" @click="select_area()">
 				{{getCity}}
@@ -130,6 +131,11 @@
 			}
 		},
 		methods: {
+			go_to_main_page(){
+				this.$router.push({
+					path: '/'
+				})
+			},
 // 			show() {
 // 				alert(this.isLogin)
 // 			},

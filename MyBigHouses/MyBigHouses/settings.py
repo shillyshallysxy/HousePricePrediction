@@ -25,9 +25,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'c*u1bxd@y!ed1avb%^5pebrm10t4&9s4%giam*m76&@qwlob9%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['nginxserver',
+                 'nginxavatar']
 
 
 # Application definition

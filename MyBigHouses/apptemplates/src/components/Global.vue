@@ -3,9 +3,8 @@
 </template>
 
 <script>
-//定义web服务器的公网ip
-	//const IpUrl = 'http://42.159.122.69';
-	const IpUrl = 'http://127.0.0.1:8000';
+  //定义web服务器的公网ip
+	const IpUrl = 'http://42.159.122.69/backend';
 	//定义省份、城市的中文、拼音对照
 	const city_mapping = {
 		"北京": "beijing",

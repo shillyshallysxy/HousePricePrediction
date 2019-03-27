@@ -45,7 +45,7 @@
 							</div>
 						</div>
 					</div>
-					
+
 					<div class="main_right">
 						<div class="right_1" style="margin-top: 70px;">
 							本月实际价格
@@ -66,7 +66,7 @@
 					<div class="main_right_1" style="padding-top: 40px;">
 						<vue-highcharts :highcharts="Highcharts" :options="options_chart_line" ref="HisPriceCharts_line"></vue-highcharts>
 					</div>
-					
+
 				</div>
 				<div class="main_second">
 					<div class="main_second_left">
@@ -124,8 +124,7 @@
 						text: "房价走势预测图"
 					},
 					subtitle: {},
-					xAxis: {
-					},
+					xAxis: {},
 					yAxis: {
 						title: {
 							text: '价格 (万元/平方米)'
@@ -218,9 +217,12 @@
 							let x_axis = []
 							// 接受get请求返回的数据
 							for (let s of response.data.chart_data) {
-								if(hist_price.length == 5){
-									hist_price.push({'y':parseFloat(s[1]), 'color':'#7cb5ec'})
-								}else{
+								if (hist_price.length == 5) {
+									hist_price.push({
+										'y': parseFloat(s[1]),
+										'color': '#7cb5ec'
+									})
+								} else {
 									hist_price.push(parseFloat(s[1]))
 								}
 								x_axis.push(s[0])
@@ -260,7 +262,7 @@
 							name: hist_price_key,
 							data: this.his_price_line[hist_price_key].slice(-last_n_month),
 						})
-					// 如果表格中存在该数据则更新该数据
+						// 如果表格中存在该数据则更新该数据
 					} else {
 						vali_series.setData(this.his_price_line[hist_price_key].slice(-last_n_month))
 					}
@@ -377,75 +379,85 @@
 		float: left;
 	}
 
-.main_left_1 {
+	.main_left_1 {
 		width: 2px;
 		height: 90%;
-		background-color: rgba(210,236,233,100);
+		background-color: rgba(210, 236, 233, 100);
 		margin-left: 20%;
 		float: left;
-}
-.circle1 {
-  width: 20px;
-  height: 20px;
-  background: rgba(0,150,136,100);
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  margin-left: -9px;
-}
-.circle2 {
-  width: 30px;
-  height: 30px;
-  background: rgba(255,152,0,100);
-  -moz-border-radius: 15px;
-  -webkit-border-radius: 15px;
-  border-radius: 15px;
-  margin-left: -14px;
-}
-.main_left_2 {
-	width: 250px;
-	height: 90%;
-	margin-left: 10%;
-	float: left;
 	}
-.left_part_1 {
-	width: 200px;
-	height: 50px;
-	color: black;
-	text-align: left;
-	font-size: 16px;
-}
-.left_part_2 {
-	width: 200px;
-	height: 50px;
-	color: black;
-	text-align: left;
-	font-size: 20px;
-}
-.main_right {
+
+	.circle1 {
+		width: 20px;
+		height: 20px;
+		background: rgba(0, 150, 136, 100);
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		border-radius: 10px;
+		margin-left: -9px;
+	}
+
+	.circle2 {
+		width: 30px;
+		height: 30px;
+		background: rgba(255, 152, 0, 100);
+		-moz-border-radius: 15px;
+		-webkit-border-radius: 15px;
+		border-radius: 15px;
+		margin-left: -14px;
+	}
+
+	.main_left_2 {
+		width: 250px;
+		height: 90%;
+		margin-left: 10%;
+		float: left;
+	}
+
+	.left_part_1 {
+		width: 200px;
+		height: 50px;
+		color: black;
+		text-align: left;
+		font-size: 16px;
+	}
+
+	.left_part_2 {
+		width: 200px;
+		height: 50px;
+		color: black;
+		text-align: left;
+		font-size: 20px;
+	}
+
+	.main_right {
 		width: 500px;
 		height: 360px;
 		margin-left: 20px;
 		float: left;
-		background: rgba(210,236,233,100);
+		background: rgba(210, 236, 233, 100);
 		border-radius: 60px;
 	}
-.main_right_1 {
-	width: 500px;
-	height: 440px;
-	margin-left: 20px;
-	float: left;
-}
-.right_1{
-	font-size: 24px;
-	margin-top: 10px;
-	color: black;
-}
-.right_2{
-	margin-top: 10px;
-	font-size: 20px;
-	color: black;
-}
+
+	.main_right_1 {
+		width: 500px;
+		height: 440px;
+		margin-left: 20px;
+		float: left;
+	}
+
+	.right_1 {
+		font-size: 24px;
+		margin-top: 10px;
+		color: black;
+	}
+
+	.right_2 {
+		margin-top: 10px;
+		font-size: 20px;
+		color: black;
+	}
+
 	.main_second {
 		width: 100%;
 		height: 500px;
@@ -480,7 +492,7 @@
 	}
 
 	.main_second_right {
-		width: 550px;
+		width: 500px;
 		height: 80%;
 		margin-left: 50px;
 		margin-top: 50px;

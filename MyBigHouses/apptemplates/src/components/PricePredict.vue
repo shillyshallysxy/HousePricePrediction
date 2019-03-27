@@ -6,58 +6,67 @@
 				<div class="main_first">
 					<div class="main_left">
 						<div class="main_left_1">
-							<p class="left_part_1">{{get_city}}</p>
+							<div class="circle1"></div>
+							<div class="circle2" style="margin-top:150px;"></div>
+							<div class="circle2" style="margin-top:150px;"></div>
+							<div class="circle1" style="margin-top:150px;"></div>
+							<div class="circle1" style="margin-top:150px;"></div>
 						</div>
 						<div class="main_left_2">
-							<div class="left_part_2">
-								<p class="left_part_2_1">
-									当前房价
-								</p>
-								<p class="left_part_2_2">
-									{{predict_info.present}}
-								</p>
-								<p class="left_part_2_3">元</p>
+							<div class="left_part_1">
+								预测三个月后房价：
+							</div>
+							<div class="left_part_1">
+								{{predict_info.three_month_later}}
+							</div>
+							<div class="left_part_2" style="margin-top: 60px;">
+								预测一个月后房价：
+							</div>
+							<div class="left_part_2" style="color: red;">
+								{{predict_info.one_month_later}}
+							</div>
+							<div class="left_part_2" style="margin-top: 60px;">
+								当前房价：
 							</div>
 							<div class="left_part_2">
-								<p class="left_part_2_1">
-									预测1个月后房价
-								</p>
-								<p class="left_part_2_2">
-									{{predict_info.one_month_later}}
-								</p>
-								<p class="left_part_2_3">元</p>
+								{{predict_info.present}}
 							</div>
-						</div>
-						<div class="main_left_3">
-							<div class="left_part_3" style="border-left: 0;">
-								<p class="left_part_3_1">
-									一个月前房价
-								</p>
-								<p class="left_part_3_2">
-									{{predict_info.one_month_earlier}}
-								</p>
+							<div class="left_part_1" style="margin-top: 60px;">
+								一个月前房价：
 							</div>
-							<div class="left_part_3">
-								<p class="left_part_3_1">
-									半年前房价
-								</p>
-								<p class="left_part_3_2">
-									{{predict_info.half_year_earlier}}
-								</p>
+							<div class="left_part_1">
+								{{predict_info.one_month_earlier}}
 							</div>
-							<div class="left_part_3pre">
-								<p class="left_part_3_1">
-									预测3个月后房价
-								</p>
-								<p class="left_part_3_2">
-									{{predict_info.three_month_later}}
-								</p>
+							<div class="left_part_1" style="margin-top: 60px;">
+								半年前房价：
+							</div>
+							<div class="left_part_1">
+								{{predict_info.half_year_earlier}}
 							</div>
 						</div>
 					</div>
+					
 					<div class="main_right">
+						<div class="right_1" style="margin-top: 70px;">
+							本月实际价格
+						</div>
+						<div class="right_2">
+							与
+						</div>
+						<div class="right_1">
+							上个月预测价格
+						</div>
+						<div class="right_2">
+							误差
+						</div>
+						<div class="right_1" style="font-size: 32px;">
+							123 元
+						</div>
+					</div>
+					<div class="main_right_1" style="padding-top: 40px;">
 						<vue-highcharts :highcharts="Highcharts" :options="options_chart_line" ref="HisPriceCharts_line"></vue-highcharts>
 					</div>
+					
 				</div>
 				<div class="main_second">
 					<div class="main_second_left">
@@ -330,145 +339,119 @@
 <style scoped>
 	.body {
 		width: 100%;
-		height: 1000px;
-		min-width: 1273px;
+		height: 1400px;
+		min-width: 1050px;
 	}
 
 	.bar {
 		min-width: 100%;
-		height: 60px;
+		height: 15px;
 		background-color: rgb(237, 237, 237);
 	}
 
 	.PredictiveContent {
+		margin-top: 30px;
 		width: 100%;
-		height: 1000px;
+		height: 1400px;
 		background-color: white;
 		padding-left: 50%;
 	}
 
 	.Content {
 		width: 950px;
-		height: 950px;
+		height: 1350px;
 		margin-left: -475px;
 		padding-top: 30px;
 	}
 
 	.main_first {
 		width: 100%;
-		height: 400px;
+		height: 800px;
 		background: white;
 		float: left;
 	}
 
 	.main_left {
-		width: 500px;
-		height: 100%;
-		background-color: rgb(17, 134, 117);
-		float: left;
-	}
-
-	.main_left_1 {
-		width: 100%;
-		height: 45%;
-	}
-
-	.main_left_2 {
-		width: 100%;
-		height: 30%;
-	}
-
-	.left_part_1 {
-		font-size: 48px;
-		font-weight: 600;
-		float: left;
-		margin-left: 30px;
-		margin-top: 30px;
-		color: white;
-	}
-
-	.left_part_2 {
-		width: 50%;
-		height: 100%;
-		float: left;
-		text-align: center;
-	}
-
-	.left_part_2_1 {
-		font-size: 20px;
-		font-weight: 600;
-		font-family: arial;
-		color: white;
-	}
-
-	.left_part_2_2 {
-		margin-left: 30px;
-		font-size: 48px;
-		font-weight: 600;
-		font-family: arial;
-		color: white;
-		float: left;
-	}
-
-	.left_part_2_3 {
-		margin-top: 20px;
-		font-size: 32px;
-		font-weight: 400;
-		color: white;
-		float: left;
-	}
-
-	.main_left_3 {
-		width: 100%;
-		height: 25%;
-		background-color: white;
-		border: 1px solid black;
-	}
-
-	.left_part_3 {
-		width: 30%;
-		height: 100%;
-		float: left;
-		border-left: 1px solid black;
-		text-align: center;
-	}
-	.left_part_3pre {
-		width: 40%;
-		height: 100%;
-		float: left;
-		border-left: 1px solid black;
-		text-align: center;
-	}
-
-	.left_part_3_1 {
-		margin-top: 20px;
-		font-size: 20px;
-		font-weight: 600;
-		font-family: arial;
-		color: black;
-	}
-
-	.left_part_3_2 {
-		font-size: 20px;
-		font-weight: 600;
-		font-family: arial;
-		color: black;
-	}
-
-	.main_right {
 		width: 430px;
 		height: 100%;
-		margin-left: 20px;
-		/* border: 1px solid black; */
 		float: left;
 	}
 
+.main_left_1 {
+		width: 2px;
+		height: 90%;
+		background-color: rgba(210,236,233,100);
+		margin-left: 20%;
+		float: left;
+}
+.circle1 {
+  width: 20px;
+  height: 20px;
+  background: rgba(0,150,136,100);
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  margin-left: -9px;
+}
+.circle2 {
+  width: 30px;
+  height: 30px;
+  background: rgba(255,152,0,100);
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+  margin-left: -14px;
+}
+.main_left_2 {
+	width: 250px;
+	height: 90%;
+	margin-left: 10%;
+	float: left;
+	}
+.left_part_1 {
+	width: 200px;
+	height: 50px;
+	color: black;
+	text-align: left;
+	font-size: 16px;
+}
+.left_part_2 {
+	width: 200px;
+	height: 50px;
+	color: black;
+	text-align: left;
+	font-size: 20px;
+}
+.main_right {
+		width: 500px;
+		height: 360px;
+		margin-left: 20px;
+		float: left;
+		background: rgba(210,236,233,100);
+		border-radius: 60px;
+	}
+.main_right_1 {
+	width: 500px;
+	height: 440px;
+	margin-left: 20px;
+	float: left;
+}
+.right_1{
+	font-size: 24px;
+	margin-top: 10px;
+	color: black;
+}
+.right_2{
+	margin-top: 10px;
+	font-size: 20px;
+	color: black;
+}
 	.main_second {
 		width: 100%;
 		height: 500px;
 		background: white;
 		border-radius: 30px;
-		margin-top: 430px;
+		margin-top: 830px;
 		background-color: rgb(237, 237, 237);
 	}
 
@@ -479,6 +462,9 @@
 	}
 
 	.main_second_left_1 {
+		cursor: pointer;
+		padding-top: 15px;
+		font-size: 15px;
 		width: 200px;
 		margin-left: 50px;
 		height: 100px;
@@ -487,18 +473,17 @@
 
 	.main_second_middle {
 		width: 10px;
-		height: 60%;
-		margin-top: 100px;
+		height: 80%;
+		margin-top: 50px;
 		border-left: 1px solid darkgray;
 		float: left;
 	}
 
 	.main_second_right {
-		width: 500px;
+		width: 550px;
 		height: 80%;
 		margin-left: 50px;
 		margin-top: 50px;
-		background-color: white;
 		float: left;
 		overflow: auto;
 	}

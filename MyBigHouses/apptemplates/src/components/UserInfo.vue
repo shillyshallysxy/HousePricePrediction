@@ -47,7 +47,7 @@
 								{{o.total_price}}万
 							</p>
 							<p style="font-size: 12px;font-weight: 300;">
-								单价：{{o.price}}万
+								单价：{{o.price}}元
 							</p>
 							<p style="font-size: 12px;font-weight: 300;margin-top: 20px;">
 								{{o.star_count}}人已收藏

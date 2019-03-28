@@ -57,6 +57,18 @@ class LoginView(View):
             return JsonResponse({'code': 5, 'msg': u'该用户名不存在！'})
 
 
+# url: /user/logout
+class LogoutView(View):
+	# 注销 删除session中的用户名
+    def get(self, request):
+	    # method == 'GET'
+        try:
+            del request.session['user']
+        except:
+            return JsonResponse({'code':1, 'msg':'退出发生错误'})
+        return JsonResponse({'code':0})
+
+
 # 将类转化为json
 def object_to_json(self):
     fields = []

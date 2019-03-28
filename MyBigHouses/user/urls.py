@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import RegisterView, ActiveView, LoginView, UploadAvatarView, StarCountView, GetInfoView
+from .views import RegisterView, ActiveView, LoginView, UploadAvatarView, StarCountView, GetInfoView, LogoutView
 app_name = 'user'
 
 urlpatterns = [
@@ -9,6 +9,8 @@ urlpatterns = [
     url(r'active/(?P<token>.*)', ActiveView.as_view(), name='active'),
     # 用户登录
     url('login', LoginView.as_view(), name='login'),
+	# 用户注销
+	url('logout', LogoutView.as_view(), name='logout'),
     # 修改用户头像
     url(r'modify_avatar', UploadAvatarView.as_view(), name="modify_avatar"),
     # 获取用户详情页信息

@@ -334,6 +334,7 @@
 		},
 		//mounted 钩子
 		mounted() {
+			document.documentElement.scrollTop=0
 			// 获取城市区域信息
 			this.set_region()
 			// 获取初始话页面信息

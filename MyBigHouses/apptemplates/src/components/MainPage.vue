@@ -43,7 +43,7 @@
 
 		<!--bar代码-->
 		<div style="background-color: #009688;width: 100%;height: 150px;min-width: 1050px;">
-			<div style="width: 26%;height: 60px;margin-top: 45px;margin-left: 5%;float: left;">
+			<div style="width: 26%;height: 60px;margin-top: 45px;margin-left: 5%;float: left;cursor: pointer;" @click="go_to_pricr_chart()">
 				<img src="../assets/logo1.png" style="max-height: 40px;float: left;margin-left: 100px;margin-top: 10px;" />
 				<p style="font-size: 15px;color: white;font-weight: 500;margin-top: 10px;">
 					当前房价
@@ -52,7 +52,7 @@
 					Current house price
 				</p>
 			</div>
-			<div style="width: 26%;height: 60px;margin-top: 45px;margin-left: 5%;float: left;">
+			<div style="width: 26%;height: 60px;margin-top: 45px;margin-left: 5%;float: left;cursor: pointer;" @click="go_to_prediction()">
 				<img src="../assets/logo1.png" style="max-height: 40px;float: left;margin-top: 10px;" />
 				<p style="font-size: 15px;color: white;font-weight: 500;margin-top: 10px;">
 					房价预测
@@ -61,7 +61,7 @@
 					House price prediction
 				</p>
 			</div>
-			<div style="width: 26%;height: 60px;margin-top: 45px;margin-left: 5%;float: left;">
+			<div style="width: 26%;height: 60px;margin-top: 45px;margin-left: 5%;float: left;cursor: pointer;" @click="go_to_house_choosing()">
 				<img src="../assets/logo1.png" style="max-height: 40px;float: left;margin-top: 10px;" />
 				<p style="font-size: 15px;color: white;font-weight: 500;margin-top: 10px;">
 					挑好房
@@ -77,7 +77,7 @@
 			<div style="width: 100%;height: 750px;clear: both;padding-top: 1px;padding-left: 50%;background-attachment: fixed;-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;">
 				<div style="width: 100%;height: 100px;min-width: 950px;margin-left: -475px;">
 					<p style="font-size: 25px;margin-left: 5%;float: left;margin-top: 55px;"><b>精选好房</b>，为你而选</p>
-					<p style="font-size: 15px;float:right;margin-right: 5%;margin-top: 55px;">更多好房</p>
+					<p style="font-size: 15px;float:right;margin-right: 5%;margin-top: 55px;cursor: pointer;" @click="go_to_house_choosing()">更多好房</p>
 				</div>
 				<div style="width: 100%;height: 300px;float: left; min-width: 950px;margin-left: -475px;">
 					<el-row>
@@ -109,7 +109,7 @@
 
 				<div style="width: 100%;height: 50px;min-width: 950px;margin-left: -475px;">
 					<p style="font-size: 25px;margin-left: 5%;float: left;margin-top: 5px;"><b>投资之最</b>，未来可期</p>
-					<p style="font-size: 15px;float:right;margin-right: 5%;margin-top: 5px;">更多好房</p>
+					<p style="font-size: 15px;float:right;margin-right: 5%;margin-top: 5px;cursor: pointer;" @click="go_to_house_choosing()">更多好房</p>
 				</div>
 				<div style="width: 100%;height: 300px;float: left;min-width: 950px;margin-left: -475px;margin-top: 18px;">
 					<el-row>
@@ -152,7 +152,7 @@
 					<vue-highcharts :highcharts="Highcharts" :options="options_chart_line" ref="HisPriceCharts_line"></vue-highcharts>
 				</div>				
 				<div style="background-color: red;width: 320px;height: 220px;background-size: 100% 100%;float: left;margin-left: 100px;">
-					<img src="../assets/predict.png" style="width: 320px;height: 220px;" />
+					<img src="../assets/predict.png" style="width: 320px;height: 220px;cursor: pointer;" @click="go_to_prediction()"/>
 				</div>
 			</div>
 		</div>
@@ -257,7 +257,7 @@
 				//图片路径
 				listImg:[
 					{url:require('../../src/assets/main_bg.jpg')},
-					{url:'../../static/images/2.jpg'},
+					{url:require('../../src/assets/4.jpeg')},
 					{url:require('../../src/assets/login_back.jpg')}	
 				]
 			}
@@ -324,6 +324,21 @@
 			VueHighcharts
 		},
 		methods: {
+			go_to_pricr_chart(){
+				this.$router.push({
+					path:'/price_condition'
+				})
+			},
+			go_to_prediction(){
+				this.$router.push({
+					path:'/PricePredict'
+				})
+			},
+			go_to_house_choosing(){
+				this.$router.push({
+					path: '/HouseChoosing'
+				})
+			},
 			// 更改曲线图的城市,并同步更新曲线图
 			getSelectedCityPrice() {
 				var city_sel_len = this.city_selected.length

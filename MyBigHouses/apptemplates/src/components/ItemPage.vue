@@ -136,7 +136,13 @@
 					star_flag: '',
 					pic_url: ''
 				},
-				fullscreenLoading: false
+				fullscreenLoading: false,
+				loading : this.$loading({
+					lock: true,
+					text: 'Loading',
+					spinner: 'el-icon-loading',
+					background: 'rgba(255,255,255,0.8)'
+				})
 			}
 		},
 		//create钩子，挂载前调用
@@ -144,12 +150,7 @@
 			//获取需要展示的房子id
 			var House_id = this.$route.query.HouseId
 			//加载等待
-			const loading = this.$loading({
-				lock: true,
-				text: 'Loading',
-				spinner: 'el-icon-loading',
-				background: 'rgba(255,255,255,0.8)'
-			});
+			this.loading
 			var _this = this
 			//根据id获取房源信息
 			_this.$ajax({
@@ -177,14 +178,14 @@
 					_this.Detail_info.contact = house['contact']
 					_this.Detail_info.pic_url = house['pic_url']
 					_this.Detail_info.star_flag = response.data.star_flag
-					loading.close();
+					_this.loading.close();
 				} else {
 
 				}
 			})
 		},
 		mounted() {
-
+			document.documentElement.scrollTop=0
 		},
 		methods: {
 			//收藏功能
@@ -228,6 +229,11 @@
 					path: "/login"
 				})
 			},
+			
+			
+		},
+		destroyed() {
+			this.loading.close()
 		}
 	}
 </script>

@@ -166,14 +166,22 @@
 // 			},
 			//注销按键
 			loginout() {
-				store.commit('change_LoginOut')
-				delCookie("username")
-				delCookie("Flag")
-				iView.Message.info('退出成功')
-				//返回到登陆页面
-				this.$router.push({
-					name:'MainPage',
-					})
+				var _this = this
+				_this.$ajax({
+					url:global_.IpUrl+'/user/logout',
+					method:'get'
+				}).then(function(response){
+					store.commit('change_LoginOut')
+					delCookie("username")
+					delCookie("Flag")
+					iView.Message.info('退出成功')
+					//返回到登陆页面
+					_this.$router.push({
+						path:'/',
+						})
+				})
+				
+				
 			},
 			//跳转到选择区域界面
 			select_area() {

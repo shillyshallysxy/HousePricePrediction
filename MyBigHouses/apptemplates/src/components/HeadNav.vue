@@ -2,8 +2,8 @@
 	<div style="width: 100%;height: 50px;background-color: white;color: black;min-width: 1050px;">
 		<el-menu router :default-active="$route.path" class="el-menu-demo" mode="horizontal" @select="handleSelect">
 			<div style=" cursor: pointer;" @click="go_to_main_page()">
-			<img src="../assets/logo1.png" style="max-height: 40px;float: left;margin-left: 80px;margin-top: 5px;outline:none;"/>
-			<p style="float:left;font-size: 20px;color: black;font-weight: 700;margin-left: 10px;margin-top: 15px;outline:none;">
+			<img src="../assets/logo1.png" style="max-height: 40px;float: left;margin-left: 80px;margin-top: 5px;border:none;"/>
+			<p style="float:left;font-size: 20px;color: black;font-weight: 700;margin-left: 10px;margin-top: 15px;border:none;">
 				My Big Houses
 			</p>
 			</div>

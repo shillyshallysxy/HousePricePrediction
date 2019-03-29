@@ -76,27 +76,42 @@
 							</div>
 						</div>
 						<div style="margin-left: 50px;height: 2px;min-width: 400px;max-width: 400px;background:rgb(173,173,173);overflow:hidden;"></div>
-						<div style="min-width: 500px;max-width: 500px;min-height: 200px;max-height: 200px;">
-							<div v-bind:class="{itemInfo: true}">
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">小区名称:</p>
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 150px;">{{Detail_info.garden}}</p>
+						<div style="min-width: 500px;max-width: 500px;min-height: 200px;max-height: 200px;float: left;">
+							<div style="width: 150px;height: 200px;float: left;">
+								<div class="itemInfo1">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">小区名称:</p>
+								</div>
+								<div class="itemInfo1">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">所在地区:</p>
+								</div>
+								<div class="itemInfo1">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">开发公司:</p>
+								</div>
+								<div class="itemInfo1">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">物业公司:</p>
+								</div>
+								<div class="itemInfo1">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">联系方式:</p>
+								</div>
 							</div>
-							<div v-bind:class="{itemInfo: true}">
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">所在地区:</p>
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 150px;">{{Detail_info.location}}</p>
+							<div style="width: 300px;height: 200px;float: left;">
+								<div class="itemInfo2">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;text-align: center;">{{Detail_info.garden}}</p>
+								</div>
+								<div class="itemInfo2">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;text-align: center;">{{Detail_info.location}}</p>
+								</div>
+								<div class="itemInfo2">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;text-align: center;">{{Detail_info.developer}}</p>
+								</div>
+								<div class="itemInfo2">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;text-align: center;">{{Detail_info.property_company}}</p>
+								</div>
+								<div class="itemInfo2">
+									<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;text-align: center;">{{Detail_info.contact}}</p>
+								</div>
 							</div>
-							<div v-bind:class="{itemInfo: true}">
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">开发公司:</p>
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 80px;">{{Detail_info.developer}}</p>
-							</div>
-							<div v-bind:class="{itemInfo: true}">
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">物业公司:</p>
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 80px;">{{Detail_info.property_company}}</p>
-							</div>
-							<div v-bind:class="{itemInfo: true}">
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 60px;">联系方式:</p>
-								<p style="font-family: 黑体;font-size: 16px;margin-top: 5px;display: inline-block;float: left;margin-left: 135px;">{{Detail_info.contact}}</p>
-							</div>
+				
 						</div>
 					</div>
 				</div>
@@ -150,7 +165,7 @@
 			//获取需要展示的房子id
 			var House_id = this.$route.query.HouseId
 			//加载等待
-			this.loading
+			//this.loading
 			var _this = this
 			//根据id获取房源信息
 			_this.$ajax({
@@ -291,11 +306,14 @@
 		text-align: center;
 	}
 
-	.itemInfo {
-		max-height: 40px;
-		min-height: 40px;
-		max-width: 500px;
-		min-width: 500px;
+	.itemInfo1 {
+		height: 40px;
+		width: 150px;
+		padding-top: 1px;
+	}
+	.itemInfo2 {
+		height: 40px;
+		width: 350px;
 		padding-top: 1px;
 	}
 </style>

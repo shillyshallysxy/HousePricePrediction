@@ -2,7 +2,7 @@ amqp==2.4.1
 anyjson==0.3.3
 billiard==3.5.0.5
 celery==4.2.1
-Django==2.1.7
+Django==2.2.10
 django-appconf==1.0.3
 django-avatar==4.1.0
 django-cors-headers==2.4.0

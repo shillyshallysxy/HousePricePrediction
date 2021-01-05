@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "ajv": "^6.9.2",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "element-ui": "^2.5.4",
     "highcharts": "^7.0.3",
     "iview": "^3.3.0",

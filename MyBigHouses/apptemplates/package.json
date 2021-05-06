@@ -14,7 +14,7 @@
     "ajv": "^6.9.2",
     "axios": "^0.18.0",
     "element-ui": "^2.5.4",
-    "highcharts": "^7.0.3",
+    "highcharts": "^9.0.0",
     "iview": "^3.3.0",
     "vue": "^2.5.2",
     "vue-highcharts": "^0.1.0",

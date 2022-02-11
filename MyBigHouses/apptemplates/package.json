@@ -11,7 +11,7 @@
 		"fix-memory-limit": "cross-env LIMIT=4096 increase-memory-limit"
   },
   "dependencies": {
-    "ajv": "^6.9.2",
+    "ajv": "^6.12.3",
     "axios": "^0.18.0",
     "element-ui": "^2.5.4",
     "highcharts": "^7.0.3",
